@@ -481,7 +481,7 @@
         };
         const HARD_TOPICS = {
             en: ["Quantum entanglement", "Byzantine Empire", "Tardigrade", "Non-Euclidean geometry", "Glagolitic script", "Isotopes of gold", "Photosynthesis", "Linguistics", "Cuneiform", "Oort cloud", "Standard Model", "Voynich manuscript"],
-            de: ["Quantenverschränkung", "Byzantinisches Reich", "Bärtierchen", "Nichteuklidische Geometrie", "Glagolitische Schrift", "Goldisotope", "Photosynthese", "Linguistik", "Keilschrift", "Standardmodell", "Voynich-Manuskript"],
+            de: ["Quantenverschränkung", "Byzantinisches Reich", "Bärtierchen", "Nichteuklidische Geometrie", "Glagolitische Schrift", "Goldisotope", "Photosynthese", "Linguistik", "Keilschrift", "Standardmodell", "Voynich-Manuscript"],
             es: ["Entrelazamiento cuántico", "Imperio bizantino", "Tardigrada", "Geometría no euclidiana", "Alfabeto glagolítico", "Isótopos de oro", "Fotosíntesis", "Lingüística", "Modelo estándar", "Manuscrito Voynich"]
         };
 
@@ -586,6 +586,10 @@
             const todayStr = new Date().toISOString().split('T')[0];
 
             if (isWinner) {
+                // Clear the current mission words so next time it picks new ones
+                localStorage.removeItem('wiki_start_' + mode);
+                localStorage.removeItem('wiki_target_' + mode);
+
                 state.totalRounds++; localStorage.setItem('wiki_total_rounds', state.totalRounds); state.history[todayStr] = (state.history[todayStr] || 0) + 1; localStorage.setItem('wiki_history', JSON.stringify(state.history));
                 
                 let reward = 1;

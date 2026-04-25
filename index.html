@@ -5,187 +5,316 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Wiki Game</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@300;400;600&display=swap');
         body { font-family: 'Libre+Franklin', sans-serif; background-color: #f6f6f6; }
         .wiki-content { line-height: 1.6; color: #202122; }
         .wiki-content a { color: #3366cc; text-decoration: none; }
-        .wiki-content .mw-editsection, .wiki-content .navbox { display: none !important; }
+        .wiki-content a:hover { text-decoration: underline; }
+        .wiki-content .mw-editsection, .wiki-content .navbox, .wiki-content .metadata { display: none !important; }
+        .wiki-content img { max-width: 100%; height: auto; border-radius: 4px; }
         .loading-spinner { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes slideInRight { 0% { transform: translateX(50%); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
+        @keyframes slideInLeft { 0% { transform: translateX(-50%); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
     </style>
 </head>
-<body class="min-h-screen">
+<body class="min-h-screen relative">
 
-    <div id="screen-auth" class="flex items-center justify-center min-h-screen bg-blue-600 p-4">
-        <div class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-sm text-center">
-            <h1 class="text-3xl font-black mb-6">The Wiki Game</h1>
-            <input type="text" id="auth-user" placeholder="Username" class="w-full p-3 mb-3 border rounded-xl outline-none focus:ring-2 ring-blue-500">
-            <input type="password" id="auth-pass" placeholder="Password" class="w-full p-3 mb-6 border rounded-xl outline-none focus:ring-2 ring-blue-500">
-            <div class="flex gap-2">
-                <button id="btn-login" class="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold">Login</button>
-                <button id="btn-signup" class="flex-1 py-3 bg-gray-100 rounded-xl font-bold">Sign Up</button>
+    <div id="screen-auth" class="fixed inset-0 z-[200] bg-blue-600 flex items-center justify-center p-4">
+        <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md text-center">
+            <h1 class="text-3xl font-black mb-6 text-gray-800">The Wiki Game</h1>
+            <div class="space-y-4">
+                <input type="text" id="auth-user" placeholder="Username" class="w-full p-3 border rounded-xl outline-none focus:ring-2 ring-blue-500">
+                <input type="password" id="auth-pass" placeholder="Password" class="w-full p-3 border rounded-xl outline-none focus:ring-2 ring-blue-500">
+                <div class="flex gap-2">
+                    <button id="btn-login" class="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold">Login</button>
+                    <button id="btn-signup" class="flex-1 py-3 bg-gray-100 rounded-xl font-bold">Sign Up</button>
+                </div>
+                <p id="auth-msg" class="text-sm font-bold text-red-500 hidden"></p>
             </div>
-            <p id="auth-msg" class="mt-4 text-sm font-bold text-red-500 hidden"></p>
         </div>
     </div>
 
-    <div id="game-ui" class="hidden">
+    <div id="main-game-container" class="hidden">
         <div class="fixed top-4 right-4 flex items-center gap-3 z-50">
-            <div class="bg-white px-3 py-1.5 rounded-xl shadow-sm border font-black text-gray-700 flex gap-3">
-                <span>🔥 <span id="streak-val">0</span></span>
-                <span class="border-l pl-3">🪙 <span id="coins-val">0</span></span>
-                <button id="btn-logout" class="text-gray-400 ml-2">🚪</button>
+            <div class="flex items-center gap-3 bg-white px-3 py-1.5 rounded-xl shadow-sm border font-black text-gray-700 select-none">
+                <span class="text-orange-500">🔥</span> <span id="streak-val-top">0</span>
+                <span class="border-l pl-3 text-yellow-500">🪙</span> <span id="coins-val-top">0</span>
+                <button id="btn-logout" class="ml-2 text-gray-300 hover:text-red-500">🚪</button>
+            </div>
+            <div class="flex gap-1 bg-white p-1 rounded-lg shadow-sm border border-gray-200">
+                <button id="lang-en" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-md font-bold text-xs transition">EN</button>
+                <button id="lang-de" class="px-3 py-1 text-gray-500 hover:bg-gray-100 rounded-md font-bold text-xs transition">DE</button>
+                <button id="lang-es" class="px-3 py-1 text-gray-500 hover:bg-gray-100 rounded-md font-bold text-xs transition">ES</button>
             </div>
         </div>
 
-        <div id="screen-menu" class="flex flex-col items-center justify-center min-h-screen p-4">
-            <div class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-lg text-center">
-                <p id="welcome-text" class="text-blue-500 font-bold mb-2 uppercase tracking-widest text-xs"></p>
-                <h2 id="mode-display" class="text-2xl font-black mb-6 text-blue-600">Classic Mode</h2>
-                <div class="bg-blue-50 p-4 rounded-xl border text-left mb-3">
-                    <span class="text-xs font-bold text-blue-400">START</span>
-                    <div id="solo-start" class="font-bold text-lg">Loading...</div>
-                </div>
-                <div class="bg-red-50 p-4 rounded-xl border text-left mb-6">
-                    <span class="text-xs font-bold text-red-400">TARGET</span>
-                    <div id="solo-target" class="font-bold text-lg">Loading...</div>
-                </div>
-                <div class="flex flex-col gap-3">
-                    <button id="btn-roll" class="py-3 bg-gray-100 rounded-xl font-bold">🎲 New Topics (-2 🪙)</button>
-                    <button id="btn-start" class="py-3 bg-blue-600 text-white rounded-xl font-bold">🚀 Start Game</button>
+        <div id="screen-menu" class="flex flex-col items-center justify-center min-h-screen p-4 bg-gradient-to-br from-gray-100 to-gray-200 overflow-x-hidden relative">
+            <div class="relative w-full max-w-lg flex flex-col items-center justify-center mx-auto">
+                <div class="relative w-full flex items-center justify-center">
+                    <button id="mode-prev" class="absolute -left-12 sm:-left-16 z-30 w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-xl border border-gray-100 text-3xl font-bold text-gray-600">&lsaquo;</button>
+                    <div class="bg-white p-8 rounded-3xl shadow-xl w-full text-center border border-gray-100 z-20 relative">
+                        <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">🌐</div>
+                        <h1 class="text-4xl font-black mb-2 text-gray-800" data-i18n="title">The Wiki Game</h1>
+                        <div class="relative h-10 mb-6 mt-2 flex items-center justify-center overflow-hidden w-full">
+                            <p id="mode-display" class="font-black text-2xl tracking-wide absolute w-full text-center text-blue-600">Classic</p>
+                        </div>
+                        <div class="flex gap-2 mb-6 p-1 bg-gray-100 rounded-xl">
+                            <button id="tab-solo" class="flex-1 py-2 bg-white text-blue-600 rounded-lg font-bold shadow-sm" data-i18n="tabSolo">Single Player</button>
+                            <button id="tab-multi" class="flex-1 py-2 text-gray-500 rounded-lg font-bold" data-i18n="tabMulti">Multiplayer</button>
+                        </div>
+                        <div id="solo-setup" class="w-full mb-4">
+                            <div class="flex flex-col gap-3 mb-6">
+                                <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 text-left">
+                                    <span class="text-xs font-bold text-blue-400 uppercase" data-i18n="startArticle">Start</span>
+                                    <div id="solo-start" class="font-bold text-blue-700 text-lg">Loading...</div>
+                                </div>
+                                <div class="bg-red-50 p-4 rounded-xl border border-red-100 text-left">
+                                    <span class="text-xs font-bold text-red-400 uppercase" data-i18n="targetArticle">Target</span>
+                                    <div id="solo-target" class="font-bold text-red-700 text-lg">Loading...</div>
+                                </div>
+                            </div>
+                            <div class="flex flex-col gap-3">
+                                <button id="btn-solo-roll" class="py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-bold flex items-center justify-center gap-2">
+                                    <span data-i18n="btnRandom">🎲 Random</span> <span class="text-xs bg-yellow-100 text-yellow-700 px-2 rounded-full">-2 🪙</span>
+                                </button>
+                                <button id="btn-solo-start" class="py-3 bg-blue-600 text-white rounded-xl font-bold shadow-md" data-i18n="btnStartSolo">🚀 Start Game</button>
+                            </div>
+                        </div>
+                        <div id="multiplayer-setup" class="hidden w-full mb-4">
+                            <div id="role-selection" class="flex gap-4">
+                                <button id="btn-host" class="flex-1 py-4 bg-blue-600 text-white rounded-xl font-bold shadow-md" data-i18n="btnHost">Host</button>
+                                <button id="btn-show-join" class="flex-1 py-4 bg-white border-2 border-blue-600 text-blue-600 rounded-xl font-bold" data-i18n="btnShowJoin">Join</button>
+                            </div>
+                            <div id="join-section" class="hidden flex flex-col gap-2 mt-4 bg-gray-50 p-4 rounded-xl">
+                                <input type="text" id="join-code" placeholder="XXXXXX" class="p-3 border rounded-lg uppercase font-black text-center text-2xl tracking-widest" maxlength="6">
+                                <button id="btn-join-submit" class="py-3 bg-blue-600 text-white rounded-lg font-bold" data-i18n="btnJoin">Join</button>
+                            </div>
+                            <div id="lobby-section" class="hidden bg-white border border-gray-200 p-6 rounded-xl text-left mt-4">
+                                <div class="text-center bg-gray-50 py-3 rounded-lg mb-6">
+                                    <span class="text-gray-500 text-xs font-bold uppercase" data-i18n="sessionCode">Code</span>
+                                    <div id="display-code" class="text-4xl font-black text-gray-800 tracking-[0.2em]">------</div>
+                                </div>
+                                <div id="lobby-start" class="font-bold text-blue-700 mb-2"></div>
+                                <div id="lobby-target" class="font-bold text-red-700"></div>
+                                <button id="btn-lobby-start" class="w-full py-4 bg-green-500 text-white rounded-xl font-black mt-4 disabled:opacity-50" disabled>Wait for P2...</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="mode-next" class="absolute -right-12 sm:-right-16 z-30 w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-xl border border-gray-100 text-3xl font-bold text-gray-600">&rsaquo;</button>
                 </div>
             </div>
         </div>
 
-        <div id="screen-game" class="hidden flex flex-col min-h-screen bg-white">
-            <header class="p-4 border-b sticky top-0 bg-white z-10 flex justify-between items-center">
-                <div><span class="text-xs block text-gray-400">TARGET</span><span id="target-display" class="font-bold text-red-600"></span></div>
-                <div class="text-center"><span class="text-xs block text-gray-400">CLICKS</span><span id="click-count" class="font-bold text-xl">0</span></div>
-                <button id="btn-quit" class="text-sm font-bold text-gray-400">Quit</button>
+        <div id="screen-game" class="hidden flex flex-col min-h-screen">
+            <header class="sticky top-0 bg-white border-b shadow-sm z-10 p-4">
+                <div class="max-w-4xl mx-auto flex justify-between items-center">
+                    <div><span class="text-xs text-gray-400 uppercase font-bold" data-i18n="target">Target</span><div id="game-target-display" class="font-bold text-red-600"></div></div>
+                    <div class="flex items-center gap-6">
+                        <div class="text-center"><span class="text-xs text-gray-400 uppercase font-bold" data-i18n="clicks">Clicks</span><div id="click-count" class="font-bold text-xl">0</div></div>
+                        <button id="btn-quit-trigger" class="px-4 py-2 border rounded-lg font-bold text-gray-600" data-i18n="btnGiveUp">Give Up</button>
+                    </div>
+                </div>
             </header>
-            <main class="p-6 max-w-4xl mx-auto w-full">
-                <h1 id="current-title" class="text-3xl font-serif mb-6 border-b pb-2"></h1>
-                <div id="wiki-area" class="wiki-content"></div>
-                <div id="loader" class="hidden py-20 flex justify-center"><div class="loading-spinner"></div></div>
+            <main class="flex-grow max-w-4xl mx-auto w-full p-6 bg-white shadow-sm mt-4 rounded-lg">
+                <h1 id="current-title" class="text-3xl font-serif border-b pb-2 mb-6"></h1>
+                <div id="wiki-content-area" class="wiki-content"></div>
+                <div id="loader" class="hidden flex flex-col items-center py-20"><div class="loading-spinner"></div></div>
             </main>
+        </div>
+
+        <div id="screen-results" class="hidden flex flex-col items-center justify-center min-h-screen p-4 bg-gray-50">
+            <div class="bg-white p-10 rounded-3xl shadow-2xl max-w-4xl w-full text-center">
+                <div class="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl">🏁</div>
+                <h1 class="text-5xl font-black mb-2 text-gray-800" data-i18n="victoryTitle">Victory!</h1>
+                <div id="coin-reward-display" class="mb-4 text-2xl font-black text-yellow-600"></div>
+                <div class="p-6 bg-blue-50 rounded-2xl border border-blue-100 inline-block mb-10">
+                    <span class="block text-xs text-blue-400 font-bold uppercase" data-i18n="yourClicks">Your Clicks</span>
+                    <span id="final-clicks" class="text-4xl font-black text-blue-700">0</span>
+                </div>
+                <button id="btn-home" class="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold text-xl" data-i18n="btnBackMenu">Menu</button>
+            </div>
         </div>
     </div>
 
     <script>
-        const state = { user: null, coins: 0, streak: 0, start: '', target: '', clicks: 0, path: [] };
+        let peer = null, peerConn = null;
+        const state = {
+            user: null, language: 'en', isMultiplayer: false, isHost: false, isPlaying: false,
+            startTitle: '', targetTitle: '', clicks: 0, path: [], finished: false,
+            coins: 0, dailyStreak: 0, lastDailyWin: null, totalRounds: 0, maxClicks: null
+        };
 
-        // --- Auth System ---
+        const ORIGINAL_MODES = [
+            { id: 'classic', i18n: 'modeClassic', color: 'text-blue-600' },
+            { id: 'hard', i18n: 'modeHard', color: 'text-red-600' },
+            { id: 'limited', i18n: 'modeLimited', color: 'text-purple-600' }
+        ];
+        let currentModeIndex = 0;
+
+        const uiDict = {
+            en: { title: "The Wiki Game", tabSolo: "Solo", tabMulti: "Multiplayer", startArticle: "Start", targetArticle: "Target", btnRandom: "🎲 Random", btnStartSolo: "🚀 Start", btnHost: "Host", btnShowJoin: "Join", btnJoin: "Join", sessionCode: "Code", target: "Target", clicks: "Clicks", btnGiveUp: "Give Up", victoryTitle: "Victory!", yourClicks: "Your Clicks", btnBackMenu: "Menu", modeClassic: "Classic", modeHard: "Hard Mode", modeLimited: "Limited" },
+            de: { title: "Das Wiki Spiel", tabSolo: "Solo", tabMulti: "Mehrspieler", startArticle: "Start", targetArticle: "Ziel", btnRandom: "🎲 Zufall", btnStartSolo: "🚀 Start", btnHost: "Hosten", btnShowJoin: "Join", btnJoin: "Join", sessionCode: "Code", target: "Ziel", clicks: "Klicks", btnGiveUp: "Aufgeben", victoryTitle: "Sieg!", yourClicks: "Deine Klicks", btnBackMenu: "Menü", modeClassic: "Klassisch", modeHard: "Schwer", modeLimited: "Limitiert" },
+            es: { title: "El Juego de Wiki", tabSolo: "Solo", tabMulti: "Multi", startArticle: "Inicio", targetArticle: "Destino", btnRandom: "🎲 Azar", btnStartSolo: "🚀 Jugar", btnHost: "Host", btnShowJoin: "Join", btnJoin: "Join", sessionCode: "Código", target: "Destino", clicks: "Clicks", btnGiveUp: "Rendirse", victoryTitle: "Victoria!", yourClicks: "Tus Clicks", btnBackMenu: "Menü", modeClassic: "Clásico", modeHard: "Difícil", modeLimited: "Límite" }
+        };
+
+        const TOPICS = {
+            en: ["Apple Inc.", "Albert Einstein", "Ancient Egypt", "Artificial Intelligence", "Batman", "Bitcoin", "Coffee", "Dinosaur", "Football", "Mars"],
+            de: ["Apple", "Albert Einstein", "Altes Ägypten", "Künstliche Intelligenz", "Batman", "Bitcoin", "Kaffee", "Dinosaurier", "Fußball", "Mars"],
+            es: ["Apple", "Albert Einstein", "Antiguo Egipto", "Inteligencia artificial", "Batman", "Bitcoin", "Café", "Dinosaurio", "Fútbol", "Marte"]
+        };
+
+        // --- AUTH SYSTEM ---
         function getAccounts() { return JSON.parse(localStorage.getItem('wiki_accounts') || '{}'); }
 
         document.getElementById('btn-signup').onclick = () => {
-            const user = document.getElementById('auth-user').value.trim();
-            const pass = document.getElementById('auth-pass').value.trim();
-            if(!user || !pass) return;
-            let accounts = getAccounts();
-            if(accounts[user]) { showAuthMsg("Name taken!"); return; }
-            accounts[user] = { password: pass, coins: 10, streak: 0 };
-            localStorage.setItem('wiki_accounts', JSON.stringify(accounts));
-            showAuthMsg("Signed up! Now Login.", false);
+            const u = document.getElementById('auth-user').value.trim();
+            const p = document.getElementById('auth-pass').value.trim();
+            if(!u || !p) return;
+            let accs = getAccounts();
+            if(accs[u]) { alert("Username exists!"); return; }
+            accs[u] = { password: p, coins: 10, streak: 0, lastWin: null, rounds: 0 };
+            localStorage.setItem('wiki_accounts', JSON.stringify(accs));
+            alert("Signed up! Now Login.");
         };
 
         document.getElementById('btn-login').onclick = () => {
-            const user = document.getElementById('auth-user').value.trim();
-            const pass = document.getElementById('auth-pass').value.trim();
-            let accounts = getAccounts();
-            if(accounts[user] && accounts[user].password === pass) {
-                state.user = user;
-                state.coins = accounts[user].coins;
-                state.streak = accounts[user].streak;
-                loginSuccess();
-            } else { showAuthMsg("Wrong name or password!"); }
+            const u = document.getElementById('auth-user').value.trim();
+            const p = document.getElementById('auth-pass').value.trim();
+            let accs = getAccounts();
+            if(accs[u] && accs[u].password === p) {
+                state.user = u;
+                state.coins = accs[u].coins;
+                state.dailyStreak = accs[u].streak;
+                state.lastDailyWin = accs[u].lastWin;
+                state.totalRounds = accs[u].rounds;
+                document.getElementById('screen-auth').classList.add('hidden');
+                document.getElementById('main-game-container').classList.remove('hidden');
+                updateUI();
+                updateModeDisplay();
+            } else { alert("Wrong username or password!"); }
         };
-
-        function loginSuccess() {
-            document.getElementById('screen-auth').classList.add('hidden');
-            document.getElementById('game-ui').classList.remove('hidden');
-            document.getElementById('welcome-text').innerText = `Hello, ${state.user}`;
-            updateStats();
-            rollTopics();
-        }
 
         function saveGame() {
-            let accounts = getAccounts();
             if(!state.user) return;
-            accounts[state.user].coins = state.coins;
-            accounts[state.user].streak = state.streak;
-            localStorage.setItem('wiki_accounts', JSON.stringify(accounts));
-            updateStats();
+            let accs = getAccounts();
+            accs[state.user] = { ...accs[state.user], coins: state.coins, streak: state.dailyStreak, lastWin: state.lastDailyWin, rounds: state.totalRounds };
+            localStorage.setItem('wiki_accounts', JSON.stringify(accs));
+            updateUI();
         }
 
-        function showAuthMsg(txt, isErr = true) {
-            const el = document.getElementById('auth-msg');
-            el.innerText = txt;
-            el.className = `mt-4 text-sm font-bold ${isErr ? 'text-red-500' : 'text-green-500'}`;
-            el.classList.remove('hidden');
+        // --- GAME LOGIC ---
+        function updateUI() {
+            const d = uiDict[state.language];
+            document.querySelectorAll('[data-i18n]').forEach(el => { const k = el.getAttribute('data-i18n'); if (d[k]) el.innerText = d[k]; });
+            document.getElementById('coins-val-top').innerText = state.coins;
+            document.getElementById('streak-val-top').innerText = state.dailyStreak;
         }
 
-        // --- Game System ---
-        const topics = ["Albert Einstein", "Pizza", "Ancient Egypt", "Batman", "Internet", "Coffee", "Mars", "Japan", "Chess", "Dinosaur"];
-
-        function rollTopics() {
-            const filtered = topics.sort(() => 0.5 - Math.random());
-            state.start = filtered[0];
-            state.target = filtered[1];
-            document.getElementById('solo-start').innerText = state.start;
-            document.getElementById('solo-target').innerText = state.target;
+        function updateModeDisplay(dir = 'none') {
+            const mode = ORIGINAL_MODES[currentModeIndex];
+            const display = document.getElementById('mode-display');
+            display.innerText = uiDict[state.language][mode.i18n];
+            display.className = `font-black text-2xl tracking-wide absolute w-full text-center ${mode.color}`;
+            rollSoloWords();
         }
 
-        document.getElementById('btn-roll').onclick = () => {
-            if(state.coins >= 2) { state.coins -= 2; rollTopics(); saveGame(); }
-            else { alert("Not enough coins!"); }
+        function rollSoloWords(force = false) {
+            const mode = ORIGINAL_MODES[currentModeIndex].id;
+            const sStart = localStorage.getItem('wiki_start_' + mode + '_' + state.user);
+            const sTarget = localStorage.getItem('wiki_target_' + mode + '_' + state.user);
+
+            if (!force && sStart && sTarget) {
+                state.startTitle = sStart; state.targetTitle = sTarget;
+            } else {
+                const list = TOPICS[state.language];
+                const shuffled = [...list].sort(() => 0.5 - Math.random());
+                state.startTitle = shuffled[0]; state.targetTitle = shuffled[1];
+                localStorage.setItem('wiki_start_' + mode + '_' + state.user, state.startTitle);
+                localStorage.setItem('wiki_target_' + mode + '_' + state.user, state.targetTitle);
+            }
+            document.getElementById('solo-start').innerText = state.startTitle;
+            document.getElementById('solo-target').innerText = state.targetTitle;
+        }
+
+        document.getElementById('btn-solo-roll').onclick = () => {
+            if(state.coins >= 2) { state.coins -= 2; rollSoloWords(true); saveGame(); }
+            else { alert("Need 2 coins!"); }
         };
 
-        function updateStats() {
-            document.getElementById('coins-val').innerText = state.coins;
-            document.getElementById('streak-val').innerText = state.streak;
-        }
-
-        async function loadWiki(title) {
+        async function loadArticle(title) {
             document.getElementById('loader').classList.remove('hidden');
-            document.getElementById('wiki-area').innerHTML = "";
+            document.getElementById('wiki-content-area').innerHTML = "";
             document.getElementById('current-title').innerText = title;
+            const container = document.getElementById('game-breadcrumbs');
+            container.innerHTML = state.path.map(s => `<span class='text-xs'>${s}</span>`).join(' › ');
             try {
-                const res = await fetch(`https://en.wikipedia.org/w/api.php?origin=*&action=parse&page=${encodeURIComponent(title)}&prop=text&format=json&redirects=true`);
+                const res = await fetch(`https://${state.language}.wikipedia.org/w/api.php?origin=*&action=parse&page=${encodeURIComponent(title)}&prop=text&format=json&disableeditsection=true&redirects=true`);
                 const data = await res.json();
-                document.getElementById('wiki-area').innerHTML = data.parse.text['*'];
-                document.querySelectorAll('#wiki-area a').forEach(a => {
-                    const href = a.getAttribute('href');
-                    if(href && href.startsWith('/wiki/') && !href.includes(':')) {
-                        a.onclick = (e) => { e.preventDefault(); navigate(decodeURIComponent(href.replace('/wiki/', '')).replace(/_/g, ' ')); };
-                    } else { a.style.pointerEvents = 'none'; a.style.color = 'black'; }
+                const area = document.getElementById('wiki-content-area');
+                area.innerHTML = data.parse.text['*'];
+                area.querySelectorAll('a').forEach(link => {
+                    const href = link.getAttribute('href');
+                    if (href && href.startsWith('/wiki/') && !href.includes(':') && !href.includes('#')) {
+                        link.onclick = (e) => { e.preventDefault(); navigate(decodeURIComponent(href.replace('/wiki/', '')).replace(/_/g, ' ')); };
+                    } else { link.style.pointerEvents = 'none'; link.style.color = 'black'; }
                 });
-            } catch(e) { alert("Error loading page."); }
-            document.getElementById('loader').classList.add('hidden');
+            } catch(e) {} finally { document.getElementById('loader').classList.add('hidden'); }
         }
 
         function navigate(title) {
             state.clicks++;
             document.getElementById('click-count').innerText = state.clicks;
-            if(title.toLowerCase() === state.target.toLowerCase()) {
-                alert(`Victory in ${state.clicks} clicks! +1 🪙`);
-                state.coins += 1;
-                state.streak += 1;
-                saveGame();
-                location.reload();
-            } else { loadWiki(title); }
+            state.path.push(title);
+            if (title.toLowerCase() === state.targetTitle.toLowerCase()) finishGame();
+            else if (state.maxClicks && state.clicks >= state.maxClicks) alert("Too many clicks!");
+            else loadArticle(title);
         }
 
-        document.getElementById('btn-start').onclick = () => {
-            state.clicks = 0;
-            document.getElementById('target-display').innerText = state.target;
-            document.getElementById('screen-menu').classList.add('hidden');
-            document.getElementById('screen-game').classList.remove('hidden');
-            loadWiki(state.start);
+        function finishGame() {
+            state.finished = true;
+            const mode = ORIGINAL_MODES[currentModeIndex].id;
+            let reward = (mode === 'classic') ? 1 : 10;
+            state.coins += reward;
+            state.totalRounds++;
+            saveGame();
+            document.getElementById('final-clicks').innerText = state.clicks;
+            document.getElementById('coin-reward-display').innerText = `+${reward} 🪙`;
+            showScreen('results');
+        }
+
+        function showScreen(id) {
+            ['screen-menu', 'screen-game', 'screen-results'].forEach(s => document.getElementById(s).classList.add('hidden'));
+            document.getElementById('screen-' + id).classList.remove('hidden');
+            window.scrollTo(0,0);
+        }
+
+        document.getElementById('btn-solo-start').onclick = () => {
+            state.isPlaying = true; state.clicks = 0; state.path = [state.startTitle];
+            document.getElementById('game-target-display').innerText = state.targetTitle;
+            showScreen('game'); loadArticle(state.startTitle);
         };
 
-        document.getElementById('btn-quit').onclick = () => location.reload();
+        document.getElementById('mode-next').onclick = () => { currentModeIndex = (currentModeIndex + 1) % ORIGINAL_MODES.length; updateModeDisplay(); };
+        document.getElementById('mode-prev').onclick = () => { currentModeIndex = (currentModeIndex - 1 + ORIGINAL_MODES.length) % ORIGINAL_MODES.length; updateModeDisplay(); };
+        document.getElementById('btn-home').onclick = () => { showScreen('menu'); };
+        document.getElementById('btn-quit-trigger').onclick = () => showScreen('menu');
         document.getElementById('btn-logout').onclick = () => location.reload();
+        
+        document.getElementById('lang-en').onclick = () => { state.language = 'en'; updateUI(); rollSoloWords(true); };
+        document.getElementById('lang-de').onclick = () => { state.language = 'de'; updateUI(); rollSoloWords(true); };
+        document.getElementById('lang-es').onclick = () => { state.language = 'es'; updateUI(); rollSoloWords(true); };
+
+        document.getElementById('tab-solo').onclick = () => {
+            document.getElementById('solo-setup').classList.remove('hidden');
+            document.getElementById('multiplayer-setup').classList.add('hidden');
+        };
+        document.getElementById('tab-multi').onclick = () => {
+            document.getElementById('solo-setup').classList.add('hidden');
+            document.getElementById('multiplayer-setup').classList.remove('hidden');
+        };
     </script>
 </body>
 </html>

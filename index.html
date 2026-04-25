@@ -316,33 +316,60 @@
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // --- Firebase Setup ---
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-
+        // --- Firebase Setup (Safe Fallback) ---
+        let app = null;
+        let auth = null;
+        let db = null;
         let currentUser = null;
         let sessionRef = null;
         let unsubscribeSession = null;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
-        const initAuth = async () => {
-            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                await signInWithCustomToken(auth, __initial_auth_token);
+        try {
+            const configStr = typeof __firebase_config !== 'undefined' ? __firebase_config : null;
+            if (configStr && configStr.trim() !== "" && configStr !== "{}") {
+                const firebaseConfig = JSON.parse(configStr);
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                const initAuth = async () => {
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                };
+
+                onAuthStateChanged(auth, (user) => {
+                    currentUser = user;
+                });
+
+                initAuth();
             } else {
-                await signInAnonymously(auth);
+                console.warn("Multiplayer disabled: No Firebase config found.");
             }
-        };
-
-        onAuthStateChanged(auth, (user) => {
-            currentUser = user;
-        });
-
-        // Initialize immediately
-        initAuth();
+        } catch (e) {
+            console.error("Firebase init failed:", e);
+        }
 
         // --- Game Setup Data ---
+        const state = {
+            language: 'en',
+            isMultiplayer: false,
+            isHost: false,
+            sessionCode: '',
+            startTitle: '',
+            targetTitle: '',
+            currentTitle: '',
+            clicks: 0,
+            path: [],
+            easyMode: false,
+            finished: false,
+            opponentFinished: false,
+            record: localStorage.getItem('wiki_game_record') || null
+        };
+
         const getApiUrl = () => `https://${state.language}.wikipedia.org/w/api.php?origin=*&action=`;
         
         const POPULAR_TOPICS = {
@@ -387,21 +414,6 @@
             ]
         };
 
-        const state = {
-            language: 'en',
-            isMultiplayer: false,
-            isHost: false,
-            sessionCode: '',
-            startTitle: '',
-            targetTitle: '',
-            currentTitle: '',
-            clicks: 0,
-            path: [],
-            easyMode: false,
-            finished: false,
-            opponentFinished: false
-        };
-
         const screens = {
             menu: document.getElementById('screen-menu'),
             game: document.getElementById('screen-game'),
@@ -431,8 +443,8 @@
             btnEs.className = lang === 'es' ? activeClass : inactiveClass;
 
             if (!state.isMultiplayer || (state.isMultiplayer && state.isHost)) {
-                rollSoloWords(); // Update words based on new language
-                if (state.isMultiplayer && sessionRef) {
+                rollSoloWords(); 
+                if (state.isMultiplayer && sessionRef && db) {
                     updateDoc(sessionRef, { 
                         language: lang,
                         startTitle: state.startTitle,
@@ -517,9 +529,13 @@
             startGame();
         });
 
-        // UI Handlers for Menu
+        // UI Handlers for Multiplayer
         document.getElementById('btn-host').addEventListener('click', async () => {
-            if (!currentUser) return;
+            if (!db || !currentUser) {
+                alert("Multiplayer ist nur im Canvas verfügbar, da die Datenbank lokal nicht geladen werden kann.");
+                return;
+            }
+
             state.isHost = true;
             state.sessionCode = generateCode();
             state.easyMode = false;
@@ -544,12 +560,16 @@
         });
 
         document.getElementById('btn-show-join').addEventListener('click', () => {
+            if (!db || !currentUser) {
+                alert("Multiplayer ist nur im Canvas verfügbar, da die Datenbank lokal nicht geladen werden kann.");
+                return;
+            }
             document.getElementById('role-selection').classList.add('hidden');
             document.getElementById('join-section').classList.remove('hidden');
         });
 
         document.getElementById('btn-join-submit').addEventListener('click', async () => {
-            if (!currentUser) return;
+            if (!db || !currentUser) return;
             const codeInput = document.getElementById('join-code').value.toUpperCase();
             if (codeInput.length !== 6) return;
 
@@ -597,7 +617,7 @@
 
         // Host Control Actions
         document.getElementById('btn-lobby-refresh').addEventListener('click', async () => {
-            if (!state.isHost || !sessionRef) return;
+            if (!state.isHost || !sessionRef || !db) return;
             rollSoloWords();
             await updateDoc(sessionRef, {
                 startTitle: state.startTitle,
@@ -606,16 +626,17 @@
         });
 
         document.getElementById('lobby-easy-mode').addEventListener('change', async (e) => {
-            if (!state.isHost || !sessionRef) return;
+            if (!state.isHost || !sessionRef || !db) return;
             await updateDoc(sessionRef, { easyMode: e.target.checked });
         });
 
         document.getElementById('btn-lobby-start').addEventListener('click', async () => {
-            if (!state.isHost || !sessionRef) return;
+            if (!state.isHost || !sessionRef || !db) return;
             await updateDoc(sessionRef, { status: 'playing' });
         });
 
         function listenToSession() {
+            if (!db) return;
             if (unsubscribeSession) unsubscribeSession();
 
             unsubscribeSession = onSnapshot(sessionRef, (docSnap) => {
@@ -780,7 +801,7 @@
             state.finished = true;
 
             // If I am the winner, notify DB
-            if (state.isMultiplayer && isWinner && sessionRef) {
+            if (state.isMultiplayer && isWinner && sessionRef && db) {
                 if (state.isHost) {
                     await updateDoc(sessionRef, { p1Finished: true, p1Clicks: state.clicks });
                 } else {

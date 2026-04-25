@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Wiki Game</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@300;400;600&display=swap');
         
@@ -315,48 +316,38 @@
     </div>
 
     <!-- MULTIPLAYER AND GAME LOGIC -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    <script>
+        // --- PeerJS Setup ---
+        let peer = null;
+        let peerConn = null;
 
-        // --- Firebase Setup ---
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'wikigame-default';
-        let firebaseConfig = {};
-
-        // HINWEIS FÜR GITHUB PAGES:
-        // Das Canvas-System blockiert PeerJS WebSockets durch seine Sicherheitsrichtlinien.
-        // Daher nutzen wir hier Firebase für den Multiplayer, was immer reibungslos funktioniert.
-        // Wenn du das Spiel später auf GitHub Pages veröffentlichst, musst du in das untere 'else' 
-        // deine eigene Firebase Config (aus der Firebase Console) einfügen.
-        if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-            firebaseConfig = JSON.parse(__firebase_config);
-        } else {
-            console.warn("WICHTIG: Füge hier für GitHub Pages deine eigene Firebase-Config ein!");
-            // firebaseConfig = { apiKey: "...", authDomain: "...", projectId: "...", ... };
+        function sendPeerData(data) {
+            if (peerConn && peerConn.open) {
+                peerConn.send(data);
+            }
         }
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        let currentUser = null;
-        let sessionRef = null;
-        let unsubscribeSession = null;
-
-        const initAuth = async () => {
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
+        function handlePeerData(data) {
+            if (data.type === 'lobbyUpdate') {
+                state.startTitle = data.startTitle;
+                state.targetTitle = data.targetTitle;
+                state.easyMode = data.easyMode;
+                if (data.language && data.language !== state.language) {
+                    state.language = data.language;
+                    updateLanguageButtonsUI(state.language);
+                    updateUI();
                 }
-            } catch (e) {
-                console.error("Auth Error:", e);
+                updateLobbyWords();
+            } else if (data.type === 'startGame') {
+                startGame();
+            } else if (data.type === 'progress') {
+                state.opponentClicks = data.clicks;
+                state.opponentPath = data.path;
+                updateOpponentProgressUI();
+            } else if (data.type === 'finish') {
+                finishGame(false, data.clicks);
             }
-        };
-        initAuth();
-        onAuthStateChanged(auth, user => currentUser = user);
+        }
 
         // --- Translation Data ---
         const uiDict = {
@@ -534,12 +525,14 @@
 
             if (!state.isMultiplayer || (state.isMultiplayer && state.isHost)) {
                 rollSoloWords(); 
-                if (state.isMultiplayer && sessionRef) {
-                    updateDoc(sessionRef, { 
+                if (state.isMultiplayer && peerConn && peerConn.open) {
+                    sendPeerData({ 
+                        type: 'lobbyUpdate',
                         language: lang,
                         startTitle: state.startTitle,
-                        targetTitle: state.targetTitle
-                    }).catch(console.error);
+                        targetTitle: state.targetTitle,
+                        easyMode: state.easyMode
+                    });
                 }
             }
         }
@@ -616,12 +609,7 @@
         });
 
         // UI Handlers for Multiplayer
-        document.getElementById('btn-host').addEventListener('click', async () => {
-            if (!currentUser) {
-                alert(uiDict[state.language].multiErr);
-                return;
-            }
-
+        document.getElementById('btn-host').addEventListener('click', () => {
             state.isHost = true;
             state.sessionCode = generateCode();
             state.easyMode = false;
@@ -634,26 +622,36 @@
             document.getElementById('joiner-status').innerText = uiDict[state.language].loading;
 
             try {
-                sessionRef = doc(db, 'artifacts', appId, 'public', 'data', 'wikisessions', state.sessionCode);
-                await setDoc(sessionRef, {
-                    status: 'waiting',
-                    language: state.language,
-                    startTitle: state.startTitle,
-                    targetTitle: state.targetTitle,
-                    easyMode: false,
-                    p1Finished: false,
-                    p2Finished: false,
-                    p1Clicks: 0,
-                    p2Clicks: 0,
-                    p1Path: [],
-                    p2Path: []
+                peer = new Peer('wikigame-v1-' + state.sessionCode);
+                peer.on('open', () => {
+                    document.getElementById('joiner-status').innerText = uiDict[state.language].waitHostWait;
                 });
+                peer.on('connection', (conn) => {
+                    peerConn = conn;
+                    peerConn.on('data', handlePeerData);
+                    
+                    document.getElementById('host-controls').classList.remove('hidden');
+                    document.getElementById('joiner-status').classList.add('hidden');
 
-                document.getElementById('host-controls').classList.remove('hidden');
-                document.getElementById('joiner-status').classList.add('hidden');
+                    const startBtn = document.getElementById('btn-lobby-start');
+                    startBtn.disabled = false;
+                    startBtn.innerText = uiDict[state.language].waitHostStart;
+                    startBtn.classList.replace('bg-gray-400', 'bg-green-500');
+                    startBtn.classList.add('hover:bg-green-600', 'active:scale-95');
 
-                listenToSession();
-            } catch (e) {
+                    sendPeerData({
+                        type: 'lobbyUpdate',
+                        startTitle: state.startTitle,
+                        targetTitle: state.targetTitle,
+                        easyMode: state.easyMode,
+                        language: state.language
+                    });
+                });
+                peer.on('error', (err) => {
+                    console.error(err);
+                    alert(uiDict[state.language].multiErr + " (Host)");
+                });
+            } catch(e) {
                 console.error(e);
                 alert(uiDict[state.language].multiErr);
             }
@@ -664,35 +662,37 @@
             document.getElementById('join-section').classList.remove('hidden');
         });
 
-        document.getElementById('btn-join-submit').addEventListener('click', async () => {
+        document.getElementById('btn-join-submit').addEventListener('click', () => {
             const codeInput = document.getElementById('join-code').value.toUpperCase();
-            if (codeInput.length !== 6 || !currentUser) return;
+            if (codeInput.length !== 6) return;
 
             document.getElementById('btn-join-submit').innerText = "...";
             document.getElementById('join-error').classList.add('hidden');
 
             try {
-                const tempRef = doc(db, 'artifacts', appId, 'public', 'data', 'wikisessions', codeInput);
-                const docSnap = await getDoc(tempRef);
-
-                if (docSnap.exists()) {
-                    state.isHost = false;
-                    state.sessionCode = codeInput;
-                    sessionRef = tempRef;
-
-                    await updateDoc(sessionRef, { status: 'ready' });
-                    
-                    document.getElementById('btn-join-submit').innerText = uiDict[state.language].btnJoin;
-                    setupLobbyUI();
-                    listenToSession();
-                } else {
+                peer = new Peer();
+                peer.on('open', () => {
+                    peerConn = peer.connect('wikigame-v1-' + codeInput);
+                    peerConn.on('open', () => {
+                        document.getElementById('btn-join-submit').innerText = uiDict[state.language].btnJoin;
+                        state.isHost = false;
+                        state.sessionCode = codeInput;
+                        setupLobbyUI();
+                        peerConn.on('data', handlePeerData);
+                    });
+                    peerConn.on('error', () => {
+                        document.getElementById('join-error').classList.remove('hidden');
+                        document.getElementById('btn-join-submit').innerText = uiDict[state.language].btnJoin;
+                    });
+                });
+                peer.on('error', (err) => {
                     document.getElementById('join-error').classList.remove('hidden');
                     document.getElementById('btn-join-submit').innerText = uiDict[state.language].btnJoin;
-                }
-            } catch(e) {
-                 console.error(e);
-                 document.getElementById('join-error').classList.remove('hidden');
-                 document.getElementById('btn-join-submit').innerText = uiDict[state.language].btnJoin;
+                });
+            } catch (e) {
+                console.error(e);
+                document.getElementById('join-error').classList.remove('hidden');
+                document.getElementById('btn-join-submit').innerText = uiDict[state.language].btnJoin;
             }
         });
 
@@ -720,79 +720,35 @@
         }
 
         // Host Control Actions
-        document.getElementById('btn-lobby-refresh').addEventListener('click', async () => {
-            if (!state.isHost || !sessionRef) return;
+        document.getElementById('btn-lobby-refresh').addEventListener('click', () => {
+            if (!state.isHost) return;
             rollSoloWords();
-            await updateDoc(sessionRef, { 
+            sendPeerData({ 
+                type: 'lobbyUpdate', 
                 startTitle: state.startTitle, 
                 targetTitle: state.targetTitle, 
+                easyMode: state.easyMode, 
                 language: state.language 
             });
         });
 
-        document.getElementById('lobby-easy-mode').addEventListener('change', async (e) => {
-            if (!state.isHost || !sessionRef) return;
+        document.getElementById('lobby-easy-mode').addEventListener('change', (e) => {
+            if (!state.isHost) return;
             state.easyMode = e.target.checked;
-            await updateDoc(sessionRef, { easyMode: state.easyMode });
-        });
-
-        document.getElementById('btn-lobby-start').addEventListener('click', async () => {
-            if (!state.isHost || !sessionRef) return;
-            await updateDoc(sessionRef, { status: 'playing' });
-        });
-
-        function listenToSession() {
-            if (unsubscribeSession) unsubscribeSession();
-
-            unsubscribeSession = onSnapshot(sessionRef, (docSnap) => {
-                if (!docSnap.exists()) return;
-                const data = docSnap.data();
-
-                if (data.status === 'waiting' || data.status === 'ready') {
-                    state.startTitle = data.startTitle;
-                    state.targetTitle = data.targetTitle;
-                    state.easyMode = data.easyMode;
-                    
-                    if (data.language && data.language !== state.language) {
-                        state.language = data.language;
-                        updateLanguageButtonsUI(state.language);
-                        updateUI();
-                    }
-
-                    updateLobbyWords();
-
-                    if (state.isHost && data.status === 'ready') {
-                        const startBtn = document.getElementById('btn-lobby-start');
-                        startBtn.disabled = false;
-                        startBtn.innerText = uiDict[state.language].waitHostStart;
-                        startBtn.classList.replace('bg-gray-400', 'bg-green-500');
-                        startBtn.classList.add('hover:bg-green-600', 'active:scale-95');
-                    }
-                }
-
-                if (data.status === 'playing' && !state.isPlaying && !state.finished) {
-                    startGame();
-                }
-
-                if (data.status === 'playing' && state.isPlaying) {
-                    const oppClicks = state.isHost ? data.p2Clicks : data.p1Clicks;
-                    const oppPath = state.isHost ? data.p2Path : data.p1Path;
-                    const oppFinished = state.isHost ? data.p2Finished : data.p1Finished;
-
-                    if (oppPath && oppPath.length > 0) {
-                        state.opponentClicks = oppClicks;
-                        state.opponentPath = oppPath;
-                        updateOpponentProgressUI();
-                    }
-
-                    if (oppFinished && !state.finished) {
-                        finishGame(false, oppClicks);
-                    }
-                }
-            }, (error) => {
-                console.error("Sync error:", error);
+            sendPeerData({ 
+                type: 'lobbyUpdate', 
+                startTitle: state.startTitle, 
+                targetTitle: state.targetTitle, 
+                easyMode: state.easyMode, 
+                language: state.language 
             });
-        }
+        });
+
+        document.getElementById('btn-lobby-start').addEventListener('click', () => {
+            if (!state.isHost) return;
+            sendPeerData({ type: 'startGame' });
+            startGame();
+        });
 
         // --- Core Game Logic ---
         function startGame() {
@@ -816,13 +772,7 @@
             if (state.isMultiplayer) {
                 document.getElementById('opponent-progress-container').classList.remove('hidden');
                 updateOpponentProgressUI();
-                
-                if (sessionRef) {
-                    const updateData = state.isHost 
-                        ? { p1Clicks: state.clicks, p1Path: state.path } 
-                        : { p2Clicks: state.clicks, p2Path: state.path };
-                    updateDoc(sessionRef, updateData).catch(console.error);
-                }
+                sendPeerData({ type: 'progress', clicks: state.clicks, path: state.path });
             } else {
                 document.getElementById('opponent-progress-container').classList.add('hidden');
             }
@@ -924,11 +874,8 @@
             state.currentTitle = title;
             document.getElementById('click-count').innerText = state.clicks;
 
-            if (state.isMultiplayer && sessionRef) {
-                const updateData = state.isHost 
-                    ? { p1Clicks: state.clicks, p1Path: state.path } 
-                    : { p2Clicks: state.clicks, p2Path: state.path };
-                updateDoc(sessionRef, updateData).catch(console.error);
+            if (state.isMultiplayer) {
+                sendPeerData({ type: 'progress', clicks: state.clicks, path: state.path });
                 updateOpponentProgressUI(); 
             }
 
@@ -948,11 +895,8 @@
                 state.clicks++;
                 document.getElementById('click-count').innerText = state.clicks;
                 
-                if (state.isMultiplayer && sessionRef) {
-                    const updateData = state.isHost 
-                        ? { p1Clicks: state.clicks, p1Path: state.path } 
-                        : { p2Clicks: state.clicks, p2Path: state.path };
-                    updateDoc(sessionRef, updateData).catch(console.error);
+                if (state.isMultiplayer) {
+                    sendPeerData({ type: 'progress', clicks: state.clicks, path: state.path });
                     updateOpponentProgressUI();
                 }
                 
@@ -961,18 +905,14 @@
         });
 
         // --- End Game Handling ---
-        async function finishGame(isWinner, oppClicks = "?") {
+        function finishGame(isWinner, oppClicks = "?") {
             if (state.finished) return;
             state.finished = true;
 
             const dict = uiDict[state.language];
 
-            if (state.isMultiplayer && isWinner && sessionRef) {
-                if (state.isHost) {
-                    await updateDoc(sessionRef, { p1Finished: true, p1Clicks: state.clicks, p1Path: state.path });
-                } else {
-                    await updateDoc(sessionRef, { p2Finished: true, p2Clicks: state.clicks, p2Path: state.path });
-                }
+            if (state.isMultiplayer && isWinner) {
+                sendPeerData({ type: 'finish', clicks: state.clicks });
             }
 
             const icon = document.getElementById('result-icon');
@@ -1029,10 +969,9 @@
         document.getElementById('btn-home').addEventListener('click', () => {
             const dict = uiDict[state.language];
             
-            if (unsubscribeSession) { 
-                unsubscribeSession(); 
-                unsubscribeSession = null; 
-            }
+            if (peerConn) { peerConn.close(); peerConn = null; }
+            if (peer) { peer.destroy(); peer = null; }
+
             state.isPlaying = false;
 
             document.getElementById('role-selection').classList.remove('hidden');

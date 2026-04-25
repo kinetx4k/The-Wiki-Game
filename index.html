@@ -28,6 +28,10 @@
             text-decoration: underline;
         }
 
+        .wiki-content p {
+            margin-bottom: 1rem;
+        }
+
         .wiki-content .mw-editsection,
         .wiki-content .reflist,
         .wiki-content .reference,
@@ -46,12 +50,9 @@
             margin-bottom: 1rem;
         }
 
-        /* Bilder Styling */
         .wiki-content img {
             max-width: 100%;
             height: auto;
-            display: block;
-            margin: 0.5rem 0;
         }
 
         .wiki-content .infobox {
@@ -69,22 +70,6 @@
             margin-bottom: 0.5em;
             width: auto;
             background-color: transparent;
-            border: 1px solid #c8ccd1;
-            padding: 3px;
-            background-color: #f8f9fa;
-            font-size: 88%;
-        }
-
-        .wiki-content .tright {
-            float: right;
-            clear: right;
-            margin: 0.5em 0 1.3em 1.4em;
-        }
-
-        .wiki-content .tleft {
-            float: left;
-            clear: left;
-            margin: 0.5em 1.4em 1.3em 0;
         }
 
         .wiki-content table {
@@ -131,13 +116,14 @@
         }
     </style>
 </head>
-<body class="min-h-screen bg-gray-50">
+<body class="min-h-screen relative">
 
     <!-- Top UI (Streak & Languages) -->
     <div class="fixed top-4 right-4 flex items-center gap-3 z-50">
         <div id="streak-top-ui" class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl shadow-sm border border-gray-100 font-black text-gray-700 select-none">
             <span class="text-orange-500">🔥</span>
             <span id="streak-val-top">0</span>
+            <button id="btn-calendar" class="ml-1 text-gray-400 hover:text-blue-500 transition">📅</button>
         </div>
 
         <div class="flex gap-1 bg-white p-1 rounded-lg shadow-sm border border-gray-200">
@@ -147,209 +133,142 @@
         </div>
     </div>
 
-    <!-- Improved Dashboard Menu -->
-    <div id="screen-menu" class="min-h-screen p-6 md:p-12 overflow-x-hidden">
-        <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 pt-12">
-            
-            <!-- Left Side: Play & Modes -->
-            <div class="lg:col-span-7 flex flex-col gap-6">
-                <header>
-                    <h1 class="text-5xl font-black text-gray-800 tracking-tight mb-2" data-i18n="title">The Wiki Game</h1>
-                    <p class="text-lg text-gray-500 font-medium" data-i18n="subtitle">Race through Wikipedia to find the target!</p>
-                </header>
-
-                <div class="bg-white p-8 rounded-[2.5rem] shadow-xl shadow-blue-900/5 border border-gray-100 relative">
-                    <div class="flex gap-4 mb-8 p-1 bg-gray-100 rounded-2xl w-fit">
-                        <button id="tab-solo" class="px-6 py-2 bg-white text-blue-600 rounded-xl font-bold shadow-sm transition" data-i18n="tabSolo">Single Player</button>
-                        <button id="tab-multi" class="px-6 py-2 text-gray-500 hover:text-gray-700 rounded-xl font-bold transition" data-i18n="tabMulti">Multiplayer</button>
-                    </div>
-
-                    <!-- Mode Selector -->
-                    <div id="mode-selector-ui" class="relative flex items-center justify-between bg-blue-50/50 p-4 rounded-3xl mb-8 border border-blue-100/50">
-                        <button id="mode-prev" class="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow hover:bg-gray-50 transition text-2xl font-bold text-gray-600">&lsaquo;</button>
-                        <div class="relative h-12 flex-1 flex items-center justify-center overflow-hidden">
-                            <p id="mode-display" class="font-black text-2xl tracking-wide absolute w-full text-center text-blue-600">Classic</p>
-                            <span id="daily-notification" class="hidden absolute top-0 right-1/4 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full animate-bounce">NEW!</span>
+    <!-- Menu Screen -->
+    <div id="screen-menu" class="flex flex-col items-center justify-center min-h-screen p-4 bg-gradient-to-br from-gray-100 to-gray-200 overflow-x-hidden relative">
+        <div class="relative w-full max-w-lg flex items-center justify-center mx-auto">
+            <button id="mode-prev" class="absolute -left-12 sm:-left-16 z-30 w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-xl border border-gray-100 hover:bg-gray-50 transition active:scale-95 text-3xl font-bold text-gray-600">&lsaquo;</button>
+            <div id="main-menu-box" class="bg-white p-8 rounded-3xl shadow-xl w-full text-center border border-gray-100 z-20 relative">
+                <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl shadow-sm">🌐</div>
+                <h1 class="text-4xl font-black mb-2 text-gray-800 tracking-tight" data-i18n="title">The Wiki Game</h1>
+                <div class="relative h-10 mb-6 mt-2 flex items-center justify-center overflow-hidden w-full">
+                    <p id="mode-display" class="font-black text-2xl tracking-wide absolute w-full text-center text-blue-600">Classic</p>
+                    <span id="daily-notification" class="hidden absolute right-4 sm:right-12 top-0 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full animate-bounce">NEW!</span>
+                </div>
+                <div id="recovery-prompt" class="hidden mb-4 p-3 bg-orange-50 border border-orange-200 rounded-xl text-sm text-orange-700 font-bold animate-pulse" data-i18n="recoveryText">⚠️ Streak at risk! Win a Hard game to restore it.</div>
+                <p id="multi-subtitle" class="text-gray-500 mb-8 font-medium hidden" data-i18n="subtitle">Race to the target article. First to finish wins!</p>
+                <div class="flex gap-2 mb-6 p-1 bg-gray-100 rounded-xl">
+                    <button id="tab-solo" class="flex-1 py-2 bg-white text-blue-600 rounded-lg font-bold shadow-sm transition" data-i18n="tabSolo">Single Player</button>
+                    <button id="tab-multi" class="flex-1 py-2 text-gray-500 hover:text-gray-700 rounded-lg font-bold transition" data-i18n="tabMulti">Multiplayer</button>
+                </div>
+                <div id="solo-setup" class="w-full mb-4">
+                    <div class="flex flex-col gap-3 mb-6">
+                        <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 text-left">
+                            <span class="text-xs font-bold text-blue-400 uppercase tracking-widest block mb-1" data-i18n="startArticle">Start Article</span>
+                            <div id="solo-start" class="font-bold text-blue-700 text-lg">Loading...</div>
                         </div>
-                        <button id="mode-next" class="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow hover:bg-gray-50 transition text-2xl font-bold text-gray-600">&rsaquo;</button>
-                    </div>
-
-                    <div id="solo-setup">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                            <div class="bg-blue-50 p-5 rounded-3xl border border-blue-100">
-                                <span class="text-xs font-bold text-blue-400 uppercase tracking-widest block mb-2" data-i18n="startArticle">Start</span>
-                                <div id="solo-start" class="font-bold text-blue-700 text-xl truncate">Loading...</div>
-                            </div>
-                            <div class="bg-red-50 p-5 rounded-3xl border border-red-100">
-                                <span class="text-xs font-bold text-red-400 uppercase tracking-widest block mb-2" data-i18n="targetArticle">Target</span>
-                                <div id="solo-target" class="font-bold text-red-700 text-xl truncate">Loading...</div>
-                            </div>
-                        </div>
-                        <div class="flex gap-4">
-                            <button id="btn-solo-roll" class="px-6 py-4 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-2xl font-bold transition active:scale-95 text-lg" data-i18n="btnRandom">🎲 Random</button>
-                            <button id="btn-solo-start" class="flex-1 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold transition shadow-lg shadow-blue-600/20 active:scale-95 text-xl" data-i18n="btnStartSolo">🚀 Play Game</button>
+                        <div class="flex justify-center -my-5 relative z-10"><div class="text-gray-300 bg-white p-1 rounded-full shadow-sm border font-bold text-sm">➔</div></div>
+                        <div class="bg-red-50 p-4 rounded-xl border border-red-100 text-left">
+                            <span class="text-xs font-bold text-red-400 uppercase tracking-widest block mb-1" data-i18n="targetArticle">Target Article</span>
+                            <div id="solo-target" class="font-bold text-red-700 text-lg">Loading...</div>
                         </div>
                     </div>
-
-                    <div id="multiplayer-setup" class="hidden">
-                        <div id="role-selection" class="flex gap-4">
-                            <button id="btn-host" class="flex-1 py-4 bg-blue-600 text-white rounded-2xl font-bold shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition active:scale-95 text-lg" data-i18n="btnHost">Host Session</button>
-                            <button id="btn-show-join" class="flex-1 py-4 bg-white border-2 border-blue-600 text-blue-600 rounded-2xl font-bold hover:bg-blue-50 transition active:scale-95 text-lg" data-i18n="btnShowJoin">Join Session</button>
+                    <div class="flex gap-3">
+                        <button id="btn-solo-roll" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-bold transition shadow-sm active:scale-95" data-i18n="btnRandom">🎲 Random</button>
+                        <button id="btn-solo-start" class="flex-[2] py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition shadow-md active:scale-95" data-i18n="btnStartSolo">🚀 Start Solo Game</button>
+                    </div>
+                </div>
+                <div id="multiplayer-setup" class="hidden w-full mb-4">
+                    <div id="role-selection" class="flex gap-4 mb-4">
+                        <button id="btn-host" class="flex-1 py-4 bg-blue-600 text-white rounded-xl font-bold shadow-md hover:bg-blue-700 transition active:scale-95 text-lg" data-i18n="btnHost">Host Session</button>
+                        <button id="btn-show-join" class="flex-1 py-4 bg-white border-2 border-blue-600 text-blue-600 rounded-xl font-bold shadow-sm hover:bg-blue-50 transition active:scale-95 text-lg" data-i18n="btnShowJoin">Join Session</button>
+                    </div>
+                    <div id="join-section" class="hidden flex flex-col gap-2 mb-4 bg-gray-50 p-4 rounded-xl border border-gray-200">
+                        <label class="text-xs font-bold text-gray-500 uppercase" data-i18n="enterCode">Enter 6-Character Code</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="join-code" placeholder="XXXXXX" class="flex-1 p-3 border border-gray-300 rounded-lg uppercase font-black text-center tracking-widest text-2xl outline-none focus:border-blue-500 transition" maxlength="6">
+                            <button id="btn-join-submit" class="py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold transition" data-i18n="btnJoin">Join</button>
                         </div>
-                        <div id="join-section" class="hidden flex flex-col gap-3 mt-4 bg-gray-50 p-6 rounded-3xl border border-gray-200">
-                            <label class="text-xs font-bold text-gray-500 uppercase tracking-widest" data-i18n="enterCode">Session Code</label>
-                            <div class="flex gap-3">
-                                <input type="text" id="join-code" placeholder="XXXXXX" class="flex-1 p-4 border border-gray-300 rounded-2xl uppercase font-black text-center tracking-[0.3em] text-2xl outline-none focus:border-blue-500 transition" maxlength="6">
-                                <button id="btn-join-submit" class="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold transition" data-i18n="btnJoin">Join</button>
+                        <p id="join-error" class="text-red-500 text-sm font-bold hidden mt-1" data-i18n="codeNotFound">Code not found!</p>
+                    </div>
+                    <div id="lobby-section" class="hidden bg-white border border-gray-200 p-6 rounded-xl text-left shadow-inner">
+                        <div class="mb-6 text-center bg-gray-50 py-3 rounded-lg border border-gray-200">
+                            <span class="text-gray-500 text-xs font-bold uppercase tracking-wider block" data-i18n="sessionCode">Session Code</span>
+                            <div id="display-code" class="text-4xl font-black text-gray-800 tracking-[0.2em] mt-1 select-all">------</div>
+                        </div>
+                        <div class="flex flex-col gap-3 mb-6">
+                            <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                                <span class="text-xs font-bold text-blue-400 uppercase tracking-widest block mb-1" data-i18n="startArticle">Start Article</span>
+                                <div id="lobby-start" class="font-bold text-blue-700 text-lg">Loading...</div>
+                            </div>
+                            <div class="flex justify-center -my-5 relative z-10"><div class="text-gray-300 bg-white p-1 rounded-full shadow-sm border font-bold text-sm">➔</div></div>
+                            <div class="bg-red-50 p-4 rounded-xl border border-red-100">
+                                <span class="text-xs font-bold text-red-400 uppercase tracking-widest block mb-1" data-i18n="targetArticle">Target Article</span>
+                                <div id="lobby-target" class="font-bold text-red-700 text-lg">Loading...</div>
                             </div>
                         </div>
-                        <div id="lobby-section" class="hidden mt-4 bg-white border border-gray-200 p-8 rounded-3xl shadow-inner">
-                            <div class="text-center mb-6">
-                                <span class="text-gray-400 text-xs font-bold uppercase tracking-widest block mb-1">Code</span>
-                                <div id="display-code" class="text-5xl font-black text-gray-800 tracking-[0.2em]">------</div>
-                            </div>
-                            
-                            <!-- Lobby Topics Display -->
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                                <div class="bg-blue-50 p-4 rounded-2xl border border-blue-100">
-                                    <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest block mb-1">Start</span>
-                                    <div id="lobby-start" class="font-bold text-blue-700 text-sm truncate">Loading...</div>
-                                </div>
-                                <div class="bg-red-50 p-4 rounded-2xl border border-red-100">
-                                    <span class="text-[10px] font-bold text-red-400 uppercase tracking-widest block mb-1">Target</span>
-                                    <div id="lobby-target" class="font-bold text-red-700 text-sm truncate">Loading...</div>
-                                </div>
-                            </div>
-
-                            <div id="host-controls" class="hidden flex flex-col gap-4">
-                                <button id="btn-lobby-refresh" class="w-full py-4 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-2xl font-bold transition" data-i18n="btnRefresh">🔄 New Topics</button>
-                                <button id="btn-lobby-start" class="w-full py-5 bg-green-500 text-white rounded-2xl font-black text-xl transition shadow-lg shadow-green-500/20 disabled:opacity-50" disabled>Waiting for P2...</button>
-                            </div>
-                            <div id="joiner-status" class="hidden text-center text-gray-400 font-bold p-6 bg-gray-50 rounded-2xl animate-pulse" data-i18n="waitingJoin">Wait for Host...</div>
+                        <div id="host-controls" class="hidden flex flex-col gap-3">
+                            <button id="btn-lobby-refresh" class="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-bold transition shadow-sm active:scale-95" data-i18n="btnRefresh">🔄 Refresh</button>
+                            <button id="btn-lobby-start" class="w-full py-4 bg-green-500 text-white rounded-xl font-black text-lg mt-2 transition shadow-md disabled:opacity-50 disabled:bg-gray-400" disabled>Waiting for P2 to Join...</button>
                         </div>
+                        <div id="joiner-status" class="hidden text-center text-gray-500 font-bold p-4 bg-gray-50 rounded-xl border border-gray-200 animate-pulse" data-i18n="waitingJoin">Waiting for Host...</div>
                     </div>
                 </div>
             </div>
-
-            <!-- Right Side: Stats & Info -->
-            <div class="lg:col-span-5 flex flex-col gap-6">
-                <!-- Statistics Dashboard -->
-                <div class="bg-white p-8 rounded-[2.5rem] shadow-xl shadow-gray-200/50 border border-gray-100">
-                    <h2 class="text-2xl font-black text-gray-800 mb-6 flex items-center gap-3">📊 Statistics</h2>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-gray-50 p-6 rounded-3xl">
-                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Total Rounds</span>
-                            <div id="stat-total-rounds" class="text-3xl font-black text-gray-700">0</div>
-                        </div>
-                        <div class="bg-gray-50 p-6 rounded-3xl">
-                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Current Streak</span>
-                            <div id="stat-streak" class="text-3xl font-black text-orange-500">0</div>
-                        </div>
-                    </div>
-                    <div class="mt-6 flex flex-col gap-2">
-                        <button id="btn-calendar" class="w-full py-3 bg-blue-50 text-blue-600 rounded-2xl font-bold text-sm hover:bg-blue-100 transition">📅 View Play History</button>
-                    </div>
-                </div>
-
-                <!-- How to play -->
-                <div class="bg-white p-8 rounded-[2.5rem] shadow-xl shadow-gray-200/50 border border-gray-100">
-                    <h2 class="text-2xl font-black text-gray-800 mb-4 flex items-center gap-3">❓ How to Play</h2>
-                    <ul id="how-to-play-list" class="text-sm text-gray-500 space-y-4 font-medium">
-                        <!-- Content injected by updateModeDisplay -->
-                    </ul>
-                </div>
-            </div>
+            <button id="mode-next" class="absolute -right-12 sm:-right-16 z-30 w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-xl border border-gray-100 hover:bg-gray-50 transition active:scale-95 text-3xl font-bold text-gray-600">&rsaquo;</button>
         </div>
     </div>
 
     <!-- Modals -->
-    <div id="modal-calendar" class="hidden fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-[100] p-4">
-        <div class="bg-white rounded-[3rem] p-8 max-w-md w-full shadow-2xl">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-black text-gray-800">History</h3>
-                <button id="calendar-close" class="text-gray-400 hover:text-gray-800 text-2xl font-bold">✕</button>
-            </div>
-            <div id="calendar-grid" class="grid grid-cols-7 gap-3 mb-6"></div>
-            <p class="text-center text-xs text-gray-400 font-bold uppercase tracking-widest">Last 14 Days</p>
+    <div id="modal-calendar" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl">
+            <div class="flex justify-between items-center mb-4"><h3 class="text-xl font-black text-gray-800">History</h3><button id="calendar-close" class="text-gray-400 hover:text-gray-600">✕</button></div>
+            <div id="calendar-grid" class="grid grid-cols-7 gap-2 mb-4 text-center"></div>
+            <div class="border-t pt-4 text-center"><p class="text-sm text-gray-500">Total Rounds: <span id="total-rounds-val" class="font-bold text-blue-600">0</span></p></div>
         </div>
     </div>
 
     <!-- Game Screen -->
-    <div id="screen-game" class="hidden flex flex-col min-h-screen bg-white">
-        <header class="sticky top-0 bg-white/95 backdrop-blur-sm border-b shadow-sm z-10">
-            <div class="max-w-5xl mx-auto p-4 md:p-6">
-                <div class="flex flex-wrap justify-between items-center gap-4">
-                    <div class="flex flex-col">
-                        <span class="text-[10px] text-gray-400 uppercase font-black tracking-widest" data-i18n="target">Target Article</span>
-                        <span id="game-target-display" class="font-bold text-red-600 text-lg">Target</span>
-                    </div>
-                    <div class="flex items-center gap-4 md:gap-8">
-                        <div id="multiplayer-countdown" class="hidden bg-red-50 px-4 py-2 rounded-2xl border border-red-100 flex items-center gap-2">
-                            <span class="text-lg font-black text-red-600" id="countdown-val">120</span>
+    <div id="screen-game" class="hidden flex flex-col min-h-screen">
+        <header class="sticky top-0 bg-white border-b shadow-sm z-10">
+            <div class="max-w-4xl mx-auto p-4">
+                <div class="flex flex-wrap justify-between items-center gap-4 mb-3">
+                    <div class="flex flex-col"><span class="text-xs text-gray-400 uppercase font-bold tracking-widest" data-i18n="target">Target</span><span id="game-target-display" class="font-bold text-red-600">Target</span></div>
+                    <div class="flex items-center gap-6">
+                        <div id="multiplayer-countdown" class="hidden bg-red-50 px-3 py-1 rounded-full border border-red-100 flex items-center gap-2"><span class="text-xs font-bold text-red-500 animate-pulse">⏰</span><span id="countdown-val" class="text-sm font-black text-red-600">120</span></div>
+                        <div id="easy-controls">
+                            <button id="btn-back" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 border rounded text-sm font-bold transition" data-i18n="btnBack">← Back</button>
                         </div>
-                        <button id="btn-back" class="px-5 py-2 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm font-bold transition" data-i18n="btnBack">← Back</button>
-                        <div class="text-center px-4 border-l border-r border-gray-200">
-                            <span class="block text-[10px] text-gray-400 uppercase font-black tracking-widest" data-i18n="clicks">Clicks</span>
-                            <div class="font-black text-2xl text-gray-800" id="click-count">0</div>
-                        </div>
-                        <button id="btn-quit-trigger" class="px-5 py-2 text-sm border-2 border-gray-100 rounded-xl hover:bg-red-50 hover:border-red-100 hover:text-red-600 font-bold transition text-gray-500" data-i18n="btnGiveUp">Give Up</button>
+                        <div class="text-center"><span class="block text-xs text-gray-400 uppercase font-bold" data-i18n="clicks">Clicks</span><div class="font-bold text-xl text-gray-800"><span id="click-count">0</span><span id="click-max" class="hidden text-gray-400 text-sm"> / 10</span></div></div>
+                        <button id="btn-quit-trigger" class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 font-bold text-gray-600" data-i18n="btnGiveUp">Give Up</button>
                     </div>
                 </div>
-                <div class="flex items-center gap-2 overflow-x-auto whitespace-nowrap pt-4 breadcrumb-scroll text-sm text-gray-400" id="game-breadcrumbs"></div>
-                <div id="opponent-progress-container" class="hidden items-center gap-2 overflow-x-auto whitespace-nowrap pb-1 breadcrumb-scroll text-[10px] text-gray-400 border-t pt-2 mt-2">
-                    <span class="font-bold text-gray-500 uppercase"><span data-i18n="oppProgress">Opponent</span> (<span id="opp-live-clicks">0</span>):</span>
-                    <div id="opp-live-path" class="flex items-center gap-2"></div>
-                </div>
+                <div class="flex items-center gap-2 overflow-x-auto whitespace-nowrap pb-1 breadcrumb-scroll text-sm text-gray-500 border-t pt-2" id="game-breadcrumbs"></div>
+                <div id="opponent-progress-container" class="hidden items-center gap-2 overflow-x-auto whitespace-nowrap pb-1 breadcrumb-scroll text-sm text-gray-400 border-t pt-2 mt-1"><span class="font-bold text-gray-500 text-xs uppercase"><span data-i18n="oppProgress">Opponent</span> (<span id="opp-live-clicks">0</span>):</span><div id="opp-live-path" class="flex items-center gap-2"></div></div>
             </div>
         </header>
-        <main class="flex-grow max-w-5xl mx-auto w-full p-6 md:p-12">
-            <h1 id="current-title" class="text-4xl md:text-5xl font-black text-gray-800 mb-8 pb-4 border-b-4 border-blue-500/20">Article Title</h1>
-            <div id="wiki-content-area" class="wiki-content prose prose-blue max-w-none"></div>
-            <div id="loader" class="hidden flex flex-col items-center py-32">
-                <div class="loading-spinner mb-6"></div>
-                <p class="text-gray-400 font-black uppercase tracking-widest animate-pulse" data-i18n="fetching">Loading Wiki Data...</p>
-            </div>
+        <main class="flex-grow max-w-4xl mx-auto w-full p-6 bg-white shadow-sm mt-4 mb-10 rounded-lg">
+            <h1 id="current-title" class="text-3xl font-serif border-b pb-2 mb-6">Article Title</h1>
+            <div id="wiki-content-area" class="wiki-content"></div>
+            <div id="loader" class="hidden flex flex-col items-center py-20"><div class="loading-spinner mb-4"></div><p class="text-gray-500 font-medium" data-i18n="fetching">Fetching Wikipedia data...</p></div>
         </main>
     </div>
 
     <!-- Result Screen -->
-    <div id="screen-results" class="hidden flex flex-col items-center justify-center min-h-screen p-6 bg-blue-600">
-        <div class="bg-white p-12 rounded-[3rem] shadow-2xl max-w-3xl w-full text-center">
-            <div id="result-icon" class="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-8 text-5xl">🏁</div>
+    <div id="screen-results" class="hidden flex flex-col items-center justify-center min-h-screen p-4 bg-gray-50">
+        <div class="bg-white p-10 rounded-3xl shadow-2xl max-w-4xl w-full text-center border border-gray-100">
+            <div id="result-icon" class="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl">🏁</div>
             <h1 id="result-title" class="text-5xl font-black mb-2 text-gray-800" data-i18n="victoryTitle">Victory!</h1>
-            <p id="result-subtitle" class="text-lg text-gray-500 mb-12 font-medium" data-i18n="victorySub">You reached the destination!</p>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-                <div class="p-8 bg-blue-50 rounded-3xl border border-blue-100">
-                    <span class="block text-xs text-blue-400 font-bold uppercase tracking-widest mb-2" data-i18n="yourClicks">Your Clicks</span>
-                    <span id="final-clicks" class="text-5xl font-black text-blue-700">0</span>
-                </div>
-                <div id="opponent-clicks-container" class="p-8 bg-gray-50 rounded-2xl border border-gray-200 hidden">
-                    <span class="block text-xs text-gray-400 font-bold uppercase tracking-widest mb-2" data-i18n="oppClicks">Opponent Clicks</span>
-                    <span id="opponent-clicks" class="text-5xl font-black text-gray-700">?</span>
-                </div>
+            <p id="result-subtitle" class="text-gray-500 mb-10 text-lg font-medium" data-i18n="victorySub">Success!</p>
+            <div class="flex flex-wrap gap-6 mb-10 items-center justify-center">
+                <div class="p-6 bg-blue-50 rounded-2xl border border-blue-100 min-w-[150px]"><span class="block text-xs text-blue-400 font-bold uppercase tracking-widest mb-1" data-i18n="yourClicks">Your Clicks</span><span id="final-clicks" class="text-4xl font-black text-blue-700">0</span></div>
+                <div id="opponent-clicks-container" class="p-6 bg-gray-50 rounded-2xl border border-gray-200 min-w-[150px] hidden"><span class="block text-xs text-gray-400 font-bold uppercase tracking-widest mb-1" data-i18n="oppClicks">Opponent Clicks</span><span id="opponent-clicks" class="text-4xl font-black text-gray-700">?</span></div>
             </div>
-
-            <div class="text-left mb-12">
-                <h3 class="font-bold text-gray-400 uppercase text-xs tracking-widest mb-4">📍 Your Path</h3>
-                <div id="path-list" class="flex flex-wrap gap-2 p-6 bg-gray-50 rounded-3xl border border-gray-100 max-h-40 overflow-y-auto"></div>
+            <div class="flex flex-col md:flex-row gap-6 mb-10 text-left">
+                <div class="flex-1"><h3 class="font-bold mb-3">📍 Your Path</h3><div id="path-list" class="text-sm space-y-2 p-4 bg-gray-50 rounded-xl border max-h-40 overflow-y-auto"></div></div>
+                <div class="flex-1"><h3 class="font-bold mb-3">⚡ Shortcut</h3><div id="theoretical-path-display" class="p-4 bg-amber-50 rounded-xl border text-sm italic">Shortcut calculation unavailable.</div></div>
             </div>
-
-            <div class="flex flex-col gap-4">
-                <button id="btn-play-again-multi" class="hidden w-full py-5 bg-green-500 hover:bg-green-600 text-white rounded-2xl font-black text-xl transition-all shadow-xl shadow-green-500/20 active:scale-95">Play Again (0/2)</button>
-                <button id="btn-home" class="w-full py-5 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-black text-xl transition-all shadow-xl shadow-blue-600/20 active:scale-95" data-i18n="btnBackMenu">Back to Menu</button>
+            <div class="flex flex-col gap-3">
+                <button id="btn-play-again-multi" class="hidden w-full py-4 bg-green-500 hover:bg-green-600 text-white rounded-2xl font-bold text-xl transition-all shadow-lg active:scale-95">Play Again (0/2)</button>
+                <button id="btn-home" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold text-xl transition-all shadow-lg active:scale-95" data-i18n="btnBackMenu">Back to Menu</button>
             </div>
         </div>
     </div>
 
     <!-- Quit Modal -->
-    <div id="modal-quit" class="hidden fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-[100] p-4">
-        <div class="bg-white rounded-[3rem] p-10 max-w-sm w-full shadow-2xl text-center">
-            <h3 class="text-3xl font-black text-gray-800 mb-4" data-i18n="giveUpTitle">Give Up?</h3>
-            <div class="flex gap-4">
-                <button id="modal-cancel" class="flex-1 py-4 bg-gray-100 rounded-2xl font-bold transition hover:bg-gray-200" data-i18n="btnStay">No, stay</button>
-                <button id="modal-confirm" class="flex-1 py-4 bg-red-600 text-white rounded-2xl font-bold transition shadow-lg shadow-red-600/20" data-i18n="btnQuit">Yes, quit</button>
-            </div>
+    <div id="modal-quit" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-3xl p-8 max-sm w-full shadow-2xl text-center">
+            <h3 class="text-2xl font-black text-gray-800 mb-2" data-i18n="giveUpTitle">Give Up?</h3>
+            <div class="flex gap-3 mt-8"><button id="modal-cancel" class="flex-1 py-3 bg-gray-100 rounded-xl font-bold transition" data-i18n="btnStay">Stay</button><button id="modal-confirm" class="flex-1 py-3 bg-red-600 text-white rounded-xl font-bold transition shadow-md" data-i18n="btnQuit">Quit</button></div>
         </div>
     </div>
 
@@ -384,24 +303,19 @@
 
         const uiDict = {
             en: {
-                title: "The Wiki Game", subtitle: "Race through Wikipedia to find the target!", tabSolo: "Single Player", tabMulti: "Multiplayer",
+                title: "The Wiki Game", subtitle: "Race to the target article. First to finish wins!", tabSolo: "Single Player", tabMulti: "Multiplayer",
                 startArticle: "Start Article", targetArticle: "Target Article", btnRandom: "🎲 Random",
-                btnStartSolo: "🚀 Play Game", noneYet: "None yet", btnHost: "Host Session",
-                btnShowJoin: "Join Session", enterCode: "Session Code", btnJoin: "Join", codeNotFound: "Not found!", sessionCode: "Session Code",
-                btnRefresh: "🔄 New Topics", target: "Target", clicks: "Clicks", btnBack: "← Back", btnGiveUp: "Give Up", fetching: "Loading Wiki Data...",
-                victoryTitle: "Victory!", victorySub: "You reached the destination!", yourClicks: "Your Clicks", oppClicks: "Opponent Clicks",
+                btnStartSolo: "🚀 Start Solo Game", noneYet: "None yet", btnHost: "Host Session",
+                btnShowJoin: "Join Session", enterCode: "Code", btnJoin: "Join", codeNotFound: "Not found!", sessionCode: "Session Code",
+                btnRefresh: "🔄 Refresh", target: "Target", clicks: "Clicks", btnBack: "← Back", btnGiveUp: "Give Up", fetching: "Loading...",
+                victoryTitle: "Victory!", victorySub: "You won!", yourClicks: "Your Clicks", oppClicks: "Opponent Clicks",
                 yourPath: "Your Path", btnBackMenu: "Back to Menu", giveUpTitle: "Give Up?", giveUpSub: "Sure?",
                 btnStay: "Stay", btnQuit: "Quit", loading: "Loading...", waitHostStart: "Start Game", waitHostWait: "Wait for P2...", waitJoiner: "Wait for Host...",
                 youWon: "You Won!", success: "Success!", wonSub: "Winner!", youLost: "You Lost!", lostSub: "Try again.",
                 notFinished: "Not finished", clickStr: " clicks", multiErr: "Connection failed.", oppProgress: "Opponent",
                 modeClassic: "Classic", modeHard: "Hard Mode", modeDaily: "Daily Challenge", modeLimited: "Limited (10 Max)", outOfClicks: "Out of clicks!",
-                recoveryText: "⚠️ Streak at risk! Win a Hard game to restore it.",
-                // Instructions
-                instrClassic: ["Start at a random Wikipedia article.", "Click links to navigate through pages.", "Reach the Target article in as few clicks as possible!"],
-                instrHard: ["Topics are much more specific and scientific.", "Links are harder to find and paths are complex.", "Best for Wikipedia veterans!"],
-                instrDaily: ["The start and target are the same for everyone today.", "You can only score once per day.", "Compare your clicks with the community!"],
-                instrLimited: ["You have a strict budget of 10 clicks.", "If you don't reach the target within 10 clicks, you lose.", "Think carefully before every jump!"],
-                instrMulti: ["Race against a live opponent in real-time.", "The first hero to reach the destination wins.", "You can see your rival's progress live!"]
+                shortcut: "Shortcut", shortcutDesc: "Approx steps.", jumpTo: "Possible jump", dailyStreak: "🔥 Daily Streak:",
+                recoveryText: "⚠️ Streak at risk! Win a Hard game to restore it."
             },
             de: {
                 title: "Das Wiki Spiel", subtitle: "Finde als Erster den Zielartikel!", tabSolo: "Einzelspieler", tabMulti: "Mehrspieler",
@@ -415,13 +329,8 @@
                 youWon: "Gewonnen!", success: "Erfolg!", wonSub: "Sieg!", youLost: "Verloren!", lostSub: "Pech gehabt.",
                 notFinished: "Nicht fertig", clickStr: " Klicks", multiErr: "Fehlgeschlagen.", oppProgress: "Gegner",
                 modeClassic: "Klassisch", modeHard: "Schwer", modeDaily: "Daily", modeLimited: "Limitiert", outOfClicks: "Keine Klicks mehr!",
-                recoveryText: "⚠️ Streak in Gefahr! Gewinne ein schweres Spiel zur Rettung.",
-                // Anleitungen
-                instrClassic: ["Starte bei einem zufälligen Artikel.", "Nutze nur die Links im Text zum Navigieren.", "Erreiche das Ziel mit so wenig Klicks wie möglich!"],
-                instrHard: ["Die Themen sind sehr speziell oder wissenschaftlich.", "Links sind seltener und Wege deutlich komplexer.", "Nur für echte Wiki-Profis!"],
-                instrDaily: ["Start- und Zielwort sind heute für alle gleich.", "Du kannst nur einmal am Tag punkten.", "Vergleiche dich mit anderen Spielern!"],
-                instrLimited: ["Du hast ein striktes Limit von 10 Klicks.", "Erreichst du das Ziel nicht rechtzeitig, hast du verloren.", "Überlege dir jeden Sprung genau!"],
-                instrMulti: ["Tritt in Echtzeit gegen einen Gegner an.", "Wer zuerst am Ziel ankommt, gewinnt das Duell.", "Verfolge den Fortschritt deines Gegners live!"]
+                shortcut: "Abkürzung", shortcutDesc: "Ca. Schritte.", jumpTo: "Sprung zu", dailyStreak: "🔥 Daily Streak:",
+                recoveryText: "⚠️ Streak in Gefahr! Gewinne ein schweres Spiel zur Rettung."
             },
             es: {
                 title: "El Juego de Wiki", subtitle: "¡Llega primero!", tabSolo: "Un Jugador", tabMulti: "Multijugador",
@@ -430,18 +339,13 @@
                 btnShowJoin: "Unirse", enterCode: "Código", btnJoin: "Join", codeNotFound: "Error", sessionCode: "Código",
                 btnRefresh: "🔄 Reset", target: "Destino", clicks: "Clicks", btnBack: "← Atrás", btnGiveUp: "Rendirse", fetching: "Cargando...",
                 victoryTitle: "Victoria!", victorySub: "Ganaste!", yourClicks: "Tus Clicks", oppClicks: "Clicks Oponente",
-                yourPath: "Tu Camino", btnBackMenu: "Menü", giveUpTitle: "Rendirse?", giveUpSub: "Seguro?",
+                yourPath: "Tu Camino", btnBackMenu: "Menú", giveUpTitle: "Rendirse?", giveUpSub: "Seguro?",
                 btnStay: "Quedarse", btnQuit: "Salir", loading: "Cargando...", waitHostStart: "Jugar", waitHostWait: "Espera...", waitJoiner: "Espera host...",
                 youWon: "Ganaste!", success: "Éxito!", wonSub: "Victoria!", youLost: "Perdiste!", lostSub: "Inténtalo de nuevo.",
                 notFinished: "No terminó", clickStr: " clicks", multiErr: "Error conexión.", oppProgress: "Oponente",
                 modeClassic: "Clásico", modeHard: "Difícil", modeDaily: "Diario", modeLimited: "Límite", outOfClicks: "Sin clicks!",
-                recoveryText: "⚠️ ¡Racha en riesgo! Gana un juego difícil para restaurarla.",
-                // Instrucciones
-                instrClassic: ["Empieza en un artículo aleatorio.", "Usa los enlaces para navegar.", "¡Llega al destino con el mínimo de clicks!"],
-                instrHard: ["Los temas son científicos o muy específicos.", "Los enlaces son difíciles de encontrar.", "¡Solo para expertos!"],
-                instrDaily: ["El inicio y el destino son iguales para todos hoy.", "Solo puedes puntuar una vez al día.", "¡Compiete con la comunidad!"],
-                instrLimited: ["Tienes un límite estricto de 10 clicks.", "Si no llegas en 10 clicks, pierdes.", "¡Piensa bien antes de saltar!"],
-                instrMulti: ["Compite contra un oponente en tiempo real.", "El primero en llegar al destino gana.", "¡Mira el progreso de tu rival en vivo!"]
+                shortcut: "Atajo", shortcutDesc: "Pasos.", jumpTo: "Salto", dailyStreak: "🔥 Racha:",
+                recoveryText: "⚠️ ¡Racha en riesgo! Gana un juego difícil para restaurarla."
             }
         };
 
@@ -457,7 +361,7 @@
         const POPULAR_TOPICS = {
             en: ["Apple Inc.", "Albert Einstein", "Ancient Egypt", "Artificial Intelligence", "Australia", "Batman", "Beer", "Berlin", "Bitcoin", "Brazil", "Canada", "Cat", "Chess", "Chocolate", "Coffee", "Cristiano Ronaldo", "Dinosaur", "Dog", "Earth", "Elon Musk", "Facebook", "Football", "France", "Germany", "Google", "Harry Potter", "History", "India", "Internet", "iPhone", "Italy", "Japan", "Mars", "Music", "NASA", "Netflix", "New York City", "Physics", "Pizza", "Pokemon", "Rome", "Russia", "SpaceX", "Star Wars", "Sushi", "Tea", "Tennis", "United Kingdom", "United States", "Video game", "Water", "World War II", "Youtube", "Marie Curie", "Amazon River", "Basketball", "Mount Everest", "Stonehenge"],
             de: ["Apple", "Albert Einstein", "Altes Ägypten", "Künstliche Intelligenz", "Australien", "Batman", "Bier", "Berlin", "Bitcoin", "Brasilien", "Kanada", "Hauskatze", "Schach", "Schokolade", "Kaffee", "Cristiano Ronaldo", "Dinosaurier", "Haushund", "Erde", "Elon Musk", "Europa", "Facebook", "Fußball", "Frankreich", "Deutschland", "Google", "Harry Potter", "Geschichte", "Indien", "Internet", "IPhone", "Italien", "Japan", "Jupiter", "London", "Mars", "Musik", "NASA", "Netflix", "New York City", "Physik", "Pizza", "Pokémon", "Rom", "Russland", "SpaceX", "Star Wars", "Sushi", "Tee", "Tennis", "Zweiter Weltkrieg", "YouTube"],
-            es: ["Apple", "Albert Einstein", "Antiguo Egipto", "Inteligencia artificial", "Australia", "Batman", "Cerveza", "Berlín", "Bitcoin", "Brasil", "Canadá", "Gato", "Ajedrez", "Chocolate", "Café", "Cristiano Ronaldo", "Dinosaurio", "Perro", "Tierra", "Elon Musk", "Facebook", "Fútbol", "Francia", "Alemania", "Google", "Harry Potter", "Historia", "India", "Internet", "IPhone", "Italien", "Japón", "Londres", "Marte", "Música", "NASA", "Netflix", "Nueva York", "Física", "Pizza", "Pokémon", "Roma", "Rusia", "SpaceX", "Star Wars", "Sushi", "Té", "Tenis", "YouTube"]
+            es: ["Apple", "Albert Einstein", "Antiguo Egipto", "Inteligencia artificial", "Australia", "Batman", "Cerveza", "Berlín", "Bitcoin", "Brasil", "Canadá", "Gato", "Ajedrez", "Chocolate", "Café", "Cristiano Ronaldo", "Dinosaurio", "Perro", "Tierra", "Elon Musk", "Facebook", "Fútbol", "Francia", "Alemania", "Google", "Harry Potter", "Historia", "India", "Internet", "IPhone", "Italia", "Japón", "Londres", "Marte", "Música", "NASA", "Netflix", "Nueva York", "Física", "Pizza", "Pokémon", "Roma", "Rusia", "SpaceX", "Star Wars", "Sushi", "Té", "Tenis", "YouTube"]
         };
         const HARD_TOPICS = {
             en: ["Quantum entanglement", "Byzantine Empire", "Tardigrade", "Non-Euclidean geometry", "Glagolitic script", "Isotopes of gold", "Photosynthesis", "Linguistics", "Cuneiform", "Oort cloud", "Standard Model", "Voynich manuscript"],
@@ -481,8 +385,7 @@
             const dict = uiDict[state.language];
             document.querySelectorAll('[data-i18n]').forEach(el => { const key = el.getAttribute('data-i18n'); if (dict[key]) el.innerText = dict[key]; });
             document.getElementById('streak-val-top').innerText = state.dailyStreak;
-            document.getElementById('stat-streak').innerText = state.dailyStreak;
-            document.getElementById('stat-total-rounds').innerText = state.totalRounds;
+            document.getElementById('total-rounds-val').innerText = state.totalRounds;
             const todayStr = new Date().toISOString().split('T')[0];
             const hasPlayedDaily = state.lastDailyWin === todayStr;
             currentMODES = hasPlayedDaily ? ORIGINAL_MODES.filter(m => m.id !== 'daily') : [...ORIGINAL_MODES];
@@ -500,42 +403,13 @@
             const showNew = mode.id === 'daily' && state.lastDailyWin !== todayStr;
             document.getElementById('daily-notification').classList.toggle('hidden', !showNew);
             const multiTab = document.getElementById('tab-multi');
-            if (mode.id !== 'classic') { multiTab.classList.add('opacity-40', 'cursor-not-allowed'); if (state.isMultiplayer) document.getElementById('tab-solo').click(); }
-            else { multiTab.classList.remove('opacity-40', 'cursor-not-allowed'); }
-            
-            // Update Instructions
-            updateInstructions(mode.id);
-            
+            if (mode.id !== 'classic') { multiTab.classList.add('opacity-40', 'cursor-not-allowed', 'bg-gray-200'); if (state.isMultiplayer) document.getElementById('tab-solo').click(); }
+            else { multiTab.classList.remove('opacity-40', 'cursor-not-allowed', 'bg-gray-200'); }
             rollSoloWords();
         }
 
-        function updateInstructions(modeId) {
-            const list = document.getElementById('how-to-play-list');
-            if (!list) return;
-            
-            let key = "";
-            if (state.isMultiplayer) {
-                key = "instrMulti";
-            } else {
-                switch(modeId) {
-                    case 'hard': key = "instrHard"; break;
-                    case 'daily': key = "instrDaily"; break;
-                    case 'limited': key = "instrLimited"; break;
-                    default: key = "instrClassic";
-                }
-            }
-            
-            const steps = uiDict[state.language][key];
-            list.innerHTML = steps.map((text, i) => `
-                <li class="flex gap-4">
-                    <span class="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center shrink-0 font-bold text-xs">${i+1}</span>
-                    ${text}
-                </li>
-            `).join('');
-        }
-
-        document.getElementById('mode-prev').onclick = () => { currentModeIndex = (currentModeIndex - 1 + currentMODES.length) % currentMODES.length; updateModeDisplay('prev'); };
-        document.getElementById('mode-next').onclick = () => { currentModeIndex = (currentModeIndex + 1) % currentMODES.length; updateModeDisplay('next'); };
+        document.getElementById('mode-prev').addEventListener('click', () => { currentModeIndex = (currentModeIndex - 1 + currentMODES.length) % currentMODES.length; updateModeDisplay('prev'); });
+        document.getElementById('mode-next').addEventListener('click', () => { currentModeIndex = (currentModeIndex + 1) % currentMODES.length; updateModeDisplay('next'); });
 
         function rollSoloWords() {
             let topics;
@@ -554,27 +428,13 @@
         function getDailyTopics(list) { const today = new Date(); const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate(); const random1 = Math.abs(Math.sin(seed) * 10000) % list.length; const random2 = Math.abs(Math.cos(seed) * 10000) % list.length; let idx1 = Math.floor(random1); let idx2 = Math.floor(random2); if(idx1 === idx2) idx2 = (idx2 + 1) % list.length; return { start: list[idx1], target: list[idx2] }; }
 
         function setupLobbyUI() {
-            document.getElementById('role-selection').classList.add('hidden'); 
-            document.getElementById('join-section').classList.add('hidden'); 
-            document.getElementById('lobby-section').classList.remove('hidden'); 
-            document.getElementById('display-code').innerText = state.sessionCode;
-            if (state.isHost) { 
-                document.getElementById('host-controls').classList.remove('hidden'); 
-                document.getElementById('joiner-status').classList.add('hidden'); 
-            }
-            else { 
-                document.getElementById('host-controls').classList.add('hidden'); 
-                document.getElementById('joiner-status').classList.remove('hidden'); 
-            }
+            document.getElementById('role-selection').classList.add('hidden'); document.getElementById('join-section').classList.add('hidden'); document.getElementById('lobby-section').classList.remove('hidden'); document.getElementById('display-code').innerText = state.sessionCode;
+            if (state.isHost) { document.getElementById('host-controls').classList.remove('hidden'); document.getElementById('joiner-status').classList.add('hidden'); }
+            else { document.getElementById('host-controls').classList.add('hidden'); document.getElementById('joiner-status').classList.remove('hidden'); }
             updateLobbyWords();
         }
 
-        function updateLobbyWords() { 
-            const startEl = document.getElementById('lobby-start');
-            const targetEl = document.getElementById('lobby-target');
-            if (startEl) startEl.innerText = state.startTitle; 
-            if (targetEl) targetEl.innerText = state.targetTitle; 
-        }
+        function updateLobbyWords() { document.getElementById('lobby-start').innerText = state.startTitle; document.getElementById('lobby-target').innerText = state.targetTitle; }
 
         function finishGame(isWinner, oppClicks = "?", reason = "") {
             if (state.finished) return;
@@ -595,7 +455,7 @@
                 document.getElementById('opponent-clicks-container').classList.add('hidden'); 
                 document.getElementById('btn-play-again-multi').classList.add('hidden');
             }
-            document.getElementById('path-list').innerHTML = state.path.map((step, idx) => `<span class='bg-gray-100 px-3 py-1 rounded-full text-[10px] font-bold border'>${step}</span>`).join('');
+            document.getElementById('path-list').innerHTML = state.path.map((step, idx) => `<div class='flex gap-2 text-xs'><span class='bg-gray-200 px-1 rounded'>${idx}</span>${step}</div>`).join('');
             showScreen('results');
         }
 
@@ -604,20 +464,26 @@
             let count = (state.localPlayAgain ? 1 : 0) + (state.opponentPlayAgain ? 1 : 0);
             btn.innerText = `Play Again (${count}/2)`;
             btn.disabled = state.localPlayAgain;
-            btn.className = state.localPlayAgain ? "w-full py-5 bg-gray-300 text-white rounded-2xl font-black text-xl cursor-default" : "w-full py-5 bg-green-500 hover:bg-green-600 text-white rounded-2xl font-black text-xl transition-all shadow-xl active:scale-95";
+            btn.className = state.localPlayAgain ? "w-full py-4 bg-gray-300 text-white rounded-2xl font-bold text-xl cursor-default" : "w-full py-4 bg-green-500 hover:bg-green-600 text-white rounded-2xl font-bold text-xl transition-all shadow-lg active:scale-95";
         }
 
         document.getElementById('btn-play-again-multi').onclick = () => {
-            state.localPlayAgain = true; updatePlayAgainUI(); sendPeerData({ type: 'playAgainVote' });
-            if (state.isHost && state.opponentPlayAgain) { rollSoloWords(); sendPeerData({ type: 'restartWithNewTitles', start: state.startTitle, target: state.targetTitle }); startGame(); }
+            state.localPlayAgain = true;
+            updatePlayAgainUI();
+            sendPeerData({ type: 'playAgainVote' });
+            if (state.isHost && state.opponentPlayAgain) {
+                rollSoloWords();
+                sendPeerData({ type: 'restartWithNewTitles', start: state.startTitle, target: state.targetTitle });
+                startGame();
+            }
         };
 
-        document.getElementById('btn-calendar').onclick = () => {
+        document.getElementById('btn-calendar').addEventListener('click', () => {
             const grid = document.getElementById('calendar-grid'); grid.innerHTML = ''; const today = new Date();
-            for (let i = 13; i >= 0; i--) { const date = new Date(); date.setDate(today.getDate() - i); const dateStr = date.toISOString().split('T')[0]; const count = state.history[dateStr] || 0; const cell = document.createElement('div'); cell.className = `aspect-square flex flex-col items-center justify-center rounded-2xl text-[10px] font-bold border ${count > 0 ? 'bg-blue-600 text-white' : 'bg-gray-50 text-gray-400'}`; cell.innerHTML = `<span>${date.getDate()}</span><span class='text-[8px]'>${count > 0 ? count : ''}</span>`; grid.appendChild(cell); }
+            for (let i = 13; i >= 0; i--) { const date = new Date(); date.setDate(today.getDate() - i); const dateStr = date.toISOString().split('T')[0]; const count = state.history[dateStr] || 0; const cell = document.createElement('div'); cell.className = `p-2 rounded-lg text-[10px] flex flex-col items-center ${count > 0 ? 'bg-blue-100 text-blue-700 font-bold border border-blue-200' : 'bg-gray-50 text-gray-400'}`; cell.innerHTML = `<span>${date.getDate()}</span><span class='text-[8px]'>${count > 0 ? count : ''}</span>`; grid.appendChild(cell); }
             document.getElementById('modal-calendar').classList.remove('hidden');
-        };
-        document.getElementById('calendar-close').onclick = () => document.getElementById('modal-calendar').classList.add('hidden');
+        });
+        document.getElementById('calendar-close').addEventListener('click', () => document.getElementById('modal-calendar').classList.add('hidden'));
 
         function startGame() {
             state.isPlaying = true; state.clicks = 0; state.path = [state.startTitle]; state.currentTitle = state.startTitle; state.finished = false;
@@ -644,22 +510,6 @@
                         link.onclick = (e) => { e.preventDefault(); handleNavigation(decodeURIComponent(href.replace('/wiki/', '')).replace(/_/g, ' ')); };
                     } else link.style.pointerEvents = 'none';
                 });
-
-                // Fix image URLs
-                content.querySelectorAll('img').forEach(img => {
-                    let src = img.getAttribute('src');
-                    if (src && src.startsWith('//')) {
-                        img.setAttribute('src', 'https:' + src);
-                    }
-                    if (img.getAttribute('srcset')) {
-                        let srcset = img.getAttribute('srcset').split(',').map(s => {
-                            s = s.trim();
-                            if (s.startsWith('//')) return 'https:' + s;
-                            return s;
-                        }).join(', ');
-                        img.setAttribute('srcset', srcset);
-                    }
-                });
             } catch(e) {} finally { document.getElementById('loader').classList.add('hidden'); }
         }
 
@@ -673,13 +523,14 @@
                 else if (state.isMultiplayer) { clearInterval(state.countdownInterval); finishGame(state.clicks <= state.opponentFinishedClicks, state.opponentFinishedClicks); }
                 else { finishGame(true); }
             }
+            else if (state.maxClicks && state.clicks >= state.maxClicks) finishGame(false, "?", "limit");
             else loadArticle(title);
         }
 
-        function updateOpponentProgressUI() { if (!state.isMultiplayer) return; document.getElementById('opp-live-clicks').innerText = state.opponentClicks; const container = document.getElementById('opp-live-path'); container.innerHTML = state.opponentPath.map((step, index) => { const isLast = index === state.opponentPath.length - 1; return `<span class="${isLast ? 'text-blue-500 font-bold' : 'text-gray-300'}">${step}${!isLast ? ' › ' : ''}</span>`; }).join(''); }
+        function updateOpponentProgressUI() { if (!state.isMultiplayer) return; document.getElementById('opp-live-clicks').innerText = state.opponentClicks; const container = document.getElementById('opp-live-path'); container.innerHTML = state.opponentPath.map((step, index) => { const isLast = index === state.opponentPath.length - 1; return `<span class="flex items-center gap-1"><span class="${isLast ? 'text-gray-500 font-bold' : 'text-gray-400'}">${step}</span>${!isLast ? '<span class="text-gray-300">›</span>' : ''}</span>`; }).join(''); }
 
-        document.getElementById('btn-host').onclick = () => {
-            state.isHost = true; state.sessionCode = generateCode(); setupLobbyUI();
+        document.getElementById('btn-host').addEventListener('click', () => {
+            state.isHost = true; state.sessionCode = generateCode(); state.maxClicks = null; setupLobbyUI();
             try {
                 peer = new Peer('wikigame-v1-' + state.sessionCode);
                 peer.on('open', () => { document.getElementById('joiner-status').innerText = uiDict[state.language].waitHostWait; });
@@ -689,29 +540,25 @@
                     sendPeerData({ type: 'lobbyUpdate', startTitle: state.startTitle, targetTitle: state.targetTitle, language: state.language });
                 });
             } catch(e) {}
-        };
+        });
 
-        document.getElementById('btn-show-join').onclick = () => { document.getElementById('role-selection').classList.add('hidden'); document.getElementById('join-section').classList.remove('hidden'); };
-        document.getElementById('btn-join-submit').onclick = () => {
+        document.getElementById('btn-show-join').addEventListener('click', () => { document.getElementById('role-selection').classList.add('hidden'); document.getElementById('join-section').classList.remove('hidden'); });
+        document.getElementById('btn-join-submit').addEventListener('click', () => {
             const codeInput = document.getElementById('join-code').value.toUpperCase(); if (codeInput.length !== 6) return;
             peer = new Peer(); peer.on('open', () => { peerConn = peer.connect('wikigame-v1-' + codeInput); peerConn.on('open', () => { state.isHost = false; state.sessionCode = codeInput; setupLobbyUI(); peerConn.on('data', handlePeerData); }); });
-        };
+        });
 
         document.getElementById('btn-lobby-refresh').onclick = () => { if (state.isHost) rollSoloWords(); };
         document.getElementById('btn-lobby-start').onclick = () => { if (!state.isHost) return; sendPeerData({ type: 'startGame' }); startGame(); };
 
         document.getElementById('tab-solo').onclick = () => {
-            document.getElementById('tab-solo').className = "px-6 py-2 bg-white text-blue-600 rounded-xl font-bold shadow-sm transition";
-            document.getElementById('tab-multi').className = "px-6 py-2 text-gray-500 hover:text-gray-700 rounded-xl font-bold transition";
-            document.getElementById('solo-setup').classList.remove('hidden'); document.getElementById('multiplayer-setup').classList.add('hidden'); document.getElementById('mode-selector-ui').classList.remove('hidden'); state.isMultiplayer = false;
-            updateInstructions(currentMODES[currentModeIndex].id);
+            document.getElementById('tab-solo').classList.replace('text-gray-500', 'text-blue-600'); document.getElementById('tab-solo').classList.add('bg-white', 'shadow-sm'); document.getElementById('tab-multi').classList.replace('text-blue-600', 'text-gray-500'); document.getElementById('tab-multi').classList.remove('bg-white', 'shadow-sm');
+            document.getElementById('solo-setup').classList.remove('hidden'); document.getElementById('multiplayer-setup').classList.add('hidden'); document.getElementById('mode-prev').classList.remove('hidden'); document.getElementById('mode-next').classList.remove('hidden'); document.getElementById('multi-subtitle').classList.add('hidden'); state.isMultiplayer = false;
         };
         document.getElementById('tab-multi').onclick = () => {
             if (currentMODES[currentModeIndex].id !== 'classic') return;
-            document.getElementById('tab-multi').className = "px-6 py-2 bg-white text-blue-600 rounded-xl font-bold shadow-sm transition";
-            document.getElementById('tab-solo').className = "px-6 py-2 text-gray-500 hover:text-gray-700 rounded-xl font-bold transition";
-            document.getElementById('multiplayer-setup').classList.remove('hidden'); document.getElementById('solo-setup').classList.add('hidden'); document.getElementById('mode-selector-ui').classList.add('hidden'); state.isMultiplayer = true;
-            updateInstructions('multi');
+            document.getElementById('tab-multi').classList.replace('text-gray-500', 'text-blue-600'); document.getElementById('tab-multi').classList.add('bg-white', 'shadow-sm'); document.getElementById('tab-solo').classList.replace('text-blue-600', 'text-gray-500'); document.getElementById('tab-solo').classList.remove('bg-white', 'shadow-sm');
+            document.getElementById('multiplayer-setup').classList.remove('hidden'); document.getElementById('solo-setup').classList.add('hidden'); document.getElementById('mode-prev').classList.add('hidden'); document.getElementById('mode-next').classList.add('hidden'); document.getElementById('multi-subtitle').classList.remove('hidden'); state.isMultiplayer = true;
         };
 
         document.getElementById('btn-solo-roll').onclick = rollSoloWords;
@@ -727,10 +574,7 @@
         document.getElementById('lang-es').onclick = () => setLanguage('es');
 
         function setLanguage(lang) {
-            state.language = lang; updateLanguageButtonsUI(lang); updateUI(); 
-            const modeId = currentMODES[currentModeIndex].id;
-            updateInstructions(modeId);
-            rollSoloWords();
+            state.language = lang; updateLanguageButtonsUI(lang); updateUI(); rollSoloWords();
             if (state.isMultiplayer && state.isHost) { sendPeerData({ type: 'lobbyUpdate', startTitle: state.startTitle, targetTitle: state.targetTitle, language: state.language }); }
         }
 

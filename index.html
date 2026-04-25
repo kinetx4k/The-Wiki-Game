@@ -442,7 +442,7 @@
             },
             es: {
                 title: "The Wiki Game", subtitle: "Corre por Wikipedia hasta el destino.", tabSolo: "Misión Solo", tabMulti: "Multiplayer",
-                startArticle: "Punto de Inicio", targetArticle: "Punto de Destino", btnRandom: "🎲 Azar",
+                startArticle: "Punto de Inicio", targetArticle: "Punto de Destino", btnRandom: "Azar",
                 btnStartSolo: "Iniciar Misión", noneYet: "Ninguno", btnHost: "Crear Lobby",
                 btnShowJoin: "Unirse", enterCode: "Código", btnJoin: "Autenticar", codeNotFound: "Error", sessionCode: "ID Misión",
                 btnRefresh: "Ruta Nueva", target: "Destino", clicks: "Clicks", btnBack: "← Atrás", btnGiveUp: "Rendirse", fetching: "Cargando...",
@@ -576,6 +576,50 @@
 
         function updateLobbyWords() { document.getElementById('lobby-start').innerText = state.startTitle; document.getElementById('lobby-target').innerText = state.targetTitle; }
 
+        async function findShortestPath(start, target) {
+            const display = document.getElementById('theoretical-path-display');
+            display.innerHTML = `<div class="flex items-center gap-2"><div class="loading-spinner w-4 h-4 border-2"></div> Calculating fastest route...</div>`;
+            
+            try {
+                // Step 1: Check if start links directly to target (Path: 1)
+                const checkDirect = await fetch(`${getApiUrl()}query&titles=${encodeURIComponent(start)}&prop=links&pllimit=max&format=json`);
+                const dataDirect = await checkDirect.json();
+                const pageIdDirect = Object.keys(dataDirect.query.pages)[0];
+                const linksDirect = dataDirect.query.pages[pageIdDirect].links || [];
+                
+                if (linksDirect.some(l => l.title === target)) {
+                    display.innerHTML = `<div class='flex flex-wrap gap-2 items-center'><span>${start}</span><span>→</span><span class='font-bold text-amber-700'>${target}</span> <span class='ml-2 text-xs text-gray-400'>(1 Step)</span></div>`;
+                    return;
+                }
+
+                // Step 2: Limited BFS - Check if any link on start page links to target (Path: 2)
+                // We fetch the first 50 links from each of the first 20 links on the start page
+                const topLinks = linksDirect.slice(0, 50).map(l => l.title);
+                if (topLinks.length > 0) {
+                    const batchSize = 10;
+                    for (let i = 0; i < topLinks.length; i += batchSize) {
+                        const batch = topLinks.slice(i, i + batchSize);
+                        const multiCheck = await fetch(`${getApiUrl()}query&titles=${encodeURIComponent(batch.join('|'))}&prop=links&pllimit=max&format=json`);
+                        const multiData = await multiCheck.json();
+                        const pages = multiData.query.pages;
+                        
+                        for (const pid in pages) {
+                            const pLinks = pages[pid].links || [];
+                            if (pLinks.some(l => l.title === target)) {
+                                display.innerHTML = `<div class='flex flex-wrap gap-2 items-center'><span>${start}</span><span>→</span><span>${pages[pid].title}</span><span>→</span><span class='font-bold text-amber-700'>${target}</span> <span class='ml-2 text-xs text-gray-400'>(2 Steps)</span></div>`;
+                                return;
+                            }
+                        }
+                    }
+                }
+
+                // If not found in 2 steps, show 3+ or unavailable
+                display.innerHTML = "Estimated shortest path: 3+ steps (Calculation limit reached).";
+            } catch (e) {
+                display.innerText = "Fastest route calculation failed.";
+            }
+        }
+
         function finishGame(isWinner, oppClicks = "?", reason = "") {
             if (state.finished) return;
             state.finished = true;
@@ -626,8 +670,12 @@
                 document.getElementById('btn-play-again-multi').classList.add('hidden');
             }
             document.getElementById('path-list').innerHTML = state.path.map((step, idx) => `<div class='flex gap-2 text-xs'><span class='bg-gray-200 px-1 rounded'>${idx}</span>${step}</div>`).join('');
+            
             showScreen('results');
             updateUI();
+            
+            // Trigger calculation of the shortcut
+            findShortestPath(state.startTitle, state.targetTitle);
         }
 
         function updatePlayAgainUI() {
@@ -746,7 +794,11 @@
                 updateUI();
                 rollSoloWords(true);
             } else {
-                alert("Not enough coins! (Need 2)");
+                // UI message instead of alert
+                const rollBtn = document.getElementById('btn-solo-roll');
+                const originalText = rollBtn.innerHTML;
+                rollBtn.innerText = "Insufficient Coins!";
+                setTimeout(() => rollBtn.innerHTML = originalText, 1500);
             }
         };
         document.getElementById('btn-solo-start').onclick = startGame;

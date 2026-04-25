@@ -312,7 +312,7 @@
             </div>
             <div class="flex flex-col md:flex-row gap-6 mb-10 text-left">
                 <div class="flex-1"><h3 class="font-bold mb-3">📍 Your Path</h3><div id="path-list" class="text-sm space-y-2 p-4 bg-gray-50 rounded-xl border max-h-40 overflow-y-auto"></div></div>
-                <div class="flex-1"><h3 class="font-bold mb-3">⚡ Shortcut</h3><div id="theoretical-path-display" class="p-4 bg-amber-50 rounded-xl border text-sm italic">Loading...</div></div>
+                <div class="flex-1"><h3 class="font-bold mb-3">⚡ Shortcut</h3><div id="theoretical-path-display" class="p-4 bg-amber-50 rounded-xl border text-sm italic">Shortcut calculation unavailable.</div></div>
             </div>
             <button id="btn-home" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold text-xl transition-all shadow-lg active:scale-95" data-i18n="btnBackMenu">Back to Menu</button>
         </div>
@@ -410,8 +410,8 @@
         
         const POPULAR_TOPICS = {
             en: ["Apple Inc.", "Albert Einstein", "Ancient Egypt", "Artificial Intelligence", "Australia", "Batman", "Beer", "Berlin", "Bitcoin", "Brazil", "Canada", "Cat", "Chess", "Chocolate", "Coffee", "Cristiano Ronaldo", "Dinosaur", "Dog", "Earth", "Elon Musk", "Facebook", "Football", "France", "Germany", "Google", "Harry Potter", "History", "India", "Internet", "iPhone", "Italy", "Japan", "Mars", "Music", "NASA", "Netflix", "New York City", "Physics", "Pizza", "Pokemon", "Rome", "Russia", "SpaceX", "Star Wars", "Sushi", "Tea", "Tennis", "United Kingdom", "United States", "Video game", "Water", "World War II", "Youtube", "Marie Curie", "Amazon River", "Basketball", "Mount Everest", "Stonehenge"],
-            de: ["Apple", "Albert Einstein", "Altes Ägypten", "Künstliche Intelligenz", "Australien", "Batman", "Bier", "Berlin", "Bitcoin", "Brasilien", "Kanada", "Hauskatze", "Schach", "Schokolade", "Kaffee", "Cristiano Ronaldo", "Dinosaurier", "Haushund", "Erde", "Elon Musk", "Europa", "Facebook", "Fußball", "Frankreich", "Deutschland", "Google", "Harry Potter", "Geschichte", "Speiseeis", "Indien", "Internet", "IPhone", "Italien", "Japan", "Jupiter", "London", "Mars", "Musik", "NASA", "Netflix", "New York City", "Pazifik", "Paris", "Physik", "Pizza", "Pokémon", "Rom", "Russland", "Smartphone", "SpaceX", "Star Wars", "Sushi", "Tee", "Tennis", "Tiger", "Tokio", "Zweiter Weltkrieg", "YouTube"],
-            es: ["Apple", "Albert Einstein", "Antiguo Egipto", "Inteligencia artificial", "Australia", "Batman", "Cerveza", "Berlín", "Bitcoin", "Brasil", "Canadá", "Gato", "Ajedrez", "Chocolate", "Café", "Cristiano Ronaldo", "Dinosaurio", "Perro", "Tierra", "Elon Musk", "Facebook", "Fútbol", "Francia", "Alemania", "Google", "Harry Potter", "Historia", "Helado", "India", "Internet", "IPhone", "Italia", "Japón", "Londres", "Marte", "Música", "NASA", "Netflix", "Nueva York", "Océano Pacífico", "París", "Física", "Pizza", "Pokémon", "Roma", "Rusia", "Ciencia", "SpaceX", "Star Wars", "Sushi", "Té", "Tenis", "YouTube"]
+            de: ["Apple", "Albert Einstein", "Altes Ägypten", "Künstliche Intelligenz", "Australien", "Batman", "Bier", "Berlin", "Bitcoin", "Brasilien", "Kanada", "Hauskatze", "Schach", "Schokolade", "Kaffee", "Cristiano Ronaldo", "Dinosaurier", "Haushund", "Erde", "Elon Musk", "Europa", "Facebook", "Fußball", "Frankreich", "Deutschland", "Google", "Harry Potter", "Geschichte", "Indien", "Internet", "IPhone", "Italien", "Japan", "Jupiter", "London", "Mars", "Musik", "NASA", "Netflix", "New York City", "Physik", "Pizza", "Pokémon", "Rom", "Russland", "SpaceX", "Star Wars", "Sushi", "Tee", "Tennis", "Zweiter Weltkrieg", "YouTube"],
+            es: ["Apple", "Albert Einstein", "Antiguo Egipto", "Inteligencia artificial", "Australia", "Batman", "Cerveza", "Berlín", "Bitcoin", "Brasil", "Canadá", "Gato", "Ajedrez", "Chocolate", "Café", "Cristiano Ronaldo", "Dinosaurio", "Perro", "Tierra", "Elon Musk", "Facebook", "Fútbol", "Francia", "Alemania", "Google", "Harry Potter", "Historia", "India", "Internet", "IPhone", "Italia", "Japón", "Londres", "Marte", "Música", "NASA", "Netflix", "Nueva York", "Física", "Pizza", "Pokémon", "Roma", "Rusia", "SpaceX", "Star Wars", "Sushi", "Té", "Tenis", "YouTube"]
         };
         const HARD_TOPICS = {
             en: ["Quantum entanglement", "Byzantine Empire", "Tardigrade", "Non-Euclidean geometry", "Glagolitic script", "Isotopes of gold", "Photosynthesis", "Linguistics", "Cuneiform", "Oort cloud", "Standard Model", "Voynich manuscript"],
@@ -460,8 +460,7 @@
         }
 
         function updateUI() {
-            const lang = state.language;
-            const dict = uiDict[lang];
+            const dict = uiDict[state.language];
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if (dict[key]) el.innerText = dict[key];
@@ -594,7 +593,6 @@
                 }
             }
             
-            const dict = uiDict[state.language];
             document.getElementById('final-clicks').innerText = state.clicks;
             if (state.isMultiplayer) {
                 document.getElementById('opponent-clicks-container').classList.remove('hidden');
@@ -795,29 +793,13 @@
             state.isMultiplayer = true;
         });
 
+        document.getElementById('btn-solo-roll').onclick = rollSoloWords;
         document.getElementById('btn-solo-start').onclick = startGame;
         document.getElementById('btn-home').onclick = () => { updateUI(); updateModeDisplay(); showScreen('menu'); };
+
         document.getElementById('lang-en').onclick = () => setLanguage('en');
         document.getElementById('lang-de').onclick = () => setLanguage('de');
         document.getElementById('lang-es').onclick = () => setLanguage('es');
-        
-        document.getElementById('btn-back').addEventListener('click', () => {
-            if (state.finished) return;
-            if (state.path.length > 1) {
-                state.path.pop();
-                const prev = state.path[state.path.length - 1];
-                state.clicks++;
-                document.getElementById('click-count').innerText = state.clicks;
-                loadArticle(prev);
-            }
-        });
-
-        document.getElementById('btn-quit-trigger').addEventListener('click', () => document.getElementById('modal-quit').classList.remove('hidden'));
-        document.getElementById('modal-cancel').addEventListener('click', () => document.getElementById('modal-quit').classList.add('hidden'));
-        document.getElementById('modal-confirm').addEventListener('click', () => {
-            document.getElementById('modal-quit').classList.add('hidden');
-            document.getElementById('btn-home').click();
-        });
 
         function setLanguage(lang) {
             state.language = lang;
@@ -836,6 +818,24 @@
             btnDe.className = lang === 'de' ? activeClass : inactiveClass;
             btnEs.className = lang === 'es' ? activeClass : inactiveClass;
         }
+        
+        document.getElementById('btn-back').addEventListener('click', () => {
+            if (state.finished) return;
+            if (state.path.length > 1) {
+                state.path.pop();
+                const prev = state.path[state.path.length - 1];
+                state.clicks++;
+                document.getElementById('click-count').innerText = state.clicks;
+                loadArticle(prev);
+            }
+        });
+
+        document.getElementById('btn-quit-trigger').addEventListener('click', () => document.getElementById('modal-quit').classList.remove('hidden'));
+        document.getElementById('modal-cancel').addEventListener('click', () => document.getElementById('modal-quit').classList.add('hidden'));
+        document.getElementById('modal-confirm').addEventListener('click', () => {
+            document.getElementById('modal-quit').classList.add('hidden');
+            document.getElementById('btn-home').click();
+        });
 
         const screens = {
             menu: document.getElementById('screen-menu'),

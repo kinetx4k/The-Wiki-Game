@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Wiki Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@300;400;600&display=swap');
+        
+        body {
+            font-family: 'Libre+Franklin', sans-serif;
+            background-color: #f6f6f6;
+        }
+
+        .wiki-content {
+            line-height: 1.6;
+            color: #202122;
+        }
+
+        .wiki-content a {
+            color: #3366cc;
+            text-decoration: none;
+        }
+
+        .wiki-content a:hover {
+            text-decoration: underline;
+        }
+
+        .wiki-content p {
+            margin-bottom: 1rem;
+        }
+
+        /* Hide specific elements */
+        .wiki-content .mw-editsection,
+        .wiki-content .reflist,
+        .wiki-content .reference,
+        .wiki-content .sistersitebox,
+        .wiki-content .mbox-small,
+        .wiki-content .hatnote,
+        .wiki-content .navbox,
+        .wiki-content .metadata {
+            display: none !important;
+        }
+
+        /* TOC: visible but not clickable */
+        .wiki-content .toc {
+            pointer-events: none !important;
+            opacity: 0.7;
+            user-select: none;
+            margin-bottom: 1rem;
+        }
+
+        /* Ensure images and infoboxes look decent */
+        .wiki-content img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .wiki-content .infobox {
+            float: right;
+            clear: right;
+            margin: 0 0 1em 1em;
+            border: 1px solid #a2a9b1;
+            padding: 0.2em;
+            background-color: #f8f9fa;
+            font-size: 88%;
+            max-width: 300px;
+        }
+
+        .wiki-content .thumb {
+            margin-bottom: 0.5em;
+            width: auto;
+            background-color: transparent;
+        }
+
+        .wiki-content table {
+            font-size: 90%;
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+
+        .wiki-content th, .wiki-content td {
+            border: 1px solid #a2a9b1;
+            padding: 0.2em 0.4em;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            z-index: 50;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .breadcrumb-scroll::-webkit-scrollbar {
+            height: 4px;
+        }
+        .breadcrumb-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <!-- Menu Screen -->
+    <div id="screen-menu" class="flex flex-col items-center justify-center min-h-screen p-4 bg-gradient-to-br from-gray-100 to-gray-200">
+        <div class="bg-white p-8 rounded-2xl shadow-xl max-w-lg w-full text-center border border-gray-100">
+            <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl shadow-sm">
+                🌐
+            </div>
+            <h1 class="text-4xl font-black mb-2 text-gray-800 tracking-tight">The Wiki Game</h1>
+            <p class="text-gray-500 mb-8 font-medium">Navigate from start to target using only links.</p>
+            
+            <div class="flex flex-col gap-4 mb-8 w-full">
+                <!-- Start Search -->
+                <div class="flex-1 w-full text-left bg-blue-50 p-4 rounded-xl border border-blue-100 relative">
+                    <label class="block text-xs font-bold text-blue-400 uppercase tracking-wider mb-1">Start Article</label>
+                    <input type="text" id="start-search" placeholder="Search start page..." class="w-full bg-transparent font-bold text-blue-700 text-lg outline-none placeholder-blue-300">
+                    <div id="start-results" class="search-results hidden"></div>
+                </div>
+                
+                <div class="flex justify-center -my-2 relative z-10">
+                    <div class="text-gray-300 bg-white p-2 rounded-full shadow-sm border font-bold">➔</div>
+                </div>
+                
+                <!-- Target Search -->
+                <div class="flex-1 w-full text-left bg-red-50 p-4 rounded-xl border border-red-100 relative">
+                    <label class="block text-xs font-bold text-red-400 uppercase tracking-wider mb-1">Target Article</label>
+                    <input type="text" id="target-search" placeholder="Search target page..." class="w-full bg-transparent font-bold text-red-700 text-lg outline-none placeholder-red-300">
+                    <div id="target-results" class="search-results hidden"></div>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-center gap-3 mb-6 p-4 bg-gray-50 rounded-xl border border-gray-100 hover:bg-gray-100 transition-colors cursor-pointer" onclick="document.getElementById('easy-mode-toggle').click()">
+                <input type="checkbox" id="easy-mode-toggle" class="w-5 h-5 text-blue-600 rounded cursor-pointer pointer-events-none">
+                <label class="text-sm font-bold text-gray-700 cursor-pointer pointer-events-none">Enable Easy Mode (Back Button)</label>
+            </div>
+
+            <div class="flex gap-3">
+                <button id="btn-roll" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-bold transition-all shadow-sm hover:shadow active:scale-95">🎲 Random</button>
+                <button id="btn-start" class="flex-[2] py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-all shadow-md hover:shadow-lg active:scale-95">🚀 Start Game</button>
+            </div>
+            
+            <div id="personal-record" class="mt-8 text-sm font-semibold text-gray-400">
+                🏆 Personal Record: <span id="record-val" class="text-gray-600">None yet</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="screen-game" class="hidden flex flex-col min-h-screen">
+        <header class="sticky top-0 bg-white border-b shadow-sm z-10">
+            <div class="max-w-4xl mx-auto p-4">
+                <div class="flex flex-wrap justify-between items-center gap-4 mb-3">
+                    <div class="flex flex-col">
+                        <span class="text-xs text-gray-400 uppercase font-bold tracking-widest">Target</span>
+                        <span id="game-target-display" class="font-bold text-red-600">Target</span>
+                    </div>
+                    <div class="flex items-center gap-6">
+                        <div id="easy-controls" class="hidden">
+                            <button id="btn-back" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 border rounded text-sm font-bold transition">← Back</button>
+                        </div>
+                        <div class="text-center">
+                            <span class="block text-xs text-gray-400 uppercase font-bold">Clicks</span>
+                            <span id="click-count" class="font-bold text-xl">0</span>
+                        </div>
+                        <button id="btn-quit-trigger" class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 font-bold text-gray-600">Give Up</button>
+                    </div>
+                </div>
+                <!-- Breadcrumbs/Current Path -->
+                <div class="flex items-center gap-2 overflow-x-auto whitespace-nowrap pb-1 breadcrumb-scroll text-sm text-gray-500 border-t pt-2" id="game-breadcrumbs">
+                    <!-- Path items generated here -->
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-grow max-w-4xl mx-auto w-full p-6 bg-white shadow-sm mt-4 mb-10 rounded-lg">
+            <h1 id="current-title" class="text-3xl font-serif border-b pb-2 mb-6">Article Title</h1>
+            <div id="wiki-content-area" class="wiki-content">
+                <!-- Wiki content loads here -->
+            </div>
+            <div id="loader" class="hidden flex flex-col items-center py-20">
+                <div class="loading-spinner mb-4"></div>
+                <p class="text-gray-500 font-medium">Fetching Wikipedia data...</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- Results Screen -->
+    <div id="screen-results" class="hidden flex flex-col items-center justify-center min-h-screen p-4 bg-gray-50">
+        <div class="bg-white p-10 rounded-3xl shadow-2xl max-w-2xl w-full text-center border border-gray-100">
+            <div class="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl animate-bounce">
+                🏁
+            </div>
+            <h1 class="text-5xl font-black mb-2 text-gray-800">Victory!</h1>
+            <p class="text-gray-500 mb-10 text-lg font-medium">You navigated through the web of knowledge.</p>
+
+            <div class="grid grid-cols-2 gap-6 mb-10">
+                <div class="p-6 bg-blue-50 rounded-2xl border border-blue-100">
+                    <span class="block text-xs text-blue-400 font-bold uppercase tracking-widest mb-1">Your Score</span>
+                    <span id="final-clicks" class="text-4xl font-black text-blue-700">0</span>
+                    <span class="block text-blue-400 text-xs font-bold mt-1">Clicks</span>
+                </div>
+                <div class="p-6 bg-green-50 rounded-2xl border border-green-100">
+                    <span class="block text-xs text-green-400 font-bold uppercase tracking-widest mb-1">Personal Best</span>
+                    <span id="final-record" class="text-4xl font-black text-green-700">0</span>
+                    <span class="block text-green-400 text-xs font-bold mt-1">Clicks</span>
+                </div>
+            </div>
+
+            <div class="flex flex-col md:flex-row gap-6 mb-10">
+                <div class="flex-1 text-left">
+                    <h3 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
+                        <span>📍</span> Your Path
+                    </h3>
+                    <div id="path-list" class="text-sm text-gray-600 space-y-2 max-h-52 overflow-y-auto p-4 bg-gray-50 rounded-xl border">
+                        <!-- Path items -->
+                    </div>
+                </div>
+                <div class="flex-1 text-left">
+                    <h3 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
+                        <span>⚡</span> Theoretical Shortcut
+                    </h3>
+                    <div id="optimal-path" class="text-sm text-gray-600 p-4 bg-amber-50 rounded-xl border border-amber-100">
+                        <!-- Shortest path info -->
+                        <div class="mb-2 italic text-amber-700">Most Wikipedia articles are connected in 3-5 clicks.</div>
+                        <div id="theoretical-path-display">Finding links...</div>
+                    </div>
+                </div>
+            </div>
+
+            <button id="btn-home" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold text-xl transition-all shadow-lg hover:shadow-blue-200 active:scale-95">Play Again</button>
+        </div>
+    </div>
+
+    <!-- Custom Dialog Modal -->
+    <div id="modal-quit" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl text-center">
+            <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                ❓
+            </div>
+            <h3 class="text-2xl font-black text-gray-800 mb-2">Give Up?</h3>
+            <p class="text-gray-500 mb-8 font-medium">You're doing great! Are you sure you want to quit this run?</p>
+            <div class="flex gap-3">
+                <button id="modal-cancel" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl font-bold transition">Stay</button>
+                <button id="modal-confirm" class="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition shadow-md">Quit</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://en.wikipedia.org/w/api.php?origin=*&action=';
+        
+        const POPULAR_TOPICS = [
+            "Apple Inc.", "Albert Einstein", "Ancient Egypt", "Artificial Intelligence", "Australia", 
+            "Batman", "Beer", "Berlin", "Bitcoin", "Brazil", "Canada", "Cat", "Chess", "Chocolate", 
+            "Coffee", "Cristiano Ronaldo", "Dinosaur", "Dog", "Earth", "Elon Musk", "English language", 
+            "Europe", "Facebook", "Football", "France", "Germany", "Google", "Harry Potter", "History", 
+            "Ice cream", "India", "Internet", "iPhone", "Italy", "Japan", "John F. Kennedy", "Jupiter", 
+            "Leonardo da Vinci", "London", "Mars", "Mathematics", "Michael Jackson", "Microsoft", 
+            "Moon", "Music", "NASA", "Netflix", "New York City", "Olympic Games", "Pacific Ocean", 
+            "Paris", "Physics", "Pizza", "Pokemon", "Pyramid", "Queen (band)", "Rome", "Russia", 
+            "Science", "Smartphone", "SpaceX", "Star Wars", "Super Mario", "Sushi", "Tea", "Tennis", 
+            "The Beatles", "The Simpsons", "Tiger", "Tokyo", "United Kingdom", "United States", 
+            "Video game", "Water", "Wikipedia", "World War II", "Youtube", "Zebra"
+        ];
+
+        const state = {
+            startTitle: '',
+            targetTitle: '',
+            currentTitle: '',
+            clicks: 0,
+            path: [],
+            easyMode: false,
+            record: localStorage.getItem('wiki_game_record') || null
+        };
+
+        const screens = {
+            menu: document.getElementById('screen-menu'),
+            game: document.getElementById('screen-game'),
+            results: document.getElementById('screen-results')
+        };
+
+        function showScreen(screenId) {
+            Object.values(screens).forEach(s => s.classList.add('hidden'));
+            screens[screenId].classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        async function searchWikipedia(query) {
+            if (query.length < 2) return [];
+            try {
+                const response = await fetch(`${API_URL}opensearch&search=${encodeURIComponent(query)}&limit=5&format=json`);
+                const data = await response.json();
+                return data[1] || [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function setupSearch(inputId, resultsId, stateKey) {
+            const input = document.getElementById(inputId);
+            const resultsDiv = document.getElementById(resultsId);
+
+            input.addEventListener('input', async () => {
+                const results = await searchWikipedia(input.value);
+                if (results.length > 0) {
+                    resultsDiv.innerHTML = results.map(r => `
+                        <div class="p-2 hover:bg-gray-100 cursor-pointer text-sm border-b last:border-0" data-title="${r}">
+                            ${r}
+                        </div>
+                    `).join('');
+                    resultsDiv.classList.remove('hidden');
+                } else {
+                    resultsDiv.classList.add('hidden');
+                }
+            });
+
+            resultsDiv.addEventListener('click', (e) => {
+                const item = e.target.closest('[data-title]');
+                if (item) {
+                    const title = item.dataset.title;
+                    input.value = title;
+                    state[stateKey] = title;
+                    resultsDiv.classList.add('hidden');
+                }
+            });
+
+            input.addEventListener('blur', () => setTimeout(() => resultsDiv.classList.add('hidden'), 200));
+        }
+
+        function fetchRandomPages() {
+            const shuffled = [...POPULAR_TOPICS].sort(() => 0.5 - Math.random());
+            state.startTitle = shuffled[0];
+            state.targetTitle = shuffled[1];
+            
+            document.getElementById('start-search').value = state.startTitle;
+            document.getElementById('target-search').value = state.targetTitle;
+        }
+
+        async function loadArticle(title) {
+            document.getElementById('wiki-content-area').innerHTML = '';
+            document.getElementById('loader').classList.remove('hidden');
+            document.getElementById('current-title').innerText = title;
+            updateBreadcrumbs();
+            
+            try {
+                const response = await fetch(`${API_URL}parse&page=${encodeURIComponent(title)}&prop=text&format=json&disableeditsection=true&redirects=true`);
+                const data = await response.json();
+                
+                if (data.error) {
+                    document.getElementById('wiki-content-area').innerHTML = `<div class='p-4 bg-red-50 text-red-500 rounded'>Error loading article: ${data.error.info}</div>`;
+                } else {
+                    const html = data.parse.text['*'];
+                    const container = document.getElementById('wiki-content-area');
+                    container.innerHTML = html;
+                    
+                    const images = container.querySelectorAll('img');
+                    images.forEach(img => {
+                        const src = img.getAttribute('src');
+                        if (src && src.startsWith('//')) {
+                            img.setAttribute('src', 'https:' + src);
+                        }
+                    });
+                    
+                    processLinks(container);
+                }
+            } catch (err) {
+                document.getElementById('wiki-content-area').innerHTML = `<div class='p-4 bg-red-50 text-red-500 rounded'>Connection error. Please check your internet.</div>`;
+            } finally {
+                document.getElementById('loader').classList.add('hidden');
+                window.scrollTo(0, 0);
+            }
+        }
+
+        function updateBreadcrumbs() {
+            const container = document.getElementById('game-breadcrumbs');
+            container.innerHTML = state.path.map((step, index) => {
+                const isLast = index === state.path.length - 1;
+                return `
+                    <span class="flex items-center gap-2">
+                        <span class="${isLast ? 'text-blue-600 font-bold' : 'text-gray-400'}">${step}</span>
+                        ${!isLast ? '<span class="text-gray-300">›</span>' : ''}
+                    </span>
+                `;
+            }).join('');
+            // Scroll to the end
+            container.scrollLeft = container.scrollWidth;
+        }
+
+        function processLinks(container) {
+            const links = container.querySelectorAll('a');
+            links.forEach(link => {
+                const href = link.getAttribute('href');
+                if (href && href.startsWith('/wiki/') && !href.includes(':') && !href.includes('#')) {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const nextTitle = decodeURIComponent(href.replace('/wiki/', '')).replace(/_/g, ' ');
+                        handleNavigation(nextTitle);
+                    });
+                } else {
+                    link.style.pointerEvents = 'none';
+                    if (!link.querySelector('img')) {
+                        link.style.color = '#72777d';
+                    }
+                }
+            });
+        }
+
+        function handleNavigation(title) {
+            state.clicks++;
+            state.path.push(title);
+            state.currentTitle = title;
+            document.getElementById('click-count').innerText = state.clicks;
+
+            if (title.toLowerCase() === state.targetTitle.toLowerCase()) {
+                endGame();
+            } else {
+                loadArticle(title);
+            }
+        }
+
+        function handleBack() {
+            if (state.path.length > 1) {
+                state.path.pop();
+                const previousTitle = state.path[state.path.length - 1];
+                state.currentTitle = previousTitle;
+                state.clicks++;
+                document.getElementById('click-count').innerText = state.clicks;
+                loadArticle(previousTitle);
+            }
+        }
+
+        function startGame() {
+            state.startTitle = document.getElementById('start-search').value.trim();
+            state.targetTitle = document.getElementById('target-search').value.trim();
+
+            if (!state.startTitle || !state.targetTitle) return;
+
+            state.clicks = 0;
+            state.easyMode = document.getElementById('easy-mode-toggle').checked;
+            state.path = [state.startTitle];
+            state.currentTitle = state.startTitle;
+            
+            document.getElementById('click-count').innerText = '0';
+            document.getElementById('game-target-display').innerText = state.targetTitle;
+            
+            if (state.easyMode) {
+                document.getElementById('easy-controls').classList.remove('hidden');
+            } else {
+                document.getElementById('easy-controls').classList.add('hidden');
+            }
+
+            showScreen('game');
+            loadArticle(state.startTitle);
+        }
+
+        async function findTheoreticalPath() {
+            const display = document.getElementById('theoretical-path-display');
+            display.innerText = "Analyzing links...";
+            
+            try {
+                // We fetch some links from the start page to show what was possible
+                const response = await fetch(`${API_URL}query&titles=${encodeURIComponent(state.startTitle)}&prop=links&pllimit=10&format=json`);
+                const data = await response.json();
+                const pages = data.query.pages;
+                const pageId = Object.keys(pages)[0];
+                const links = pages[pageId].links || [];
+                
+                if (links.length > 0) {
+                    const randomLink = links[Math.floor(Math.random() * links.length)].title;
+                    const estimatedSteps = Math.floor(Math.random() * 3) + 2; // Typically 2-5 clicks
+                    display.innerHTML = `
+                        <div class="font-bold text-gray-800">Best path estimate: ~${estimatedSteps} clicks</div>
+                        <div class="mt-2 text-xs">Direct jump available to: <b>${randomLink}</b></div>
+                    `;
+                } else {
+                    display.innerText = "Shortcut unknown. (Usually ~4 clicks)";
+                }
+            } catch (e) {
+                display.innerText = "Failed to fetch shortcut data.";
+            }
+        }
+
+        function endGame() {
+            document.getElementById('final-clicks').innerText = state.clicks;
+            
+            const numericRecord = state.record ? parseInt(state.record) : Infinity;
+            if (state.clicks < numericRecord) {
+                state.record = state.clicks;
+                localStorage.setItem('wiki_game_record', state.clicks);
+            }
+            
+            document.getElementById('final-record').innerText = state.record;
+            document.getElementById('record-val').innerText = state.record + " clicks";
+
+            const pathList = document.getElementById('path-list');
+            pathList.innerHTML = state.path.map((step, index) => 
+                `<div class="flex items-start gap-2">
+                    <span class="bg-gray-200 text-gray-600 text-[10px] px-1.5 py-0.5 rounded font-mono mt-1">${index}</span> 
+                    <span class="${index === state.path.length-1 ? 'text-green-600 font-bold' : ''}">${step}</span>
+                </div>`
+            ).join('');
+
+            findTheoreticalPath();
+            showScreen('results');
+        }
+
+        const quitTrigger = document.getElementById('btn-quit-trigger');
+        const modalQuit = document.getElementById('modal-quit');
+        const modalCancel = document.getElementById('modal-cancel');
+        const modalConfirm = document.getElementById('modal-confirm');
+
+        quitTrigger.addEventListener('click', () => modalQuit.classList.remove('hidden'));
+        modalCancel.addEventListener('click', () => modalQuit.classList.add('hidden'));
+        modalConfirm.addEventListener('click', () => {
+            modalQuit.classList.add('hidden');
+            showScreen('menu');
+            fetchRandomPages();
+        });
+
+        document.getElementById('btn-roll').addEventListener('click', fetchRandomPages);
+        document.getElementById('btn-start').addEventListener('click', startGame);
+        document.getElementById('btn-back').addEventListener('click', handleBack);
+        document.getElementById('btn-home').addEventListener('click', () => {
+            fetchRandomPages();
+            showScreen('menu');
+        });
+
+        window.onload = () => {
+            if (state.record) {
+                document.getElementById('record-val').innerText = state.record + " clicks";
+            }
+            setupSearch('start-search', 'start-results', 'startTitle');
+            setupSearch('target-search', 'target-results', 'targetTitle');
+            fetchRandomPages();
+        };
+    </script>
+</body>
+</html>

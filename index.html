@@ -232,7 +232,7 @@
     </div>
 
     <div id="modal-calendar" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
-        <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl">
+        <div class="bg-white rounded-3xl p-6 max-sm w-full shadow-2xl">
             <div class="flex justify-between items-center mb-4"><h3 class="text-xl font-black text-gray-800">History</h3><button id="calendar-close" class="text-gray-400 hover:text-gray-600">✕</button></div>
             <div id="calendar-grid" class="grid grid-cols-7 gap-2 mb-4 text-center"></div>
             <div class="border-t pt-4 text-center"><p class="text-sm text-gray-500">Total Rounds: <span id="total-rounds-val" class="font-bold text-blue-600">0</span></p></div>
@@ -374,8 +374,8 @@
 
         const state = {
             language: 'en', isMultiplayer: false, isHost: false, isPlaying: false, sessionCode: '', 
-            startTitle: localStorage.getItem('wiki_start') || '', 
-            targetTitle: localStorage.getItem('wiki_target') || '', 
+            startTitle: '', 
+            targetTitle: '', 
             currentTitle: '',
             clicks: 0, maxClicks: null, path: [], finished: false, opponentClicks: 0, opponentPath: [], opponentFinishedClicks: null, countdownInterval: null,
             dailyStreak: parseInt(localStorage.getItem('wiki_daily_streak')) || 0, lastDailyWin: localStorage.getItem('wiki_last_daily_win') || null,
@@ -440,20 +440,30 @@
         document.getElementById('mode-next').addEventListener('click', () => { currentModeIndex = (currentModeIndex + 1) % currentMODES.length; updateModeDisplay('next'); });
 
         function rollSoloWords(force = false) {
-            if (!force && state.startTitle && state.targetTitle) {
+            const mode = currentMODES[currentModeIndex].id;
+            const savedStart = localStorage.getItem('wiki_start_' + mode);
+            const savedTarget = localStorage.getItem('wiki_target_' + mode);
+
+            if (!force && savedStart && savedTarget) {
+                state.startTitle = savedStart;
+                state.targetTitle = savedTarget;
                 document.getElementById('solo-start').innerText = state.startTitle;
                 document.getElementById('solo-target').innerText = state.targetTitle;
                 return;
             }
+
             let topics;
-            const mode = currentMODES[currentModeIndex].id;
             state.maxClicks = mode === 'limited' ? 10 : null;
             if (mode === 'hard') topics = getRandomTopics(HARD_TOPICS[state.language]);
             else if (mode === 'daily') topics = getDailyTopics(POPULAR_TOPICS[state.language]);
             else topics = getRandomTopics(POPULAR_TOPICS[state.language]);
-            state.startTitle = topics.start; state.targetTitle = topics.target;
-            localStorage.setItem('wiki_start', state.startTitle);
-            localStorage.setItem('wiki_target', state.targetTitle);
+            
+            state.startTitle = topics.start; 
+            state.targetTitle = topics.target;
+            
+            localStorage.setItem('wiki_start_' + mode, state.startTitle);
+            localStorage.setItem('wiki_target_' + mode, state.targetTitle);
+            
             document.getElementById('solo-start').innerText = state.startTitle;
             document.getElementById('solo-target').innerText = state.targetTitle;
             if (state.isMultiplayer && state.isHost) { updateLobbyWords(); sendPeerData({ type: 'lobbyUpdate', startTitle: state.startTitle, targetTitle: state.targetTitle, language: state.language }); }

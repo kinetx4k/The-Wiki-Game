@@ -757,7 +757,7 @@
         document.getElementById('lang-es').onclick = () => setLanguage('es');
 
         function setLanguage(lang) {
-            state.language = lang; updateLanguageButtonsUI(lang); updateUI(); rollSoloWords(true);
+            state.language = lang; updateLanguageButtonsUI(lang); updateUI(); updateModeDisplay();
             if (state.isMultiplayer && state.isHost) { sendPeerData({ type: 'lobbyUpdate', startTitle: state.startTitle, targetTitle: state.targetTitle, language: state.language }); }
         }
 

@@ -548,6 +548,7 @@
         function startCountdown() { if (!state.isMultiplayer || state.finished) return; document.getElementById('multiplayer-countdown').classList.remove('hidden'); let timeLeft = 120; document.getElementById('countdown-val').innerText = timeLeft; state.countdownInterval = setInterval(() => { timeLeft--; document.getElementById('countdown-val').innerText = timeLeft; if (timeLeft <= 0) { clearInterval(state.countdownInterval); finishGame(false, state.opponentFinishedClicks, "timeout"); } }, 1000); }
 
         async function loadArticle(title) {
+            window.scrollTo(0, 0);
             document.getElementById('loader').classList.remove('hidden');
             document.getElementById('current-title').innerText = title;
             const container = document.getElementById('game-breadcrumbs');

@@ -6,13 +6,18 @@
     <title>The Wiki Game</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@300;400;600;900&display=swap');
         
         body {
             font-family: 'Libre+Franklin', sans-serif;
-            background-color: #f0f2f5;
-            color: #1a1a1a;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         /* Button Global Animations */
@@ -32,9 +37,17 @@
             color: #202122;
         }
 
+        .dark .wiki-content {
+            color: #e2e8f0;
+        }
+
         .wiki-content a {
             color: #3366cc;
             text-decoration: none;
+        }
+
+        .dark .wiki-content a {
+            color: #60a5fa;
         }
 
         .wiki-content a:hover {
@@ -82,6 +95,11 @@
             max-width: 280px;
         }
 
+        .dark .wiki-content .infobox {
+            background-color: #1e293b;
+            border-color: #334155;
+        }
+
         .wiki-content .thumb {
             margin-bottom: 0.5em;
             width: auto;
@@ -108,6 +126,10 @@
             padding: 0.2em 0.4em;
         }
 
+        .dark .wiki-content th, .dark .wiki-content td {
+            border-color: #334155;
+        }
+
         .loading-spinner {
             border: 4px solid #f3f3f3;
             border-top: 4px solid #3498db;
@@ -115,6 +137,11 @@
             width: 40px;
             height: 40px;
             animation: spin 1s linear infinite;
+        }
+
+        .dark .loading-spinner {
+            border-color: rgba(255,255,255,0.1);
+            border-top-color: #60a5fa;
         }
 
         @keyframes spin {
@@ -151,17 +178,54 @@
             width: 2px;
             background: repeating-linear-gradient(to bottom, #e5e7eb, #e5e7eb 4px, transparent 4px, transparent 8px);
         }
+
+        .dark .mission-path::before {
+            background: repeating-linear-gradient(to bottom, #334155, #334155 4px, transparent 4px, transparent 8px);
+        }
+
+        /* Moving Background Styles */
+        .floating-word {
+            position: absolute;
+            white-space: nowrap;
+            user-select: none;
+            pointer-events: none;
+            opacity: 0.12; 
+            font-weight: 900;
+            z-index: 0;
+            animation: float linear infinite;
+            color: #64748b;
+            filter: blur(var(--blur));
+            transition: color 0.3s;
+        }
+
+        .dark .floating-word {
+            color: #94a3b8;
+            opacity: 0.08;
+        }
+
+        @keyframes float {
+            from { transform: translate(var(--start-x), var(--start-y)) rotate(var(--rot)); }
+            to { transform: translate(var(--end-x), var(--end-y)) rotate(calc(var(--rot) + 20deg)); }
+        }
     </style>
 </head>
-<body class="min-h-screen relative">
+<body class="min-h-screen relative bg-[#f0f2f5] dark:bg-[#0f172a] text-[#1a1a1a] dark:text-[#f8fafc]">
+
+    <!-- Background Layer for Menu -->
+    <div id="menu-background" class="fixed inset-0 pointer-events-none overflow-hidden z-0"></div>
 
     <div class="fixed top-6 right-6 flex items-center gap-4 z-50">
-        <div id="streak-top-ui" class="flex items-center gap-4 bg-white/80 backdrop-blur-md px-4 py-2 rounded-2xl shadow-lg border border-white/50 font-black text-gray-800 select-none">
+        <!-- Dark Mode Toggle -->
+        <button id="btn-dark-mode" class="p-2.5 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl shadow-lg border border-white/50 dark:border-slate-700/50 text-xl">
+            <span id="dark-icon">🌙</span>
+        </button>
+
+        <div id="streak-top-ui" class="flex items-center gap-4 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md px-4 py-2 rounded-2xl shadow-lg border border-white/50 dark:border-slate-700/50 font-black text-gray-800 dark:text-gray-200 select-none">
             <div class="flex items-center gap-2">
                 <span class="text-xl">🔥</span>
                 <span id="streak-val-top" class="text-lg">0</span>
             </div>
-            <div class="h-6 w-px bg-gray-200"></div>
+            <div class="h-6 w-px bg-gray-200 dark:bg-gray-700"></div>
             <div class="flex items-center gap-2">
                 <span class="text-xl">🪙</span>
                 <span id="coins-val-top" class="text-lg">0</span>
@@ -169,100 +233,100 @@
             <button id="btn-calendar" class="text-xl p-1">📅</button>
         </div>
 
-        <div class="flex p-1 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg border border-white/50">
+        <div class="flex p-1 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl shadow-lg border border-white/50 dark:border-slate-700/50">
             <button id="lang-en" class="px-4 py-1.5 bg-blue-600 text-white rounded-xl font-bold text-xs shadow-md">EN</button>
-            <button id="lang-de" class="px-4 py-1.5 text-gray-500 hover:text-gray-800 rounded-xl font-bold text-xs">DE</button>
-            <button id="lang-es" class="px-4 py-1.5 text-gray-500 hover:text-gray-800 rounded-xl font-bold text-xs">ES</button>
+            <button id="lang-de" class="px-4 py-1.5 text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white rounded-xl font-bold text-xs">DE</button>
+            <button id="lang-es" class="px-4 py-1.5 text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white rounded-xl font-bold text-xs">ES</button>
         </div>
     </div>
 
-    <div id="screen-menu" class="flex items-center justify-center min-h-screen p-6 bg-[#f0f2f5] overflow-x-hidden">
+    <div id="screen-menu" class="flex items-center justify-center min-h-screen p-6 overflow-x-hidden relative z-10 bg-transparent">
         <div class="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
             <!-- Left Side: Branding & Mode -->
             <div class="lg:col-span-5 flex flex-col gap-6">
                 <div class="text-left">
-                    <h1 class="text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-blue-700 via-blue-600 to-blue-400 leading-none mb-4 drop-shadow-sm pb-1" data-i18n="title">The Wiki Game</h1>
-                    <p class="text-gray-500 font-medium text-lg leading-snug" data-i18n="subtitle">The ultimate Wikipedia race to the finish line.</p>
+                    <h1 class="text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-blue-700 via-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-600 leading-none mb-4 drop-shadow-sm pb-1" data-i18n="title">The Wiki Game</h1>
+                    <p class="text-gray-500 dark:text-gray-400 font-medium text-lg leading-snug" data-i18n="subtitle">The ultimate Wikipedia race to the finish line.</p>
                 </div>
 
-                <div class="bg-white rounded-[2.5rem] p-8 shadow-xl shadow-gray-200/50 border border-gray-100 relative overflow-hidden">
+                <div class="bg-white dark:bg-slate-800 rounded-[2.5rem] p-8 shadow-xl shadow-gray-200/50 dark:shadow-none border border-gray-100 dark:border-slate-700 relative overflow-hidden">
                     <div class="flex items-center justify-between mb-4">
-                        <span class="text-xs font-black uppercase tracking-[0.2em] text-gray-400">Game Mode</span>
+                        <span class="text-xs font-black uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">Game Mode</span>
                         <span id="daily-notification" class="hidden bg-red-500 text-white text-[10px] font-black px-3 py-1 rounded-full animate-pulse">NEW CHALLENGE</span>
                     </div>
                     
                     <div class="flex items-center justify-between gap-4">
-                        <button id="mode-prev" class="w-12 h-12 flex items-center justify-center rounded-2xl bg-gray-50 hover:bg-gray-100 text-2xl font-bold text-gray-400">←</button>
+                        <button id="mode-prev" class="w-12 h-12 flex items-center justify-center rounded-2xl bg-gray-50 dark:bg-slate-700 hover:bg-gray-100 dark:hover:bg-slate-600 text-2xl font-bold text-gray-400">←</button>
                         <div class="relative h-12 flex-1 flex items-center justify-center">
-                            <p id="mode-display" class="font-black text-2xl tracking-tight text-blue-600">Classic</p>
+                            <p id="mode-display" class="font-black text-2xl tracking-tight text-blue-600 dark:text-blue-400">Classic</p>
                         </div>
-                        <button id="mode-next" class="w-12 h-12 flex items-center justify-center rounded-2xl bg-gray-50 hover:bg-gray-100 text-2xl font-bold text-gray-400">→</button>
+                        <button id="mode-next" class="w-12 h-12 flex items-center justify-center rounded-2xl bg-gray-50 dark:bg-slate-700 hover:bg-gray-100 dark:hover:bg-slate-600 text-2xl font-bold text-gray-400">→</button>
                     </div>
 
-                    <div id="recovery-prompt" class="hidden mt-6 p-4 bg-orange-50 border border-orange-100 rounded-2xl text-sm text-orange-700 font-bold flex items-center gap-3">
+                    <div id="recovery-prompt" class="hidden mt-6 p-4 bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-900/30 rounded-2xl text-sm text-orange-700 dark:text-orange-400 font-bold flex items-center gap-3">
                         <span class="text-xl">⚠️</span>
                         <span data-i18n="recoveryText">Streak at risk! Win Hardcore to restore.</span>
                     </div>
                 </div>
 
-                <div class="flex p-1.5 bg-gray-200/50 rounded-[1.8rem] border border-gray-200/50">
-                    <button id="tab-solo" class="flex-1 py-3.5 bg-white text-blue-600 rounded-[1.4rem] font-black shadow-lg shadow-gray-200/50" data-i18n="tabSolo">Solo Mission</button>
-                    <button id="tab-multi" class="flex-1 py-3.5 text-gray-500 hover:text-gray-700 rounded-[1.4rem] font-black" data-i18n="tabMulti">Multiplayer</button>
+                <div class="flex p-1.5 bg-gray-200/50 dark:bg-slate-800/50 rounded-[1.8rem] border border-gray-200/50 dark:border-slate-700/50 backdrop-blur-sm">
+                    <button id="tab-solo" class="flex-1 py-3.5 bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 rounded-[1.4rem] font-black shadow-lg shadow-gray-200/50 dark:shadow-none" data-i18n="tabSolo">Solo Mission</button>
+                    <button id="tab-multi" class="flex-1 py-3.5 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 rounded-[1.4rem] font-black" data-i18n="tabMulti">Multiplayer</button>
                 </div>
             </div>
 
             <!-- Right Side: Interaction Area & Instruction -->
             <div class="lg:col-span-7 flex flex-col gap-6">
-                <div id="main-menu-box" class="bg-white rounded-[3rem] p-10 shadow-2xl shadow-blue-100/50 border border-white relative">
+                <div id="main-menu-box" class="bg-white dark:bg-slate-800 rounded-[3rem] p-10 shadow-2xl shadow-blue-100/50 dark:shadow-none border border-white dark:border-slate-700 relative">
                     
                     <!-- Solo Setup View -->
                     <div id="solo-setup" class="space-y-8">
                         <div class="mission-path space-y-6">
                             <div class="flex items-start gap-6">
-                                <div class="w-12 h-12 rounded-2xl bg-blue-100 flex items-center justify-center text-xl font-black text-blue-600 z-10 shadow-sm border-4 border-white">S</div>
+                                <div class="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-xl font-black text-blue-600 dark:text-blue-400 z-10 shadow-sm border-4 border-white dark:border-slate-800">S</div>
                                 <div class="flex-1 pt-1 text-left">
                                     <span class="text-[10px] font-black uppercase tracking-widest text-blue-400" data-i18n="startArticle">Start Discovery</span>
-                                    <div id="solo-start" class="text-2xl font-black text-gray-800 leading-tight mt-1">Loading...</div>
+                                    <div id="solo-start" class="text-2xl font-black text-gray-800 dark:text-gray-100 leading-tight mt-1">Loading...</div>
                                 </div>
                             </div>
 
                             <div class="flex items-start gap-6">
-                                <div class="w-12 h-12 rounded-2xl bg-red-100 flex items-center justify-center text-xl font-black text-red-600 z-10 shadow-sm border-4 border-white">T</div>
+                                <div class="w-12 h-12 rounded-2xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-xl font-black text-red-600 dark:text-red-400 z-10 shadow-sm border-4 border-white dark:border-slate-800">T</div>
                                 <div class="flex-1 pt-1 text-left">
                                     <span class="text-[10px] font-black uppercase tracking-widest text-red-400" data-i18n="targetArticle">Target Destination</span>
-                                    <div id="solo-target" class="text-2xl font-black text-gray-800 leading-tight mt-1">Loading...</div>
+                                    <div id="solo-target" class="text-2xl font-black text-gray-800 dark:text-gray-100 leading-tight mt-1">Loading...</div>
                                 </div>
                             </div>
                         </div>
 
                         <div class="pt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <button id="btn-solo-roll" class="py-4 bg-gray-50 hover:bg-gray-100 text-gray-800 rounded-[1.8rem] font-black flex items-center justify-center gap-3 border border-gray-100 group">
+                            <button id="btn-solo-roll" class="py-4 bg-gray-50 dark:bg-slate-700 hover:bg-gray-100 dark:hover:bg-slate-600 text-gray-800 dark:text-gray-100 rounded-[1.8rem] font-black flex items-center justify-center gap-3 border border-gray-100 dark:border-slate-600 group">
                                 <span class="group-hover:rotate-12 transition-transform" data-i18n="btnRandom">🎲 Randomize</span>
-                                <span class="text-[10px] bg-yellow-400/20 text-yellow-700 px-3 py-1 rounded-full border border-yellow-400/30">-2 🪙</span>
+                                <span class="text-[10px] bg-yellow-400/20 text-yellow-700 dark:text-yellow-400 px-3 py-1 rounded-full border border-yellow-400/30">-2 🪙</span>
                             </button>
-                            <button id="btn-solo-start" class="py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-[1.8rem] font-black text-lg shadow-xl shadow-blue-200" data-i18n="btnStartSolo">Begin Mission</button>
+                            <button id="btn-solo-start" class="py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-[1.8rem] font-black text-lg shadow-xl shadow-blue-200 dark:shadow-none" data-i18n="btnStartSolo">Begin Mission</button>
                         </div>
                     </div>
 
                     <!-- Multiplayer Setup View -->
                     <div id="multiplayer-setup" class="hidden space-y-6">
                         <div id="role-selection" class="flex flex-col gap-4">
-                            <button id="btn-host" class="w-full py-6 bg-blue-600 text-white rounded-[2rem] font-black shadow-xl shadow-blue-200 text-xl" data-i18n="btnHost">Create Lobby</button>
-                            <button id="btn-show-join" class="w-full py-6 bg-white border-2 border-blue-600 text-blue-600 rounded-[2rem] font-black text-xl" data-i18n="btnShowJoin">Join Lobby</button>
+                            <button id="btn-host" class="w-full py-6 bg-blue-600 text-white rounded-[2rem] font-black shadow-xl shadow-blue-200 dark:shadow-none text-xl" data-i18n="btnHost">Create Lobby</button>
+                            <button id="btn-show-join" class="w-full py-6 bg-white dark:bg-slate-700 border-2 border-blue-600 text-blue-600 dark:text-blue-400 rounded-[2rem] font-black text-xl" data-i18n="btnShowJoin">Join Lobby</button>
                         </div>
 
-                        <div id="join-section" class="hidden space-y-4 p-6 bg-gray-50 rounded-[2.5rem] border border-gray-100">
-                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest block text-center" data-i18n="enterCode">Access Code</label>
+                        <div id="join-section" class="hidden space-y-4 p-6 bg-gray-50 dark:bg-slate-900/50 rounded-[2.5rem] border border-gray-100 dark:border-slate-700">
+                            <label class="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest block text-center" data-i18n="enterCode">Access Code</label>
                             <div class="flex flex-col gap-3">
-                                <input type="text" id="join-code" placeholder="XXXXXX" class="w-full p-5 bg-white border border-gray-200 rounded-[1.5rem] uppercase font-black text-center tracking-[0.3em] text-3xl outline-none focus:ring-4 focus:ring-blue-100" maxlength="6">
+                                <input type="text" id="join-code" placeholder="XXXXXX" class="w-full p-5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-[1.5rem] uppercase font-black text-center tracking-[0.3em] text-3xl outline-none focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/30 dark:text-white" maxlength="6">
                                 <button id="btn-join-submit" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-[1.5rem] font-black shadow-lg" data-i18n="btnJoin">Authenticate</button>
                             </div>
                             <p id="join-error" class="text-red-500 text-xs font-black hidden text-center" data-i18n="codeNotFound">Access Denied!</p>
                         </div>
 
                         <div id="lobby-section" class="hidden space-y-8">
-                            <div class="bg-gray-900 text-white p-8 rounded-[2.5rem] text-center shadow-2xl relative overflow-hidden">
+                            <div class="bg-gray-900 dark:bg-slate-950 text-white p-8 rounded-[2.5rem] text-center shadow-2xl relative overflow-hidden border border-white/5">
                                 <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl">🔒</div>
                                 <span class="text-[10px] font-black uppercase tracking-[0.3em] opacity-50 block mb-2" data-i18n="sessionCode">Mission ID</span>
                                 <div id="display-code" class="text-5xl font-black tracking-[0.2em] select-all">------</div>
@@ -272,88 +336,111 @@
                                 <div class="flex items-start gap-6">
                                     <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-sm font-black text-white z-10 shadow-sm border-4 border-white">S</div>
                                     <div class="flex-1 pt-1 text-left">
-                                        <div id="lobby-start" class="text-xl font-black text-gray-800 leading-tight">Loading...</div>
+                                        <div id="lobby-start" class="text-xl font-black text-gray-800 dark:text-white leading-tight">Loading...</div>
                                     </div>
                                 </div>
                                 <div class="flex items-start gap-6">
                                     <div class="w-10 h-10 rounded-xl bg-red-600 flex items-center justify-center text-sm font-black text-white z-10 shadow-sm border-4 border-white">T</div>
                                     <div class="flex-1 pt-1 text-left">
-                                        <div id="lobby-target" class="text-xl font-black text-gray-800 leading-tight">Loading...</div>
+                                        <div id="lobby-target" class="text-xl font-black text-gray-800 dark:text-white leading-tight">Loading...</div>
                                     </div>
                                 </div>
                             </div>
 
                             <div id="host-controls" class="hidden space-y-4">
-                                <button id="btn-lobby-refresh" class="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-2xl font-black" data-i18n="btnRefresh">🔄 New Route</button>
-                                <button id="btn-lobby-start" class="w-full py-5 bg-green-500 text-white rounded-[2rem] font-black text-xl shadow-xl shadow-green-100 disabled:bg-gray-200 disabled:shadow-none" disabled>Awaiting Partner...</button>
+                                <button id="btn-lobby-refresh" class="w-full py-3 bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 text-gray-800 dark:text-gray-100 rounded-2xl font-black" data-i18n="btnRefresh">🔄 New Route</button>
+                                <button id="btn-lobby-start" class="w-full py-5 bg-green-500 text-white rounded-[2rem] font-black text-xl shadow-xl shadow-green-100 dark:shadow-none disabled:bg-gray-200 dark:disabled:bg-slate-800" disabled>Awaiting Partner...</button>
                             </div>
-                            <div id="joiner-status" class="hidden text-center text-gray-400 font-black p-6 bg-gray-50 rounded-[2rem] animate-pulse" data-i18n="waitingJoin">Awaiting Mission Launch...</div>
+                            <div id="joiner-status" class="hidden text-center text-gray-400 font-black p-6 bg-gray-50 dark:bg-slate-900/50 rounded-[2rem] animate-pulse" data-i18n="waitingJoin">Awaiting Mission Launch...</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Manual / Instruction Card -->
-                <div id="instruction-field" class="bg-white rounded-[2rem] p-6 shadow-xl border border-gray-100 text-left">
-                    <span class="text-[10px] font-black uppercase tracking-widest text-gray-400 block mb-2">Mission Intelligence</span>
-                    <p id="mode-description" class="text-gray-500 text-sm font-medium leading-relaxed italic">Find the shortest path between two articles.</p>
+                <div id="instruction-field" class="bg-white dark:bg-slate-800 rounded-[2rem] p-6 shadow-xl border border-gray-100 dark:border-slate-700 text-left">
+                    <span class="text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500 block mb-2">Mission Intelligence</span>
+                    <p id="mode-description" class="text-gray-500 dark:text-gray-400 text-sm font-medium leading-relaxed italic">Find the shortest path between two articles.</p>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Modals & Rest -->
-    <div id="modal-calendar" class="hidden fixed inset-0 bg-gray-900/40 backdrop-blur-md flex items-center justify-center z-[100] p-6">
-        <div class="bg-white rounded-[3rem] p-10 max-w-md w-full shadow-2xl">
+    <div id="modal-calendar" class="hidden fixed inset-0 bg-gray-900/40 dark:bg-slate-950/60 backdrop-blur-md flex items-center justify-center z-[100] p-6">
+        <div class="bg-white dark:bg-slate-800 rounded-[3rem] p-10 max-w-md w-full shadow-2xl border border-white dark:border-slate-700">
             <div class="flex justify-between items-center mb-8">
-                <h3 class="text-3xl font-black text-gray-900 tracking-tight">Mission History</h3>
-                <button id="calendar-close" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200 transition-all font-bold">✕</button>
+                <h3 class="text-3xl font-black text-gray-900 dark:text-white tracking-tight">Mission History</h3>
+                <button id="calendar-close" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-slate-700 flex items-center justify-center text-gray-500 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600 transition-all font-bold">✕</button>
             </div>
             <div id="calendar-grid" class="grid grid-cols-7 gap-3 mb-8"></div>
-            <div class="border-t pt-6 text-center">
+            <div class="border-t dark:border-slate-700 pt-6 text-center">
                 <p class="text-gray-400 font-bold uppercase tracking-widest text-xs mb-1">Lifetime Score</p>
-                <div id="total-rounds-val" class="text-4xl font-black text-blue-600">0</div>
+                <div id="total-rounds-val" class="text-4xl font-black text-blue-600 dark:text-blue-400">0</div>
             </div>
         </div>
     </div>
 
-    <div id="screen-game" class="hidden flex flex-col min-h-screen">
-        <header class="sticky top-0 bg-white border-b shadow-sm z-10">
+    <div id="screen-game" class="hidden flex flex-col min-h-screen relative z-20 bg-white dark:bg-slate-900">
+        <header class="sticky top-0 bg-white dark:bg-slate-900 border-b dark:border-slate-800 shadow-sm z-10">
             <div class="max-w-4xl mx-auto p-4">
                 <div class="flex flex-wrap justify-between items-center gap-4 mb-3">
-                    <div class="flex flex-col"><span class="text-xs text-gray-400 uppercase font-bold tracking-widest" data-i18n="target">Target</span><span id="game-target-display" class="font-bold text-red-600">Target</span></div>
+                    <div class="flex flex-col">
+                        <span class="text-xs text-gray-400 dark:text-gray-500 uppercase font-bold tracking-widest" data-i18n="target">Target</span>
+                        <span id="game-target-display" class="font-bold text-red-600 dark:text-red-400">Target</span>
+                    </div>
                     <div class="flex items-center gap-6">
-                        <div id="multiplayer-countdown" class="hidden bg-red-50 px-3 py-1 rounded-full border border-red-100 flex items-center gap-2"><span class="text-xs font-bold text-red-500 animate-pulse">⏰</span><span id="countdown-val" class="text-sm font-black text-red-600">120</span></div>
+                        <div id="multiplayer-countdown" class="hidden bg-red-50 dark:bg-red-900/20 px-3 py-1 rounded-full border border-red-100 dark:border-red-900/30 flex items-center gap-2"><span class="text-xs font-bold text-red-500 animate-pulse">⏰</span><span id="countdown-val" class="text-sm font-black text-red-600 dark:text-red-400">120</span></div>
                         <div id="easy-controls">
-                            <button id="btn-back" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 border rounded text-sm font-bold transition" data-i18n="btnBack">← Back</button>
+                            <button id="btn-back" class="px-3 py-1 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 border dark:border-slate-700 rounded text-sm font-bold transition" data-i18n="btnBack">← Back</button>
                         </div>
-                        <div class="text-center"><span class="block text-xs text-gray-400 uppercase font-bold" data-i18n="clicks">Clicks</span><div class="font-bold text-xl text-gray-800"><span id="click-count">0</span><span id="click-max" class="hidden text-gray-400 text-sm"> / 10</span></div></div>
-                        <button id="btn-quit-trigger" class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 font-bold text-gray-600" data-i18n="btnGiveUp">Give Up</button>
+                        <div class="text-center">
+                            <span class="block text-xs text-gray-400 dark:text-gray-500 uppercase font-bold" data-i18n="clicks">Clicks</span>
+                            <div class="font-bold text-xl text-gray-800 dark:text-white">
+                                <span id="click-count">0</span><span id="click-max" class="hidden text-gray-400 text-sm"> / 10</span>
+                            </div>
+                        </div>
+                        <button id="btn-quit-trigger" class="px-4 py-2 text-sm border dark:border-slate-700 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800 font-bold text-gray-600 dark:text-gray-400" data-i18n="btnGiveUp">Give Up</button>
                     </div>
                 </div>
-                <div class="flex items-center gap-2 overflow-x-auto whitespace-nowrap pb-1 breadcrumb-scroll text-sm text-gray-500 border-t pt-2" id="game-breadcrumbs"></div>
-                <div id="opponent-progress-container" class="hidden items-center gap-2 overflow-x-auto whitespace-nowrap pb-1 breadcrumb-scroll text-sm text-gray-400 border-t pt-2 mt-1"><span class="font-bold text-gray-500 text-xs uppercase"><span data-i18n="oppProgress">Opponent</span> (<span id="opp-live-clicks">0</span>):</span><div id="opp-live-path" class="flex items-center gap-2"></div></div>
+                <div class="flex items-center gap-2 overflow-x-auto whitespace-nowrap pb-1 breadcrumb-scroll text-sm text-gray-500 dark:text-gray-400 border-t dark:border-slate-800 pt-2" id="game-breadcrumbs"></div>
+                <div id="opponent-progress-container" class="hidden items-center gap-2 overflow-x-auto whitespace-nowrap pb-1 breadcrumb-scroll text-sm text-gray-400 border-t dark:border-slate-800 pt-2 mt-1"><span class="font-bold text-gray-500 text-xs uppercase"><span data-i18n="oppProgress">Opponent</span> (<span id="opp-live-clicks">0</span>):</span><div id="opp-live-path" class="flex items-center gap-2"></div></div>
             </div>
         </header>
-        <main class="flex-grow max-w-4xl mx-auto w-full p-6 bg-white shadow-sm mt-4 mb-10 rounded-lg">
-            <h1 id="current-title" class="text-3xl font-serif border-b pb-2 mb-6">Article Title</h1>
+        <main class="flex-grow max-w-4xl mx-auto w-full p-6 bg-white dark:bg-slate-900 shadow-sm mt-4 mb-10 rounded-lg">
+            <h1 id="current-title" class="text-3xl font-serif border-b dark:border-slate-800 pb-2 mb-6 text-gray-900 dark:text-white">Article Title</h1>
             <div id="wiki-content-area" class="wiki-content"></div>
-            <div id="loader" class="hidden flex flex-col items-center py-20"><div class="loading-spinner mb-4"></div><p class="text-gray-500 font-medium" data-i18n="fetching">Fetching Wikipedia data...</p></div>
+            <div id="loader" class="hidden flex flex-col items-center py-20">
+                <div class="loading-spinner mb-4"></div>
+                <p class="text-gray-500 dark:text-gray-400 font-medium" data-i18n="fetching">Fetching Wikipedia data...</p>
+            </div>
         </main>
     </div>
 
-    <div id="screen-results" class="hidden flex flex-col items-center justify-center min-h-screen p-4 bg-gray-50">
-        <div class="bg-white p-10 rounded-3xl shadow-2xl max-w-4xl w-full text-center border border-gray-100">
-            <div id="result-icon" class="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl">🏁</div>
-            <h1 id="result-title" class="text-5xl font-black mb-2 text-gray-800" data-i18n="victoryTitle">Victory!</h1>
-            <div id="coin-reward-display" class="mb-4 text-2xl font-black text-yellow-600 flex items-center justify-center gap-2"></div>
-            <p id="result-subtitle" class="text-gray-500 mb-10 text-lg font-medium" data-i18n="victorySub">Success!</p>
+    <div id="screen-results" class="hidden flex flex-col items-center justify-center min-h-screen p-4 bg-gray-50 dark:bg-slate-950 relative z-20">
+        <div class="bg-white dark:bg-slate-800 p-10 rounded-3xl shadow-2xl max-w-4xl w-full text-center border border-gray-100 dark:border-slate-700">
+            <div id="result-icon" class="w-24 h-24 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl">🏁</div>
+            <h1 id="result-title" class="text-5xl font-black mb-2 text-gray-800 dark:text-white" data-i18n="victoryTitle">Victory!</h1>
+            <div id="coin-reward-display" class="mb-4 text-2xl font-black text-yellow-600 dark:text-yellow-400 flex items-center justify-center gap-2"></div>
+            <p id="result-subtitle" class="text-gray-500 dark:text-gray-400 mb-10 text-lg font-medium" data-i18n="victorySub">Success!</p>
             <div class="flex flex-wrap gap-6 mb-10 items-center justify-center">
-                <div class="p-6 bg-blue-50 rounded-2xl border border-blue-100 min-w-[150px]"><span class="block text-xs text-blue-400 font-bold uppercase tracking-widest mb-1" data-i18n="yourClicks">Your Clicks</span><span id="final-clicks" class="text-4xl font-black text-blue-700">0</span></div>
-                <div id="opponent-clicks-container" class="p-6 bg-gray-50 rounded-2xl border border-gray-200 min-w-[150px] hidden"><span class="block text-xs text-gray-400 font-bold uppercase tracking-widest mb-1" data-i18n="oppClicks">Opponent Clicks</span><span id="opponent-clicks" class="text-4xl font-black text-gray-700">?</span></div>
+                <div class="p-6 bg-blue-50 dark:bg-blue-900/20 rounded-2xl border border-blue-100 dark:border-blue-900/30 min-w-[150px]">
+                    <span class="block text-xs text-blue-400 dark:text-blue-500 font-bold uppercase tracking-widest mb-1" data-i18n="yourClicks">Your Clicks</span>
+                    <span id="final-clicks" class="text-4xl font-black text-blue-700 dark:text-blue-400">0</span>
+                </div>
+                <div id="opponent-clicks-container" class="p-6 bg-gray-50 dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 min-w-[150px] hidden">
+                    <span class="block text-xs text-gray-400 dark:text-gray-500 font-bold uppercase tracking-widest mb-1" data-i18n="oppClicks">Opponent Clicks</span>
+                    <span id="opponent-clicks" class="text-4xl font-black text-gray-700 dark:text-white">?</span>
+                </div>
             </div>
             <div class="flex flex-col md:flex-row gap-6 mb-10 text-left">
-                <div class="flex-1"><h3 class="font-bold mb-3">📍 Your Path</h3><div id="path-list" class="text-sm space-y-2 p-4 bg-gray-50 rounded-xl border max-h-40 overflow-y-auto"></div></div>
-                <div class="flex-1"><h3 class="font-bold mb-3">⚡ Shortcut</h3><div id="theoretical-path-display" class="p-4 bg-amber-50 rounded-xl border text-sm italic">Shortcut calculation unavailable.</div></div>
+                <div class="flex-1">
+                    <h3 class="font-bold mb-3 dark:text-white">📍 Your Path</h3>
+                    <div id="path-list" class="text-sm space-y-2 p-4 bg-gray-50 dark:bg-slate-900/50 rounded-xl border dark:border-slate-700 max-h-40 overflow-y-auto"></div>
+                </div>
+                <div class="flex-1">
+                    <h3 class="font-bold mb-3 dark:text-white">⚡ Shortcut</h3>
+                    <div id="theoretical-path-display" class="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border dark:border-amber-900/30 text-sm italic dark:text-amber-200">Shortcut calculation unavailable.</div>
+                </div>
             </div>
             <div class="flex flex-col gap-3">
                 <button id="btn-play-again-multi" class="hidden w-full py-4 bg-green-500 hover:bg-green-600 text-white rounded-2xl font-bold text-xl transition-all shadow-lg active:scale-95">Play Again (0/2)</button>
@@ -363,17 +450,59 @@
     </div>
 
     <div id="modal-quit" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-3xl p-8 max-sm w-full shadow-2xl text-center">
-            <h3 class="text-2xl font-black text-gray-800 mb-2" data-i18n="giveUpTitle">Give Up?</h3>
-            <div class="flex gap-3 mt-8"><button id="modal-cancel" class="flex-1 py-3 bg-gray-100 rounded-xl font-bold transition" data-i18n="btnStay">Stay</button><button id="modal-confirm" class="flex-1 py-3 bg-red-600 text-white rounded-xl font-bold transition shadow-md" data-i18n="btnQuit">Quit</button></div>
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-8 max-sm w-full shadow-2xl text-center border dark:border-slate-700">
+            <h3 class="text-2xl font-black text-gray-800 dark:text-white mb-2" data-i18n="giveUpTitle">Give Up?</h3>
+            <div class="flex gap-3 mt-8">
+                <button id="modal-cancel" class="flex-1 py-3 bg-gray-100 dark:bg-slate-700 rounded-xl font-bold transition text-gray-600 dark:text-gray-300" data-i18n="btnStay">Stay</button>
+                <button id="modal-confirm" class="flex-1 py-3 bg-red-600 text-white rounded-xl font-bold transition shadow-md" data-i18n="btnQuit">Quit</button>
+            </div>
         </div>
     </div>
 
-    <footer class="text-center py-10 text-gray-400 text-xs font-bold uppercase tracking-[0.3em] select-none">
-        Developed by <a href="https://discordapp.com/users/1056147064569987163" target="_blank" class="text-blue-600 hover:text-blue-800">kinetx</a>
+    <footer class="text-center py-10 text-gray-400 dark:text-gray-600 text-xs font-bold uppercase tracking-[0.3em] select-none relative z-10">
+        Developed by <a href="https://discordapp.com/users/1056147064569987163" target="_blank" class="text-blue-600 dark:text-blue-500 hover:text-blue-800 dark:hover:text-blue-400">kinetx</a>
     </footer>
 
     <script>
+        // Theme Logic
+        let darkMode = localStorage.getItem('wiki_dark_mode') === 'true';
+        function updateTheme() {
+            if (darkMode) {
+                document.documentElement.classList.add('dark');
+                document.getElementById('dark-icon').innerText = '☀️';
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.getElementById('dark-icon').innerText = '🌙';
+            }
+        }
+        document.getElementById('btn-dark-mode').onclick = () => {
+            darkMode = !darkMode;
+            localStorage.setItem('wiki_dark_mode', darkMode);
+            updateTheme();
+        };
+        updateTheme();
+
+        // Background Animation Logic
+        function initBackground() {
+            const container = document.getElementById('menu-background');
+            const topics = ["Encyclopedia", "Knowledge", "Algorithm", "Science", "History", "Physics", "Art", "Philosophy", "Space", "Evolution", "Internet", "Research", "Articles", "Hyperlink", "Einstein", "DNA", "Mars", "Logic", "Paradox", "Nebula", "Cybernetics"];
+            for (let i = 0; i < 35; i++) {
+                const span = document.createElement('span');
+                span.className = 'floating-word';
+                span.innerText = topics[Math.floor(Math.random() * topics.length)];
+                span.style.setProperty('--start-x', Math.random() * 100 + 'vw');
+                span.style.setProperty('--start-y', Math.random() * 100 + 'vh');
+                span.style.setProperty('--end-x', (Math.random() * 120 - 60) + 'vw');
+                span.style.setProperty('--end-y', (Math.random() * 120 - 60) + 'vh');
+                span.style.setProperty('--rot', (Math.random() * 40 - 20) + 'deg');
+                span.style.setProperty('--blur', Math.random() * 8 + 'px');
+                span.style.animationDuration = 30 + Math.random() * 50 + 's';
+                span.style.animationDelay = -(Math.random() * 50) + 's';
+                span.style.fontSize = 1.5 + Math.random() * 5 + 'rem';
+                container.appendChild(span);
+            }
+        }
+
         let peer = null;
         let peerConn = null;
         function sendPeerData(data) { if (peerConn && peerConn.open) peerConn.send(data); }
@@ -581,7 +710,6 @@
             display.innerHTML = `<div class="flex items-center gap-2"><div class="loading-spinner w-4 h-4 border-2"></div> Calculating fastest route...</div>`;
             
             try {
-                // Step 1: Check if start links directly to target (Path: 1)
                 const checkDirect = await fetch(`${getApiUrl()}query&titles=${encodeURIComponent(start)}&prop=links&pllimit=max&format=json`);
                 const dataDirect = await checkDirect.json();
                 const pageIdDirect = Object.keys(dataDirect.query.pages)[0];
@@ -592,8 +720,6 @@
                     return;
                 }
 
-                // Step 2: Limited BFS - Check if any link on start page links to target (Path: 2)
-                // We fetch the first 50 links from each of the first 20 links on the start page
                 const topLinks = linksDirect.slice(0, 50).map(l => l.title);
                 if (topLinks.length > 0) {
                     const batchSize = 10;
@@ -612,8 +738,6 @@
                         }
                     }
                 }
-
-                // If not found in 2 steps, show 3+ or unavailable
                 display.innerHTML = "Estimated shortest path: 3+ steps (Calculation limit reached).";
             } catch (e) {
                 display.innerText = "Fastest route calculation failed.";
@@ -630,7 +754,7 @@
             const todayStr = new Date().toISOString().split('T')[0];
 
             if (isWinner) {
-                // Clear the current mission words so next time it picks new ones
+                confetti({ particleCount: 150, spread: 60, origin: { y: 0.6 } });
                 localStorage.removeItem('wiki_start_' + mode);
                 localStorage.removeItem('wiki_target_' + mode);
 
@@ -641,7 +765,7 @@
                 
                 if (mode === 'daily' && state.lastDailyWin !== todayStr) {
                     state.dailyStreak++;
-                    reward = state.dailyStreak; // New reward logic
+                    reward = state.dailyStreak;
                     state.lastDailyWin = todayStr;
                     localStorage.setItem('wiki_daily_streak', state.dailyStreak);
                     localStorage.setItem('wiki_last_daily_win', todayStr);
@@ -669,12 +793,10 @@
                 document.getElementById('opponent-clicks-container').classList.add('hidden'); 
                 document.getElementById('btn-play-again-multi').classList.add('hidden');
             }
-            document.getElementById('path-list').innerHTML = state.path.map((step, idx) => `<div class='flex gap-2 text-xs'><span class='bg-gray-200 px-1 rounded'>${idx}</span>${step}</div>`).join('');
+            document.getElementById('path-list').innerHTML = state.path.map((step, idx) => `<div class='flex gap-2 text-xs'><span class='bg-gray-200 dark:bg-slate-700 px-1 rounded'>${idx}</span>${step}</div>`).join('');
             
             showScreen('results');
             updateUI();
-            
-            // Trigger calculation of the shortcut
             findShortestPath(state.startTitle, state.targetTitle);
         }
 
@@ -699,7 +821,7 @@
 
         document.getElementById('btn-calendar').addEventListener('click', () => {
             const grid = document.getElementById('calendar-grid'); grid.innerHTML = ''; const today = new Date();
-            for (let i = 13; i >= 0; i--) { const date = new Date(); date.setDate(today.getDate() - i); const dateStr = date.toISOString().split('T')[0]; const count = state.history[dateStr] || 0; const cell = document.createElement('div'); cell.className = `p-2 rounded-lg text-[10px] flex flex-col items-center ${count > 0 ? 'bg-blue-100 text-blue-700 font-bold border border-blue-200' : 'bg-gray-50 text-gray-400'}`; cell.innerHTML = `<span>${date.getDate()}</span><span class='text-[8px]'>${count > 0 ? count : ''}</span>`; grid.appendChild(cell); }
+            for (let i = 13; i >= 0; i--) { const date = new Date(); date.setDate(today.getDate() - i); const dateStr = date.toISOString().split('T')[0]; const count = state.history[dateStr] || 0; const cell = document.createElement('div'); cell.className = `p-2 rounded-lg text-[10px] flex flex-col items-center ${count > 0 ? 'bg-blue-100 text-blue-700 font-bold border border-blue-200' : 'bg-gray-50 text-gray-400 dark:bg-slate-700 dark:text-gray-500'}`; cell.innerHTML = `<span>${date.getDate()}</span><span class='text-[8px]'>${count > 0 ? count : ''}</span>`; grid.appendChild(cell); }
             document.getElementById('modal-calendar').classList.remove('hidden');
         });
         document.getElementById('calendar-close').addEventListener('click', () => document.getElementById('modal-calendar').classList.add('hidden'));
@@ -709,8 +831,14 @@
             document.getElementById('click-count').innerText = '0';
             document.getElementById('game-target-display').innerText = state.targetTitle;
             showScreen('game'); loadArticle(state.startTitle);
+            document.getElementById('menu-background').style.opacity = '0';
         }
-        function showScreen(screenId) { Object.values(screens).forEach(s => s.classList.add('hidden')); screens[screenId].classList.remove('hidden'); window.scrollTo(0, 0); }
+        function showScreen(screenId) { 
+            Object.values(screens).forEach(s => s.classList.add('hidden')); 
+            screens[screenId].classList.remove('hidden'); 
+            if (screenId === 'menu') document.getElementById('menu-background').style.opacity = '1';
+            window.scrollTo(0, 0); 
+        }
         function startCountdown() { if (!state.isMultiplayer || state.finished) return; document.getElementById('multiplayer-countdown').classList.remove('hidden'); let timeLeft = 120; document.getElementById('countdown-val').innerText = timeLeft; state.countdownInterval = setInterval(() => { timeLeft--; document.getElementById('countdown-val').innerText = timeLeft; if (timeLeft <= 0) { clearInterval(state.countdownInterval); finishGame(false, state.opponentFinishedClicks, "timeout"); } }, 1000); }
 
         async function loadArticle(title) {
@@ -794,7 +922,6 @@
                 updateUI();
                 rollSoloWords(true);
             } else {
-                // UI message instead of alert
                 const rollBtn = document.getElementById('btn-solo-roll');
                 const originalText = rollBtn.innerHTML;
                 rollBtn.innerText = "Insufficient Coins!";
@@ -825,7 +952,10 @@
         }
 
         const screens = { menu: document.getElementById('screen-menu'), game: document.getElementById('screen-game'), results: document.getElementById('screen-results') };
-        checkStreak(); updateUI(); updateModeDisplay('none');
+        initBackground();
+        checkStreak(); 
+        updateUI(); 
+        updateModeDisplay('none');
     </script>
 </body>
 </html>

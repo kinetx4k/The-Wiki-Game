@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Wiki Game</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@300;400;600&display=swap');
         
@@ -121,42 +122,42 @@
             <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl shadow-sm">
                 🌐
             </div>
-            <h1 class="text-4xl font-black mb-2 text-gray-800 tracking-tight">The Wiki Game</h1>
-            <p class="text-gray-500 mb-8 font-medium">Race to the target article. First to finish wins!</p>
+            <h1 class="text-4xl font-black mb-2 text-gray-800 tracking-tight" data-i18n="title">The Wiki Game</h1>
+            <p class="text-gray-500 mb-8 font-medium" data-i18n="subtitle">Race to the target article. First to finish wins!</p>
             
             <!-- Mode Toggle -->
             <div class="flex gap-2 mb-6 p-1 bg-gray-100 rounded-xl">
-                <button id="tab-solo" class="flex-1 py-2 bg-white text-blue-600 rounded-lg font-bold shadow-sm transition">Single Player</button>
-                <button id="tab-multi" class="flex-1 py-2 text-gray-500 hover:text-gray-700 rounded-lg font-bold transition">Multiplayer</button>
+                <button id="tab-solo" class="flex-1 py-2 bg-white text-blue-600 rounded-lg font-bold shadow-sm transition" data-i18n="tabSolo">Single Player</button>
+                <button id="tab-multi" class="flex-1 py-2 text-gray-500 hover:text-gray-700 rounded-lg font-bold transition" data-i18n="tabMulti">Multiplayer</button>
             </div>
 
             <!-- Single Player Setup -->
             <div id="solo-setup" class="w-full mb-4">
                 <div class="flex flex-col gap-3 mb-6">
                     <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 text-left">
-                        <span class="text-xs font-bold text-blue-400 uppercase tracking-widest block mb-1">Start Article</span>
+                        <span class="text-xs font-bold text-blue-400 uppercase tracking-widest block mb-1" data-i18n="startArticle">Start Article</span>
                         <div id="solo-start" class="font-bold text-blue-700 text-lg">Loading...</div>
                     </div>
                     <div class="flex justify-center -my-5 relative z-10">
                         <div class="text-gray-300 bg-white p-1 rounded-full shadow-sm border font-bold text-sm">➔</div>
                     </div>
                     <div class="bg-red-50 p-4 rounded-xl border border-red-100 text-left">
-                        <span class="text-xs font-bold text-red-400 uppercase tracking-widest block mb-1">Target Article</span>
+                        <span class="text-xs font-bold text-red-400 uppercase tracking-widest block mb-1" data-i18n="targetArticle">Target Article</span>
                         <div id="solo-target" class="font-bold text-red-700 text-lg">Loading...</div>
                     </div>
                 </div>
                 
                 <label class="flex items-center gap-3 p-3 mb-4 bg-gray-50 rounded-xl border border-gray-200 cursor-pointer hover:bg-gray-100 transition">
                     <input type="checkbox" id="solo-easy-mode" class="w-5 h-5 text-blue-600 rounded">
-                    <span class="text-sm font-bold text-gray-700">Enable Easy Mode (Back Button)</span>
+                    <span class="text-sm font-bold text-gray-700" data-i18n="enableEasy">Enable Easy Mode (Back Button)</span>
                 </label>
 
                 <div class="flex gap-3">
-                    <button id="btn-solo-roll" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-bold transition shadow-sm active:scale-95">🎲 Random</button>
-                    <button id="btn-solo-start" class="flex-[2] py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition shadow-md active:scale-95">🚀 Start Solo Game</button>
+                    <button id="btn-solo-roll" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-bold transition shadow-sm active:scale-95" data-i18n="btnRandom">🎲 Random</button>
+                    <button id="btn-solo-start" class="flex-[2] py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition shadow-md active:scale-95" data-i18n="btnStartSolo">🚀 Start Solo Game</button>
                 </div>
                 <div id="personal-record" class="mt-6 text-sm font-semibold text-gray-400">
-                    🏆 Personal Record: <span id="record-val" class="text-gray-600">None yet</span>
+                    <span data-i18n="personalRecord">🏆 Personal Record:</span> <span id="record-val" class="text-gray-600">None yet</span>
                 </div>
             </div>
 
@@ -164,55 +165,55 @@
             <div id="multiplayer-setup" class="hidden w-full mb-4">
                 <!-- Main Buttons -->
                 <div id="role-selection" class="flex gap-4 mb-4">
-                    <button id="btn-host" class="flex-1 py-4 bg-blue-600 text-white rounded-xl font-bold shadow-md hover:bg-blue-700 transition active:scale-95 text-lg">Host Session</button>
-                    <button id="btn-show-join" class="flex-1 py-4 bg-white border-2 border-blue-600 text-blue-600 rounded-xl font-bold shadow-sm hover:bg-blue-50 transition active:scale-95 text-lg">Join Session</button>
+                    <button id="btn-host" class="flex-1 py-4 bg-blue-600 text-white rounded-xl font-bold shadow-md hover:bg-blue-700 transition active:scale-95 text-lg" data-i18n="btnHost">Host Session</button>
+                    <button id="btn-show-join" class="flex-1 py-4 bg-white border-2 border-blue-600 text-blue-600 rounded-xl font-bold shadow-sm hover:bg-blue-50 transition active:scale-95 text-lg" data-i18n="btnShowJoin">Join Session</button>
                 </div>
 
                 <!-- Join Input Area -->
                 <div id="join-section" class="hidden flex flex-col gap-2 mb-4 bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <label class="text-xs font-bold text-gray-500 uppercase">Enter 6-Character Code</label>
+                    <label class="text-xs font-bold text-gray-500 uppercase" data-i18n="enterCode">Enter 6-Character Code</label>
                     <div class="flex gap-2">
                         <input type="text" id="join-code" placeholder="XXXXXX" class="flex-1 p-3 border border-gray-300 rounded-lg uppercase font-black text-center tracking-widest text-2xl outline-none focus:border-blue-500 transition" maxlength="6">
-                        <button id="btn-join-submit" class="py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold transition">Join</button>
+                        <button id="btn-join-submit" class="py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold transition" data-i18n="btnJoin">Join</button>
                     </div>
-                    <p id="join-error" class="text-red-500 text-sm font-bold hidden mt-1">Code not found!</p>
+                    <p id="join-error" class="text-red-500 text-sm font-bold hidden mt-1" data-i18n="codeNotFound">Code not found!</p>
                 </div>
 
                 <!-- Lobby Area -->
                 <div id="lobby-section" class="hidden bg-white border border-gray-200 p-6 rounded-xl text-left shadow-inner">
                     <div class="mb-6 text-center bg-gray-50 py-3 rounded-lg border border-gray-200">
-                        <span class="text-gray-500 text-xs font-bold uppercase tracking-wider block">Session Code</span>
+                        <span class="text-gray-500 text-xs font-bold uppercase tracking-wider block" data-i18n="sessionCode">Session Code</span>
                         <div id="display-code" class="text-4xl font-black text-gray-800 tracking-[0.2em] mt-1 select-all">------</div>
                     </div>
                     
                     <div class="flex flex-col gap-3 mb-6">
                         <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
-                            <span class="text-xs font-bold text-blue-400 uppercase tracking-widest block mb-1">Start Article</span>
+                            <span class="text-xs font-bold text-blue-400 uppercase tracking-widest block mb-1" data-i18n="startArticle">Start Article</span>
                             <div id="lobby-start" class="font-bold text-blue-700 text-lg">Loading...</div>
                         </div>
                         <div class="flex justify-center -my-5 relative z-10">
                             <div class="text-gray-300 bg-white p-1 rounded-full shadow-sm border font-bold text-sm">➔</div>
                         </div>
                         <div class="bg-red-50 p-4 rounded-xl border border-red-100">
-                            <span class="text-xs font-bold text-red-400 uppercase tracking-widest block mb-1">Target Article</span>
+                            <span class="text-xs font-bold text-red-400 uppercase tracking-widest block mb-1" data-i18n="targetArticle">Target Article</span>
                             <div id="lobby-target" class="font-bold text-red-700 text-lg">Loading...</div>
                         </div>
                     </div>
 
                     <!-- Host Controls -->
                     <div id="host-controls" class="hidden flex flex-col gap-3">
-                        <button id="btn-lobby-refresh" class="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-bold transition shadow-sm active:scale-95">🔄 Refresh Words</button>
+                        <button id="btn-lobby-refresh" class="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-bold transition shadow-sm active:scale-95" data-i18n="btnRefresh">🔄 Refresh Words</button>
                         
                         <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200 cursor-pointer hover:bg-gray-100 transition">
                             <input type="checkbox" id="lobby-easy-mode" class="w-5 h-5 text-blue-600 rounded">
-                            <span class="text-sm font-bold text-gray-700">Enable Easy Mode (Back Button)</span>
+                            <span class="text-sm font-bold text-gray-700" data-i18n="enableEasy">Enable Easy Mode (Back Button)</span>
                         </label>
 
                         <button id="btn-lobby-start" class="w-full py-4 bg-green-500 text-white rounded-xl font-black text-lg mt-2 transition shadow-md disabled:opacity-50 disabled:bg-gray-400" disabled>Waiting for P2 to Join...</button>
                     </div>
 
                     <!-- Joiner Status -->
-                    <div id="joiner-status" class="hidden text-center text-gray-500 font-bold p-4 bg-gray-50 rounded-xl border border-gray-200 animate-pulse">
+                    <div id="joiner-status" class="hidden text-center text-gray-500 font-bold p-4 bg-gray-50 rounded-xl border border-gray-200 animate-pulse" data-i18n="waitingJoin">
                         Waiting for Host to start game...
                     </div>
                 </div>
@@ -226,18 +227,18 @@
             <div class="max-w-4xl mx-auto p-4">
                 <div class="flex flex-wrap justify-between items-center gap-4 mb-3">
                     <div class="flex flex-col">
-                        <span class="text-xs text-gray-400 uppercase font-bold tracking-widest">Target</span>
+                        <span class="text-xs text-gray-400 uppercase font-bold tracking-widest" data-i18n="target">Target</span>
                         <span id="game-target-display" class="font-bold text-red-600">Target</span>
                     </div>
                     <div class="flex items-center gap-6">
                         <div id="easy-controls" class="hidden">
-                            <button id="btn-back" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 border rounded text-sm font-bold transition">← Back</button>
+                            <button id="btn-back" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 border rounded text-sm font-bold transition" data-i18n="btnBack">← Back</button>
                         </div>
                         <div class="text-center">
-                            <span class="block text-xs text-gray-400 uppercase font-bold">Clicks</span>
+                            <span class="block text-xs text-gray-400 uppercase font-bold" data-i18n="clicks">Clicks</span>
                             <span id="click-count" class="font-bold text-xl">0</span>
                         </div>
-                        <button id="btn-quit-trigger" class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 font-bold text-gray-600">Give Up</button>
+                        <button id="btn-quit-trigger" class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 font-bold text-gray-600" data-i18n="btnGiveUp">Give Up</button>
                     </div>
                 </div>
                 <div class="flex items-center gap-2 overflow-x-auto whitespace-nowrap pb-1 breadcrumb-scroll text-sm text-gray-500 border-t pt-2" id="game-breadcrumbs">
@@ -251,7 +252,7 @@
             </div>
             <div id="loader" class="hidden flex flex-col items-center py-20">
                 <div class="loading-spinner mb-4"></div>
-                <p class="text-gray-500 font-medium">Fetching Wikipedia data...</p>
+                <p class="text-gray-500 font-medium" data-i18n="fetching">Fetching Wikipedia data...</p>
             </div>
         </main>
     </div>
@@ -262,20 +263,20 @@
             <div id="result-icon" class="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl">
                 🏁
             </div>
-            <h1 id="result-title" class="text-5xl font-black mb-2 text-gray-800">Victory!</h1>
-            <p id="result-subtitle" class="text-gray-500 mb-10 text-lg font-medium">You navigated through the web of knowledge.</p>
+            <h1 id="result-title" class="text-5xl font-black mb-2 text-gray-800" data-i18n="victoryTitle">Victory!</h1>
+            <p id="result-subtitle" class="text-gray-500 mb-10 text-lg font-medium" data-i18n="victorySub">You navigated through the web of knowledge.</p>
 
             <div class="grid grid-cols-2 gap-6 mb-10">
                 <div class="p-6 bg-blue-50 rounded-2xl border border-blue-100">
-                    <span class="block text-xs text-blue-400 font-bold uppercase tracking-widest mb-1">Your Clicks</span>
+                    <span class="block text-xs text-blue-400 font-bold uppercase tracking-widest mb-1" data-i18n="yourClicks">Your Clicks</span>
                     <span id="final-clicks" class="text-4xl font-black text-blue-700">0</span>
                 </div>
                 <div id="opponent-clicks-container" class="p-6 bg-gray-50 rounded-2xl border border-gray-200">
-                    <span class="block text-xs text-gray-400 font-bold uppercase tracking-widest mb-1">Opponent Clicks</span>
+                    <span class="block text-xs text-gray-400 font-bold uppercase tracking-widest mb-1" data-i18n="oppClicks">Opponent Clicks</span>
                     <span id="opponent-clicks" class="text-4xl font-black text-gray-700">?</span>
                 </div>
                 <div id="personal-best-container" class="hidden p-6 bg-green-50 rounded-2xl border border-green-100">
-                    <span class="block text-xs text-green-400 font-bold uppercase tracking-widest mb-1">Personal Best</span>
+                    <span class="block text-xs text-green-400 font-bold uppercase tracking-widest mb-1" data-i18n="personalBest">Personal Best</span>
                     <span id="final-record" class="text-4xl font-black text-green-700">0</span>
                 </div>
             </div>
@@ -283,7 +284,7 @@
             <div class="flex flex-col md:flex-row gap-6 mb-10">
                 <div class="flex-1 text-left w-full">
                     <h3 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
-                        <span>📍</span> Your Path
+                        <span>📍</span> <span data-i18n="yourPath">Your Path</span>
                     </h3>
                     <div id="path-list" class="text-sm text-gray-600 space-y-2 max-h-52 overflow-y-auto p-4 bg-gray-50 rounded-xl border">
                         <!-- Path items -->
@@ -291,7 +292,7 @@
                 </div>
             </div>
 
-            <button id="btn-home" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold text-xl transition-all shadow-lg hover:shadow-blue-200 active:scale-95">Back to Menu</button>
+            <button id="btn-home" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold text-xl transition-all shadow-lg hover:shadow-blue-200 active:scale-95" data-i18n="btnBackMenu">Back to Menu</button>
         </div>
     </div>
 
@@ -301,57 +302,95 @@
             <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
                 ❓
             </div>
-            <h3 class="text-2xl font-black text-gray-800 mb-2">Give Up?</h3>
-            <p class="text-gray-500 mb-8 font-medium">Are you sure you want to quit this run?</p>
+            <h3 class="text-2xl font-black text-gray-800 mb-2" data-i18n="giveUpTitle">Give Up?</h3>
+            <p class="text-gray-500 mb-8 font-medium" data-i18n="giveUpSub">Are you sure you want to quit this run?</p>
             <div class="flex gap-3">
-                <button id="modal-cancel" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl font-bold transition">Stay</button>
-                <button id="modal-confirm" class="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition shadow-md">Quit</button>
+                <button id="modal-cancel" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl font-bold transition" data-i18n="btnStay">Stay</button>
+                <button id="modal-confirm" class="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition shadow-md" data-i18n="btnQuit">Quit</button>
             </div>
         </div>
     </div>
 
-    <!-- FIREBASE AND GAME LOGIC -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    <!-- MULTIPLAYER AND GAME LOGIC -->
+    <script>
+        // --- PeerJS Multiplayer Setup ---
+        let peer = null;
+        let peerConn = null;
 
-        // --- Firebase Setup (Safe Fallback) ---
-        let app = null;
-        let auth = null;
-        let db = null;
-        let currentUser = null;
-        let sessionRef = null;
-        let unsubscribeSession = null;
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-
-        try {
-            const configStr = typeof __firebase_config !== 'undefined' ? __firebase_config : null;
-            if (configStr && configStr.trim() !== "" && configStr !== "{}") {
-                const firebaseConfig = JSON.parse(configStr);
-                app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                db = getFirestore(app);
-
-                const initAuth = async () => {
-                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } else {
-                        await signInAnonymously(auth);
-                    }
-                };
-
-                onAuthStateChanged(auth, (user) => {
-                    currentUser = user;
-                });
-
-                initAuth();
-            } else {
-                console.warn("Multiplayer disabled: No Firebase config found.");
+        function sendPeerData(data) {
+            if (peerConn && peerConn.open) {
+                peerConn.send(data);
             }
-        } catch (e) {
-            console.error("Firebase init failed:", e);
         }
+
+        function handlePeerData(data) {
+            if (data.type === 'lobbyUpdate') {
+                state.startTitle = data.startTitle;
+                state.targetTitle = data.targetTitle;
+                state.easyMode = data.easyMode;
+                
+                if (data.language && data.language !== state.language) {
+                    state.language = data.language;
+                    const btnEn = document.getElementById('lang-en');
+                    const btnDe = document.getElementById('lang-de');
+                    const btnEs = document.getElementById('lang-es');
+                    
+                    const activeClass = "px-3 py-1 bg-blue-100 text-blue-700 rounded-md font-bold text-xs transition";
+                    const inactiveClass = "px-3 py-1 text-gray-500 hover:bg-gray-100 rounded-md font-bold text-xs transition";
+                    
+                    btnEn.className = state.language === 'en' ? activeClass : inactiveClass;
+                    btnDe.className = state.language === 'de' ? activeClass : inactiveClass;
+                    btnEs.className = state.language === 'es' ? activeClass : inactiveClass;
+                    updateUI();
+                }
+
+                updateLobbyWords();
+            } else if (data.type === 'startGame') {
+                startGame();
+            } else if (data.type === 'finish') {
+                finishGame(false, data.clicks);
+            }
+        }
+
+        // --- Translation Data ---
+        const uiDict = {
+            en: {
+                title: "The Wiki Game", subtitle: "Race to the target article. First to finish wins!", tabSolo: "Single Player", tabMulti: "Multiplayer",
+                startArticle: "Start Article", targetArticle: "Target Article", enableEasy: "Enable Easy Mode (Back Button)", btnRandom: "🎲 Random",
+                btnStartSolo: "🚀 Start Solo Game", personalRecord: "🏆 Personal Record:", noneYet: "None yet", btnHost: "Host Session",
+                btnShowJoin: "Join Session", enterCode: "Enter 6-Character Code", btnJoin: "Join", codeNotFound: "Code not found!", sessionCode: "Session Code",
+                btnRefresh: "🔄 Refresh Words", target: "Target", clicks: "Clicks", btnBack: "← Back", btnGiveUp: "Give Up", fetching: "Fetching Wikipedia data...",
+                victoryTitle: "Victory!", victorySub: "You navigated through the web of knowledge.", yourClicks: "Your Clicks", oppClicks: "Opponent Clicks",
+                personalBest: "Personal Best", yourPath: "Your Path", btnBackMenu: "Back to Menu", giveUpTitle: "Give Up?", giveUpSub: "Are you sure you want to quit this run?",
+                btnStay: "Stay", btnQuit: "Quit", loading: "Loading...", waitHostStart: "Start Game", waitHostWait: "Waiting for P2 to Join...", waitJoiner: "Waiting for Host to start game...",
+                youWon: "You Won!", success: "Success!", wonSub: "You reached the target first!", youLost: "You Lost!", lostSub: "Opponent found the path faster.",
+                notFinished: "Not finished", clickStr: " clicks", multiErr: "Multiplayer connection failed."
+            },
+            de: {
+                title: "Das Wiki Spiel", subtitle: "Finde als Erster den Zielartikel!", tabSolo: "Einzelspieler", tabMulti: "Mehrspieler",
+                startArticle: "Startartikel", targetArticle: "Zielartikel", enableEasy: "Einfacher Modus (Zurück-Button erlauben)", btnRandom: "🎲 Zufall",
+                btnStartSolo: "🚀 Spiel starten", personalRecord: "🏆 Rekord:", noneYet: "Noch keiner", btnHost: "Spiel erstellen",
+                btnShowJoin: "Spiel beitreten", enterCode: "6-stelligen Code eingeben", btnJoin: "Beitreten", codeNotFound: "Code nicht gefunden!", sessionCode: "Spielcode",
+                btnRefresh: "🔄 Neue Begriffe", target: "Ziel", clicks: "Klicks", btnBack: "← Zurück", btnGiveUp: "Aufgeben", fetching: "Lade Wikipedia-Daten...",
+                victoryTitle: "Gewonnen!", victorySub: "Du hast dich durch das Netz des Wissens geklickt.", yourClicks: "Deine Klicks", oppClicks: "Gegner Klicks",
+                personalBest: "Dein Rekord", yourPath: "Dein Weg", btnBackMenu: "Zurück zum Menü", giveUpTitle: "Aufgeben?", giveUpSub: "Bist du sicher, dass du abbrechen willst?",
+                btnStay: "Bleiben", btnQuit: "Aufgeben", loading: "Lädt...", waitHostStart: "Spiel starten", waitHostWait: "Warte auf P2...", waitJoiner: "Warte auf den Host...",
+                youWon: "Gewonnen!", success: "Erfolg!", wonSub: "Du hast das Ziel zuerst erreicht!", youLost: "Verloren!", lostSub: "Der Gegner war schneller.",
+                notFinished: "Nicht fertig", clickStr: " Klicks", multiErr: "Multiplayer-Verbindung fehlgeschlagen."
+            },
+            es: {
+                title: "El Juego de Wiki", subtitle: "¡Llega primero al artículo destino!", tabSolo: "Un Jugador", tabMulti: "Multijugador",
+                startArticle: "Artículo Inicial", targetArticle: "Artículo Destino", enableEasy: "Modo Fácil (Permitir botón atrás)", btnRandom: "🎲 Aleatorio",
+                btnStartSolo: "🚀 Iniciar Juego", personalRecord: "🏆 Mejor Récord:", noneYet: "Ninguno", btnHost: "Crear Sala",
+                btnShowJoin: "Unirse a Sala", enterCode: "Ingresa el código de 6 letras", btnJoin: "Unirse", codeNotFound: "¡Código no encontrado!", sessionCode: "Código de Sala",
+                btnRefresh: "🔄 Nuevas Palabras", target: "Destino", clicks: "Clics", btnBack: "← Atrás", btnGiveUp: "Rendirse", fetching: "Cargando datos...",
+                victoryTitle: "¡Victoria!", victorySub: "Has navegado por la red del conocimiento.", yourClicks: "Tus Clics", oppClicks: "Clics del Oponente",
+                personalBest: "Mejor Récord", yourPath: "Tu Camino", btnBackMenu: "Volver al Menú", giveUpTitle: "¿Rendirse?", giveUpSub: "¿Estás seguro de que quieres salir?",
+                btnStay: "Quedarse", btnQuit: "Salir", loading: "Cargando...", waitHostStart: "Iniciar Juego", waitHostWait: "Esperando a J2...", waitJoiner: "Esperando al anfitrión...",
+                youWon: "¡Ganaste!", success: "¡Éxito!", wonSub: "¡Llegaste primero al destino!", youLost: "¡Perdiste!", lostSub: "El oponente fue más rápido.",
+                notFinished: "No terminó", clickStr: " clics", multiErr: "Fallo en la conexión multijugador."
+            }
+        };
 
         // --- Game Setup Data ---
         const state = {
@@ -366,7 +405,6 @@
             path: [],
             easyMode: false,
             finished: false,
-            opponentFinished: false,
             record: localStorage.getItem('wiki_game_record') || null
         };
 
@@ -426,9 +464,47 @@
             window.scrollTo(0, 0);
         }
 
+        function updateUI() {
+            const lang = state.language;
+            const dict = uiDict[lang];
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) {
+                    if (el.tagName === 'INPUT' && el.type === 'text') {
+                        el.placeholder = dict[key];
+                    } else {
+                        el.innerText = dict[key];
+                    }
+                }
+            });
+
+            document.getElementById('joiner-status').innerText = dict.waitJoiner;
+            
+            const startBtn = document.getElementById('btn-lobby-start');
+            if (startBtn.disabled) {
+                startBtn.innerText = dict.waitHostWait;
+            } else {
+                startBtn.innerText = dict.waitHostStart;
+            }
+
+            if (state.record) {
+                document.getElementById('record-val').innerText = state.record + dict.clickStr;
+            } else {
+                document.getElementById('record-val').innerText = dict.noneYet;
+            }
+
+            ['solo-start', 'solo-target', 'lobby-start', 'lobby-target'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el && el.innerText.includes("Load") || el.innerText.includes("Läd") || el.innerText.includes("Carg")) {
+                    el.innerText = dict.loading;
+                }
+            });
+        }
+
         // --- Language Toggle Logic ---
         function setLanguage(lang) {
-            if (state.isMultiplayer && !state.isHost && sessionRef) return; // Only host or solo can change
+            if (state.isMultiplayer && !state.isHost) return;
             state.language = lang;
             
             const btnEn = document.getElementById('lang-en');
@@ -442,15 +518,17 @@
             btnDe.className = lang === 'de' ? activeClass : inactiveClass;
             btnEs.className = lang === 'es' ? activeClass : inactiveClass;
 
+            updateUI();
+
             if (!state.isMultiplayer || (state.isMultiplayer && state.isHost)) {
                 rollSoloWords(); 
-                if (state.isMultiplayer && sessionRef && db) {
-                    updateDoc(sessionRef, { 
-                        language: lang,
-                        startTitle: state.startTitle,
-                        targetTitle: state.targetTitle
-                    });
-                }
+                sendPeerData({ 
+                    type: 'lobbyUpdate',
+                    language: lang,
+                    startTitle: state.startTitle,
+                    targetTitle: state.targetTitle,
+                    easyMode: state.easyMode
+                });
             }
         }
 
@@ -466,10 +544,6 @@
                 code += chars.charAt(Math.floor(Math.random() * chars.length));
             }
             return code;
-        }
-
-        function getSessionDoc(code) {
-            return doc(db, 'artifacts', appId, 'public', 'data', 'wiki_sessions', code);
         }
 
         function getRandomTopics() {
@@ -530,66 +604,81 @@
         });
 
         // UI Handlers for Multiplayer
-        document.getElementById('btn-host').addEventListener('click', async () => {
-            if (!db || !currentUser) {
-                alert("Multiplayer ist nur im Canvas verfügbar, da die Datenbank lokal nicht geladen werden kann.");
-                return;
-            }
-
+        document.getElementById('btn-host').addEventListener('click', () => {
             state.isHost = true;
             state.sessionCode = generateCode();
             state.easyMode = false;
             
             rollSoloWords();
-
-            sessionRef = getSessionDoc(state.sessionCode);
-            await setDoc(sessionRef, {
-                status: 'waiting',
-                language: state.language,
-                startTitle: state.startTitle,
-                targetTitle: state.targetTitle,
-                easyMode: false,
-                p1Finished: false,
-                p2Finished: false,
-                p1Clicks: 0,
-                p2Clicks: 0
-            });
-
             setupLobbyUI();
-            listenToSession();
+
+            document.getElementById('host-controls').classList.add('hidden');
+            document.getElementById('joiner-status').classList.remove('hidden');
+            document.getElementById('joiner-status').innerText = uiDict[state.language].loading;
+
+            peer = new Peer('wikigame-v1-' + state.sessionCode);
+            peer.on('open', () => {
+                document.getElementById('joiner-status').innerText = uiDict[state.language].waitHostWait;
+            });
+            peer.on('connection', (conn) => {
+                peerConn = conn;
+                peerConn.on('data', handlePeerData);
+                
+                document.getElementById('host-controls').classList.remove('hidden');
+                document.getElementById('joiner-status').classList.add('hidden');
+
+                const startBtn = document.getElementById('btn-lobby-start');
+                startBtn.disabled = false;
+                startBtn.innerText = uiDict[state.language].waitHostStart;
+                startBtn.classList.replace('bg-gray-400', 'bg-green-500');
+                startBtn.classList.add('hover:bg-green-600', 'active:scale-95');
+
+                sendPeerData({
+                    type: 'lobbyUpdate',
+                    startTitle: state.startTitle,
+                    targetTitle: state.targetTitle,
+                    easyMode: state.easyMode,
+                    language: state.language
+                });
+            });
+            peer.on('error', () => {
+                alert(uiDict[state.language].multiErr);
+            });
         });
 
         document.getElementById('btn-show-join').addEventListener('click', () => {
-            if (!db || !currentUser) {
-                alert("Multiplayer ist nur im Canvas verfügbar, da die Datenbank lokal nicht geladen werden kann.");
-                return;
-            }
             document.getElementById('role-selection').classList.add('hidden');
             document.getElementById('join-section').classList.remove('hidden');
         });
 
-        document.getElementById('btn-join-submit').addEventListener('click', async () => {
-            if (!db || !currentUser) return;
+        document.getElementById('btn-join-submit').addEventListener('click', () => {
             const codeInput = document.getElementById('join-code').value.toUpperCase();
             if (codeInput.length !== 6) return;
 
-            const tempRef = getSessionDoc(codeInput);
-            const docSnap = await getDoc(tempRef);
+            document.getElementById('btn-join-submit').innerText = "...";
+            document.getElementById('join-error').classList.add('hidden');
 
-            if (docSnap.exists()) {
-                state.isHost = false;
-                state.sessionCode = codeInput;
-                sessionRef = tempRef;
-
-                // Update status to ready so Host knows P2 joined
-                await updateDoc(sessionRef, { status: 'ready' });
-
-                document.getElementById('join-error').classList.add('hidden');
-                setupLobbyUI();
-                listenToSession();
-            } else {
-                document.getElementById('join-error').classList.remove('hidden');
-            }
+            peer = new Peer();
+            peer.on('open', () => {
+                peerConn = peer.connect('wikigame-v1-' + codeInput);
+                peerConn.on('open', () => {
+                    document.getElementById('btn-join-submit').innerText = uiDict[state.language].btnJoin;
+                    state.isHost = false;
+                    state.sessionCode = codeInput;
+                    setupLobbyUI();
+                    peerConn.on('data', handlePeerData);
+                });
+                peerConn.on('error', () => {
+                    document.getElementById('join-error').classList.remove('hidden');
+                    document.getElementById('btn-join-submit').innerText = uiDict[state.language].btnJoin;
+                });
+            });
+            peer.on('error', (err) => {
+                if (err.type === 'peer-unavailable') {
+                    document.getElementById('join-error').classList.remove('hidden');
+                    document.getElementById('btn-join-submit').innerText = uiDict[state.language].btnJoin;
+                }
+            });
         });
 
         function setupLobbyUI() {
@@ -616,70 +705,23 @@
         }
 
         // Host Control Actions
-        document.getElementById('btn-lobby-refresh').addEventListener('click', async () => {
-            if (!state.isHost || !sessionRef || !db) return;
+        document.getElementById('btn-lobby-refresh').addEventListener('click', () => {
+            if (!state.isHost) return;
             rollSoloWords();
-            await updateDoc(sessionRef, {
-                startTitle: state.startTitle,
-                targetTitle: state.targetTitle
-            });
+            sendPeerData({ type: 'lobbyUpdate', startTitle: state.startTitle, targetTitle: state.targetTitle, easyMode: state.easyMode, language: state.language });
         });
 
-        document.getElementById('lobby-easy-mode').addEventListener('change', async (e) => {
-            if (!state.isHost || !sessionRef || !db) return;
-            await updateDoc(sessionRef, { easyMode: e.target.checked });
+        document.getElementById('lobby-easy-mode').addEventListener('change', (e) => {
+            if (!state.isHost) return;
+            state.easyMode = e.target.checked;
+            sendPeerData({ type: 'lobbyUpdate', startTitle: state.startTitle, targetTitle: state.targetTitle, easyMode: state.easyMode, language: state.language });
         });
 
-        document.getElementById('btn-lobby-start').addEventListener('click', async () => {
-            if (!state.isHost || !sessionRef || !db) return;
-            await updateDoc(sessionRef, { status: 'playing' });
+        document.getElementById('btn-lobby-start').addEventListener('click', () => {
+            if (!state.isHost) return;
+            sendPeerData({ type: 'startGame' });
+            startGame();
         });
-
-        function listenToSession() {
-            if (!db) return;
-            if (unsubscribeSession) unsubscribeSession();
-
-            unsubscribeSession = onSnapshot(sessionRef, (docSnap) => {
-                if (!docSnap.exists()) return;
-                const data = docSnap.data();
-
-                // Update local state words
-                state.startTitle = data.startTitle;
-                state.targetTitle = data.targetTitle;
-                state.easyMode = data.easyMode;
-                
-                if (data.language && data.language !== state.language) {
-                    setLanguage(data.language);
-                }
-
-                updateLobbyWords();
-
-                // Host UI updates
-                if (state.isHost && data.status === 'ready') {
-                    const startBtn = document.getElementById('btn-lobby-start');
-                    startBtn.disabled = false;
-                    startBtn.innerText = "Start Game";
-                    startBtn.classList.replace('bg-gray-400', 'bg-green-500');
-                    startBtn.classList.add('hover:bg-green-600', 'active:scale-95');
-                }
-
-                // Both players transition to game
-                if (data.status === 'playing' && document.getElementById('screen-game').classList.contains('hidden') && !state.finished) {
-                    startGame();
-                }
-
-                // Win/Loss Detection during play
-                if (data.status === 'playing' && !state.finished) {
-                    if (state.isHost && data.p2Finished) {
-                        finishGame(false, data.p2Clicks);
-                    } else if (!state.isHost && data.p1Finished) {
-                        finishGame(false, data.p1Clicks);
-                    }
-                }
-            }, (error) => {
-                console.error("Session sync error:", error);
-            });
-        }
 
         // --- Core Game Logic ---
         function startGame() {
@@ -702,6 +744,7 @@
         }
 
         async function loadArticle(title) {
+            const dict = uiDict[state.language];
             document.getElementById('wiki-content-area').innerHTML = '';
             document.getElementById('loader').classList.remove('hidden');
             document.getElementById('current-title').innerText = title;
@@ -712,7 +755,7 @@
                 const data = await response.json();
                 
                 if (data.error) {
-                    document.getElementById('wiki-content-area').innerHTML = `<div class='p-4 bg-red-50 text-red-500 rounded'>Error loading article: ${data.error.info}</div>`;
+                    document.getElementById('wiki-content-area').innerHTML = `<div class='p-4 bg-red-50 text-red-500 rounded'>${dict.errorLoading || "Error loading article:"} ${data.error.info}</div>`;
                 } else {
                     const html = data.parse.text['*'];
                     const container = document.getElementById('wiki-content-area');
@@ -729,7 +772,7 @@
                     processLinks(container);
                 }
             } catch (err) {
-                document.getElementById('wiki-content-area').innerHTML = `<div class='p-4 bg-red-50 text-red-500 rounded'>Connection error. Please check your internet.</div>`;
+                document.getElementById('wiki-content-area').innerHTML = `<div class='p-4 bg-red-50 text-red-500 rounded'>${dict.connError || "Connection error."}</div>`;
             } finally {
                 document.getElementById('loader').classList.add('hidden');
                 window.scrollTo(0, 0);
@@ -796,20 +839,16 @@
         });
 
         // --- End Game Handling ---
-        async function finishGame(isWinner, oppClicks = "?") {
+        function finishGame(isWinner, oppClicks = "?") {
             if (state.finished) return;
             state.finished = true;
 
-            // If I am the winner, notify DB
-            if (state.isMultiplayer && isWinner && sessionRef && db) {
-                if (state.isHost) {
-                    await updateDoc(sessionRef, { p1Finished: true, p1Clicks: state.clicks });
-                } else {
-                    await updateDoc(sessionRef, { p2Finished: true, p2Clicks: state.clicks });
-                }
+            const dict = uiDict[state.language];
+
+            if (state.isMultiplayer && isWinner) {
+                sendPeerData({ type: 'finish', clicks: state.clicks });
             }
 
-            // Update UI based on outcome
             const icon = document.getElementById('result-icon');
             const title = document.getElementById('result-title');
             const subtitle = document.getElementById('result-subtitle');
@@ -817,15 +856,15 @@
             if (isWinner) {
                 icon.className = "w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl animate-bounce";
                 icon.innerText = "🏆";
-                title.innerText = state.isMultiplayer ? "You Won!" : "Success!";
+                title.innerText = state.isMultiplayer ? dict.youWon : dict.success;
                 title.className = "text-5xl font-black mb-2 text-green-600";
-                subtitle.innerText = "You reached the target first!";
+                subtitle.innerText = dict.wonSub;
             } else {
                 icon.className = "w-24 h-24 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl";
                 icon.innerText = "💀";
-                title.innerText = "You Lost!";
+                title.innerText = dict.youLost;
                 title.className = "text-5xl font-black mb-2 text-red-600";
-                subtitle.innerText = "Opponent found the path faster.";
+                subtitle.innerText = dict.lostSub;
             }
 
             document.getElementById('final-clicks').innerText = state.clicks;
@@ -833,7 +872,7 @@
             if (state.isMultiplayer) {
                 document.getElementById('opponent-clicks-container').classList.remove('hidden');
                 document.getElementById('personal-best-container').classList.add('hidden');
-                document.getElementById('opponent-clicks').innerText = isWinner ? "Not finished" : oppClicks;
+                document.getElementById('opponent-clicks').innerText = isWinner ? dict.notFinished : oppClicks;
             } else {
                 document.getElementById('opponent-clicks-container').classList.add('hidden');
                 document.getElementById('personal-best-container').classList.remove('hidden');
@@ -843,7 +882,7 @@
                     state.record = state.clicks;
                     localStorage.setItem('wiki_game_record', state.clicks);
                     if (document.getElementById('record-val')) {
-                        document.getElementById('record-val').innerText = state.record + " clicks";
+                        document.getElementById('record-val').innerText = state.record + dict.clickStr;
                     }
                 }
                 document.getElementById('final-record').innerText = state.record || state.clicks;
@@ -862,19 +901,19 @@
 
         // --- Modals & Cleanup ---
         document.getElementById('btn-home').addEventListener('click', () => {
-            if (unsubscribeSession) {
-                unsubscribeSession();
-                unsubscribeSession = null;
-            }
+            const dict = uiDict[state.language];
+            
+            if (peerConn) { peerConn.close(); peerConn = null; }
+            if (peer) { peer.destroy(); peer = null; }
+
             document.getElementById('role-selection').classList.remove('hidden');
             document.getElementById('join-section').classList.add('hidden');
             document.getElementById('lobby-section').classList.add('hidden');
             document.getElementById('join-code').value = '';
             
-            // Reset host start button state
             const startBtn = document.getElementById('btn-lobby-start');
             startBtn.disabled = true;
-            startBtn.innerText = "Waiting for P2 to Join...";
+            startBtn.innerText = dict.waitHostWait;
             startBtn.className = "w-full py-4 bg-gray-400 text-white rounded-xl font-black text-lg mt-2 transition shadow-md opacity-50";
 
             showScreen('menu');
@@ -889,13 +928,11 @@
         modalCancel.addEventListener('click', () => modalQuit.classList.add('hidden'));
         modalConfirm.addEventListener('click', () => {
             modalQuit.classList.add('hidden');
-            document.getElementById('btn-home').click(); // Reuse cleanup logic
+            document.getElementById('btn-home').click();
         });
 
-        // Init solo on load
-        if (state.record && document.getElementById('record-val')) {
-            document.getElementById('record-val').innerText = state.record + " clicks";
-        }
+        // Init language and words on load
+        updateUI();
         rollSoloWords();
     </script>
 </body>

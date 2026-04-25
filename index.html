@@ -5,412 +5,187 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Wiki Game</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@300;400;600&display=swap');
-        
-        body {
-            font-family: 'Libre+Franklin', sans-serif;
-            background-color: #f6f6f6;
-        }
-
-        .wiki-content {
-            line-height: 1.6;
-            color: #202122;
-        }
-
-        .wiki-content a {
-            color: #3366cc;
-            text-decoration: none;
-        }
-
-        .wiki-content a:hover {
-            text-decoration: underline;
-        }
-
-        .wiki-content p {
-            margin-bottom: 1rem;
-        }
-
-        .wiki-content .mw-editsection,
-        .wiki-content .reflist,
-        .wiki-content .reference,
-        .wiki-content .sistersitebox,
-        .wiki-content .mbox-small,
-        .wiki-content .hatnote,
-        .wiki-content .navbox,
-        .wiki-content .metadata {
-            display: none !important;
-        }
-
-        .wiki-content .toc {
-            pointer-events: none !important;
-            opacity: 0.7;
-            user-select: none;
-            margin-bottom: 1rem;
-        }
-
-        .wiki-content img {
-            max-width: 100%;
-            height: auto;
-            display: block;
-            margin: 0.5rem 0;
-            border-radius: 4px;
-        }
-
-        .wiki-content .infobox {
-            float: right;
-            clear: right;
-            margin: 0 0 1em 1em;
-            border: 1px solid #a2a9b1;
-            padding: 0.5em;
-            background-color: #f8f9fa;
-            font-size: 88%;
-            max-width: 280px;
-        }
-
-        .wiki-content .thumb {
-            margin-bottom: 0.5em;
-            width: auto;
-            background-color: transparent;
-            border: 1px solid #c8ccd1;
-            padding: 3px;
-            background-color: #f8f9fa;
-            font-size: 88%;
-        }
-        
-        .wiki-content .thumbinner {
-            width: 100% !important;
-        }
-
-        .wiki-content table {
-            font-size: 90%;
-            border-collapse: collapse;
-            width: 100%;
-            margin-bottom: 1rem;
-        }
-
-        .wiki-content th, .wiki-content td {
-            border: 1px solid #a2a9b1;
-            padding: 0.2em 0.4em;
-        }
-
-        .loading-spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        @keyframes slideInRight {
-            0% { transform: translateX(50%); opacity: 0; }
-            100% { transform: translateX(0); opacity: 1; }
-        }
-        @keyframes slideInLeft {
-            0% { transform: translateX(-50%); opacity: 0; }
-            100% { transform: translateX(0); opacity: 1; }
-        }
-
-        .breadcrumb-scroll::-webkit-scrollbar {
-            height: 4px;
-        }
-        .breadcrumb-scroll::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
+        body { font-family: 'Libre+Franklin', sans-serif; background-color: #f6f6f6; }
+        .wiki-content { line-height: 1.6; color: #202122; }
+        .wiki-content a { color: #3366cc; text-decoration: none; }
+        .wiki-content .mw-editsection, .wiki-content .navbox { display: none !important; }
+        .loading-spinner { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="min-h-screen relative">
+<body class="min-h-screen">
 
-    <div id="screen-auth" class="flex flex-col items-center justify-center min-h-screen p-4 bg-gradient-to-br from-blue-500 to-indigo-600">
-        <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md text-center">
-            <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">🔑</div>
-            <h2 class="text-3xl font-black mb-6 text-gray-800">The Wiki Game</h2>
-            
-            <div class="space-y-4 text-left">
-                <div>
-                    <label class="text-xs font-bold text-gray-400 uppercase">Username</label>
-                    <input type="text" id="auth-user" class="w-full p-3 border rounded-xl outline-none focus:border-blue-500 transition" placeholder="Username">
-                </div>
-                <div>
-                    <label class="text-xs font-bold text-gray-400 uppercase">Password</label>
-                    <input type="password" id="auth-pass" class="w-full p-3 border rounded-xl outline-none focus:border-blue-500 transition" placeholder="••••••••">
-                </div>
-                <div id="auth-error" class="hidden text-red-500 text-sm font-bold">Invalid credentials!</div>
-                
-                <div class="flex gap-3 pt-2">
-                    <button id="btn-login" class="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold shadow-md hover:bg-blue-700 transition active:scale-95">Login</button>
-                    <button id="btn-signup" class="flex-1 py-3 bg-gray-100 text-gray-700 rounded-xl font-bold hover:bg-gray-200 transition active:scale-95">Sign Up</button>
-                </div>
+    <div id="screen-auth" class="flex items-center justify-center min-h-screen bg-blue-600 p-4">
+        <div class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-sm text-center">
+            <h1 class="text-3xl font-black mb-6">The Wiki Game</h1>
+            <input type="text" id="auth-user" placeholder="Username" class="w-full p-3 mb-3 border rounded-xl outline-none focus:ring-2 ring-blue-500">
+            <input type="password" id="auth-pass" placeholder="Password" class="w-full p-3 mb-6 border rounded-xl outline-none focus:ring-2 ring-blue-500">
+            <div class="flex gap-2">
+                <button id="btn-login" class="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold">Login</button>
+                <button id="btn-signup" class="flex-1 py-3 bg-gray-100 rounded-xl font-bold">Sign Up</button>
             </div>
-            <p class="mt-6 text-xs text-gray-400">Progress is currently saved on this device per user.</p>
+            <p id="auth-msg" class="mt-4 text-sm font-bold text-red-500 hidden"></p>
         </div>
     </div>
 
     <div id="game-ui" class="hidden">
         <div class="fixed top-4 right-4 flex items-center gap-3 z-50">
-            <div id="streak-top-ui" class="flex items-center gap-3 bg-white px-3 py-1.5 rounded-xl shadow-sm border border-gray-100 font-black text-gray-700 select-none">
-                <div class="flex items-center gap-1">
-                    <span class="text-orange-500">🔥</span>
-                    <span id="streak-val-top">0</span>
-                </div>
-                <div class="flex items-center gap-1 border-l pl-3">
-                    <span class="text-yellow-500">🪙</span>
-                    <span id="coins-val-top">0</span>
-                </div>
-                <button id="btn-logout" class="ml-1 text-gray-400 hover:text-red-500 transition">🚪</button>
-            </div>
-
-            <div class="flex gap-1 bg-white p-1 rounded-lg shadow-sm border border-gray-200">
-                <button id="lang-en" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-md font-bold text-xs transition">EN</button>
-                <button id="lang-de" class="px-3 py-1 text-gray-500 hover:bg-gray-100 rounded-md font-bold text-xs transition">DE</button>
-                <button id="lang-es" class="px-3 py-1 text-gray-500 hover:bg-gray-100 rounded-md font-bold text-xs transition">ES</button>
+            <div class="bg-white px-3 py-1.5 rounded-xl shadow-sm border font-black text-gray-700 flex gap-3">
+                <span>🔥 <span id="streak-val">0</span></span>
+                <span class="border-l pl-3">🪙 <span id="coins-val">0</span></span>
+                <button id="btn-logout" class="text-gray-400 ml-2">🚪</button>
             </div>
         </div>
 
-        <div id="screen-menu" class="flex flex-col items-center justify-center min-h-screen p-4 bg-gradient-to-br from-gray-100 to-gray-200 overflow-x-hidden relative">
-            <div class="relative w-full max-w-lg flex flex-col items-center justify-center mx-auto">
-                <div class="relative w-full flex items-center justify-center">
-                    <button id="mode-prev" class="absolute -left-12 sm:-left-16 z-30 w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-xl border border-gray-100 hover:bg-gray-50 transition active:scale-95 text-3xl font-bold text-gray-600">&lsaquo;</button>
-                    <div id="main-menu-box" class="bg-white p-8 rounded-3xl shadow-xl w-full text-center border border-gray-100 z-20 relative">
-                        <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl shadow-sm">🌐</div>
-                        <h1 class="text-4xl font-black mb-2 text-gray-800 tracking-tight" data-i18n="title">The Wiki Game</h1>
-                        <p id="user-welcome" class="text-xs font-bold text-blue-500 mb-4 uppercase tracking-widest"></p>
-                        <div class="relative h-10 mb-6 mt-2 flex items-center justify-center overflow-hidden w-full">
-                            <p id="mode-display" class="font-black text-2xl tracking-wide absolute w-full text-center text-blue-600">Classic</p>
-                        </div>
-                        <div class="flex gap-2 mb-6 p-1 bg-gray-100 rounded-xl">
-                            <button id="tab-solo" class="flex-1 py-2 bg-white text-blue-600 rounded-lg font-bold shadow-sm transition" data-i18n="tabSolo">Single Player</button>
-                            <button id="tab-multi" class="flex-1 py-2 text-gray-500 hover:text-gray-700 rounded-lg font-bold transition" data-i18n="tabMulti">Multiplayer</button>
-                        </div>
-                        <div id="solo-setup" class="w-full mb-4">
-                            <div class="flex flex-col gap-3 mb-6">
-                                <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 text-left">
-                                    <span class="text-xs font-bold text-blue-400 uppercase tracking-widest block mb-1" data-i18n="startArticle">Start Article</span>
-                                    <div id="solo-start" class="font-bold text-blue-700 text-lg">Loading...</div>
-                                </div>
-                                <div class="flex justify-center -my-5 relative z-10"><div class="text-gray-300 bg-white p-1 rounded-full shadow-sm border font-bold text-sm">➔</div></div>
-                                <div class="bg-red-50 p-4 rounded-xl border border-red-100 text-left">
-                                    <span class="text-xs font-bold text-red-400 uppercase tracking-widest block mb-1" data-i18n="targetArticle">Target Article</span>
-                                    <div id="solo-target" class="font-bold text-red-700 text-lg">Loading...</div>
-                                </div>
-                            </div>
-                            <div class="flex flex-col gap-3">
-                                <button id="btn-solo-roll" class="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-bold transition shadow-sm flex items-center justify-center gap-2">
-                                    <span data-i18n="btnRandom">🎲 Random</span>
-                                    <span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full border border-yellow-200">-2 🪙</span>
-                                </button>
-                                <button id="btn-solo-start" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition shadow-md active:scale-95" data-i18n="btnStartSolo">🚀 Start Solo Game</button>
-                            </div>
-                        </div>
-                    </div>
-                    <button id="mode-next" class="absolute -right-12 sm:-right-16 z-30 w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-xl border border-gray-100 hover:bg-gray-50 transition active:scale-95 text-3xl font-bold text-gray-600">&rsaquo;</button>
+        <div id="screen-menu" class="flex flex-col items-center justify-center min-h-screen p-4">
+            <div class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-lg text-center">
+                <p id="welcome-text" class="text-blue-500 font-bold mb-2 uppercase tracking-widest text-xs"></p>
+                <h2 id="mode-display" class="text-2xl font-black mb-6 text-blue-600">Classic Mode</h2>
+                <div class="bg-blue-50 p-4 rounded-xl border text-left mb-3">
+                    <span class="text-xs font-bold text-blue-400">START</span>
+                    <div id="solo-start" class="font-bold text-lg">Loading...</div>
+                </div>
+                <div class="bg-red-50 p-4 rounded-xl border text-left mb-6">
+                    <span class="text-xs font-bold text-red-400">TARGET</span>
+                    <div id="solo-target" class="font-bold text-lg">Loading...</div>
+                </div>
+                <div class="flex flex-col gap-3">
+                    <button id="btn-roll" class="py-3 bg-gray-100 rounded-xl font-bold">🎲 New Topics (-2 🪙)</button>
+                    <button id="btn-start" class="py-3 bg-blue-600 text-white rounded-xl font-bold">🚀 Start Game</button>
                 </div>
             </div>
         </div>
 
-        <div id="screen-game" class="hidden flex flex-col min-h-screen">
-            <header class="sticky top-0 bg-white border-b shadow-sm z-10">
-                <div class="max-w-4xl mx-auto p-4">
-                    <div class="flex flex-wrap justify-between items-center gap-4 mb-3">
-                        <div class="flex flex-col"><span class="text-xs text-gray-400 uppercase font-bold tracking-widest" data-i18n="target">Target</span><span id="game-target-display" class="font-bold text-red-600">Target</span></div>
-                        <div class="flex items-center gap-6">
-                            <div class="text-center"><span class="block text-xs text-gray-400 uppercase font-bold" data-i18n="clicks">Clicks</span><div class="font-bold text-xl text-gray-800"><span id="click-count">0</span></div></div>
-                            <button id="btn-quit-trigger" class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 font-bold text-gray-600" data-i18n="btnGiveUp">Give Up</button>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-2 overflow-x-auto whitespace-nowrap pb-1 breadcrumb-scroll text-sm text-gray-500 border-t pt-2" id="game-breadcrumbs"></div>
-                </div>
+        <div id="screen-game" class="hidden flex flex-col min-h-screen bg-white">
+            <header class="p-4 border-b sticky top-0 bg-white z-10 flex justify-between items-center">
+                <div><span class="text-xs block text-gray-400">TARGET</span><span id="target-display" class="font-bold text-red-600"></span></div>
+                <div class="text-center"><span class="text-xs block text-gray-400">CLICKS</span><span id="click-count" class="font-bold text-xl">0</span></div>
+                <button id="btn-quit" class="text-sm font-bold text-gray-400">Quit</button>
             </header>
-            <main class="flex-grow max-w-4xl mx-auto w-full p-6 bg-white shadow-sm mt-4 mb-10 rounded-lg">
-                <h1 id="current-title" class="text-3xl font-serif border-b pb-2 mb-6">Article Title</h1>
-                <div id="wiki-content-area" class="wiki-content"></div>
-                <div id="loader" class="hidden flex flex-col items-center py-20"><div class="loading-spinner mb-4"></div><p class="text-gray-500 font-medium" data-i18n="fetching">Fetching Wikipedia data...</p></div>
+            <main class="p-6 max-w-4xl mx-auto w-full">
+                <h1 id="current-title" class="text-3xl font-serif mb-6 border-b pb-2"></h1>
+                <div id="wiki-area" class="wiki-content"></div>
+                <div id="loader" class="hidden py-20 flex justify-center"><div class="loading-spinner"></div></div>
             </main>
-        </div>
-
-        <div id="screen-results" class="hidden flex flex-col items-center justify-center min-h-screen p-4 bg-gray-50">
-            <div class="bg-white p-10 rounded-3xl shadow-2xl max-w-4xl w-full text-center">
-                <div id="result-icon" class="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl">🏁</div>
-                <h1 id="result-title" class="text-5xl font-black mb-2 text-gray-800" data-i18n="victoryTitle">Victory!</h1>
-                <div id="coin-reward-display" class="mb-4 text-2xl font-black text-yellow-600"></div>
-                <p id="result-subtitle" class="text-gray-500 mb-10 text-lg font-medium" data-i18n="victorySub">Success!</p>
-                <div class="p-6 bg-blue-50 rounded-2xl border border-blue-100 inline-block mb-10"><span class="block text-xs text-blue-400 font-bold uppercase tracking-widest mb-1" data-i18n="yourClicks">Your Clicks</span><span id="final-clicks" class="text-4xl font-black text-blue-700">0</span></div>
-                <button id="btn-home" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold text-xl transition-all shadow-lg active:scale-95" data-i18n="btnBackMenu">Back to Menu</button>
-            </div>
         </div>
     </div>
 
     <script>
-        const state = {
-            language: 'en', isPlaying: false, currentUser: null,
-            startTitle: '', targetTitle: '', currentTitle: '',
-            clicks: 0, path: [], finished: false,
-            coins: 0, dailyStreak: 0, lastDailyWin: null, totalRounds: 0
-        };
+        const state = { user: null, coins: 0, streak: 0, start: '', target: '', clicks: 0, path: [] };
 
-        const uiDict = {
-            en: { title: "The Wiki Game", tabSolo: "Single Player", startArticle: "Start Article", targetArticle: "Target Article", btnRandom: "🎲 Random", btnStartSolo: "🚀 Start Solo Game", target: "Target", clicks: "Clicks", btnGiveUp: "Give Up", fetching: "Loading...", victoryTitle: "Victory!", victorySub: "You won!", yourClicks: "Your Clicks", btnBackMenu: "Back to Menu", modeClassic: "Classic", modeHard: "Hard Mode", modeDaily: "Daily", modeLimited: "Limited" },
-            de: { title: "Das Wiki Spiel", tabSolo: "Einzelspieler", startArticle: "Startartikel", targetArticle: "Zielartikel", btnRandom: "🎲 Zufall", btnStartSolo: "🚀 Spiel starten", target: "Ziel", clicks: "Klicks", btnGiveUp: "Aufgeben", fetching: "Lädt...", victoryTitle: "Sieg!", victorySub: "Gewonnen!", yourClicks: "Deine Klicks", btnBackMenu: "Menü", modeClassic: "Klassisch", modeHard: "Schwer", modeDaily: "Daily", modeLimited: "Limitiert" },
-            es: { title: "El Juego de Wiki", tabSolo: "Un Jugador", startArticle: "Inicial", targetArticle: "Destino", btnRandom: "🎲 Azar", btnStartSolo: "🚀 Jugar", target: "Destino", clicks: "Clicks", btnGiveUp: "Rendirse", fetching: "Cargando...", victoryTitle: "Victoria!", victorySub: "Ganaste!", yourClicks: "Tus Clicks", btnBackMenu: "Menü", modeClassic: "Clásico", modeHard: "Difícil", modeDaily: "Diario", modeLimited: "Límite" }
-        };
+        // --- Auth System ---
+        function getAccounts() { return JSON.parse(localStorage.getItem('wiki_accounts') || '{}'); }
 
-        const POPULAR_TOPICS = {
-            en: ["Apple Inc.", "Albert Einstein", "Ancient Egypt", "Artificial Intelligence", "Australia", "Batman", "Beer", "Berlin", "Bitcoin", "Brazil", "Canada", "Cat", "Chess", "Chocolate", "Coffee", "Cristiano Ronaldo", "Dinosaur", "Dog", "Earth", "Elon Musk", "Facebook", "Football", "France", "Germany", "Google", "Harry Potter", "History", "India", "Internet", "iPhone", "Italy", "Japan", "Mars", "Music", "NASA", "Netflix", "New York City", "Physics", "Pizza", "Pokemon", "Rome", "Russia", "SpaceX", "Star Wars", "Sushi", "Tea", "Tennis", "United Kingdom", "United States", "Video game", "Water", "World War II", "Youtube", "Marie Curie", "Amazon River", "Basketball", "Mount Everest", "Stonehenge"],
-            de: ["Apple", "Albert Einstein", "Altes Ägypten", "Künstliche Intelligenz", "Australien", "Batman", "Bier", "Berlin", "Bitcoin", "Brasilien", "Kanada", "Hauskatze", "Schach", "Schokolade", "Kaffee", "Cristiano Ronaldo", "Dinosaurier", "Haushund", "Erde", "Elon Musk", "Europa", "Facebook", "Fußball", "Frankreich", "Deutschland", "Google", "Harry Potter", "Geschichte", "Indien", "Internet", "IPhone", "Italien", "Japan", "Jupiter", "London", "Mars", "Musik", "NASA", "Netflix", "New York City", "Physik", "Pizza", "Pokémon", "Rom", "Russland", "SpaceX", "Star Wars", "Sushi", "Tee", "Tennis", "Zweiter Weltkrieg", "YouTube"],
-            es: ["Apple", "Albert Einstein", "Antiguo Egipto", "Inteligencia artificial", "Australia", "Batman", "Cerveza", "Berlín", "Bitcoin", "Brasil", "Canadá", "Gato", "Ajedrez", "Chocolate", "Café", "Cristiano Ronaldo", "Dinosaurio", "Perro", "Tierra", "Elon Musk", "Facebook", "Fútbol", "Francia", "Alemania", "Google", "Harry Potter", "Historia", "India", "Internet", "IPhone", "Italia", "Japón", "Londres", "Marte", "Música", "NASA", "Netflix", "Nueva York", "Física", "Pizza", "Pokémon", "Roma", "Rusia", "SpaceX", "Star Wars", "Sushi", "Té", "Tenis", "YouTube"]
-        };
-
-        const ORIGINAL_MODES = [{ id: 'classic', i18n: 'modeClassic', color: 'text-blue-600' }, { id: 'hard', i18n: 'modeHard', color: 'text-red-600' }, { id: 'limited', i18n: 'modeLimited', color: 'text-purple-600' }];
-        let currentModeIndex = 0;
-
-        // --- AUTH LOGIC ---
-        function handleAuth(type) {
+        document.getElementById('btn-signup').onclick = () => {
             const user = document.getElementById('auth-user').value.trim();
             const pass = document.getElementById('auth-pass').value.trim();
-            if (!user || !pass) return;
-
-            let users = JSON.parse(localStorage.getItem('wiki_users') || '{}');
-
-            if (type === 'signup') {
-                if (users[user]) { alert("User already exists!"); return; }
-                users[user] = { pass: pass, coins: 10, streak: 0, rounds: 0 };
-                localStorage.setItem('wiki_users', JSON.stringify(users));
-                alert("Account created! Please login.");
-            } else {
-                if (users[user] && users[user].pass === pass) {
-                    state.currentUser = user;
-                    loadUserData();
-                    document.getElementById('screen-auth').classList.add('hidden');
-                    document.getElementById('game-ui').classList.remove('hidden');
-                    updateUI();
-                    updateModeDisplay();
-                } else {
-                    document.getElementById('auth-error').classList.remove('hidden');
-                }
-            }
-        }
-
-        function loadUserData() {
-            let users = JSON.parse(localStorage.getItem('wiki_users') || '{}');
-            let data = users[state.currentUser];
-            state.coins = data.coins || 0;
-            state.dailyStreak = data.streak || 0;
-            state.totalRounds = data.rounds || 0;
-            document.getElementById('user-welcome').innerText = `Player: ${state.currentUser}`;
-        }
-
-        function saveUserData() {
-            if (!state.currentUser) return;
-            let users = JSON.parse(localStorage.getItem('wiki_users') || '{}');
-            users[state.currentUser] = { ...users[state.currentUser], coins: state.coins, streak: state.dailyStreak, rounds: state.totalRounds };
-            localStorage.setItem('wiki_users', JSON.stringify(users));
-        }
-
-        document.getElementById('btn-login').onclick = () => handleAuth('login');
-        document.getElementById('btn-signup').onclick = () => handleAuth('signup');
-        document.getElementById('btn-logout').onclick = () => location.reload();
-
-        // --- GAME LOGIC ---
-        function updateUI() {
-            const dict = uiDict[state.language];
-            document.querySelectorAll('[data-i18n]').forEach(el => { const key = el.getAttribute('data-i18n'); if (dict[key]) el.innerText = dict[key]; });
-            document.getElementById('coins-val-top').innerText = state.coins;
-            document.getElementById('streak-val-top').innerText = state.dailyStreak;
-        }
-
-        function updateModeDisplay() {
-            const mode = ORIGINAL_MODES[currentModeIndex];
-            const modeDisplay = document.getElementById('mode-display');
-            modeDisplay.innerText = uiDict[state.language][mode.i18n];
-            modeDisplay.className = `font-black text-2xl tracking-wide absolute w-full text-center ${mode.color}`;
-            rollSoloWords();
-        }
-
-        function rollSoloWords(force = false) {
-            const mode = ORIGINAL_MODES[currentModeIndex].id;
-            if (!force && state.startTitle && state.targetTitle) return;
-            const list = POPULAR_TOPICS[state.language];
-            const shuffled = [...list].sort(() => 0.5 - Math.random());
-            state.startTitle = shuffled[0];
-            state.targetTitle = shuffled[1];
-            document.getElementById('solo-start').innerText = state.startTitle;
-            document.getElementById('solo-target').innerText = state.targetTitle;
-        }
-
-        document.getElementById('mode-next').onclick = () => { currentModeIndex = (currentModeIndex + 1) % ORIGINAL_MODES.length; updateModeDisplay(); };
-        document.getElementById('mode-prev').onclick = () => { currentModeIndex = (currentModeIndex - 1 + ORIGINAL_MODES.length) % ORIGINAL_MODES.length; updateModeDisplay(); };
-
-        document.getElementById('btn-solo-roll').onclick = () => {
-            if (state.coins >= 2) {
-                state.coins -= 2;
-                saveUserData();
-                updateUI();
-                rollSoloWords(true);
-            } else { alert("Not enough coins!"); }
+            if(!user || !pass) return;
+            let accounts = getAccounts();
+            if(accounts[user]) { showAuthMsg("Name taken!"); return; }
+            accounts[user] = { password: pass, coins: 10, streak: 0 };
+            localStorage.setItem('wiki_accounts', JSON.stringify(accounts));
+            showAuthMsg("Signed up! Now Login.", false);
         };
 
-        function startGame() {
-            state.isPlaying = true; state.clicks = 0; state.path = [state.startTitle]; state.finished = false;
-            document.getElementById('click-count').innerText = '0';
-            document.getElementById('game-target-display').innerText = state.targetTitle;
-            showScreen('game'); loadArticle(state.startTitle);
+        document.getElementById('btn-login').onclick = () => {
+            const user = document.getElementById('auth-user').value.trim();
+            const pass = document.getElementById('auth-pass').value.trim();
+            let accounts = getAccounts();
+            if(accounts[user] && accounts[user].password === pass) {
+                state.user = user;
+                state.coins = accounts[user].coins;
+                state.streak = accounts[user].streak;
+                loginSuccess();
+            } else { showAuthMsg("Wrong name or password!"); }
+        };
+
+        function loginSuccess() {
+            document.getElementById('screen-auth').classList.add('hidden');
+            document.getElementById('game-ui').classList.remove('hidden');
+            document.getElementById('welcome-text').innerText = `Hello, ${state.user}`;
+            updateStats();
+            rollTopics();
         }
 
-        async function loadArticle(title) {
+        function saveGame() {
+            let accounts = getAccounts();
+            if(!state.user) return;
+            accounts[state.user].coins = state.coins;
+            accounts[state.user].streak = state.streak;
+            localStorage.setItem('wiki_accounts', JSON.stringify(accounts));
+            updateStats();
+        }
+
+        function showAuthMsg(txt, isErr = true) {
+            const el = document.getElementById('auth-msg');
+            el.innerText = txt;
+            el.className = `mt-4 text-sm font-bold ${isErr ? 'text-red-500' : 'text-green-500'}`;
+            el.classList.remove('hidden');
+        }
+
+        // --- Game System ---
+        const topics = ["Albert Einstein", "Pizza", "Ancient Egypt", "Batman", "Internet", "Coffee", "Mars", "Japan", "Chess", "Dinosaur"];
+
+        function rollTopics() {
+            const filtered = topics.sort(() => 0.5 - Math.random());
+            state.start = filtered[0];
+            state.target = filtered[1];
+            document.getElementById('solo-start').innerText = state.start;
+            document.getElementById('solo-target').innerText = state.target;
+        }
+
+        document.getElementById('btn-roll').onclick = () => {
+            if(state.coins >= 2) { state.coins -= 2; rollTopics(); saveGame(); }
+            else { alert("Not enough coins!"); }
+        };
+
+        function updateStats() {
+            document.getElementById('coins-val').innerText = state.coins;
+            document.getElementById('streak-val').innerText = state.streak;
+        }
+
+        async function loadWiki(title) {
             document.getElementById('loader').classList.remove('hidden');
+            document.getElementById('wiki-area').innerHTML = "";
             document.getElementById('current-title').innerText = title;
-            const container = document.getElementById('game-breadcrumbs');
-            container.innerHTML = state.path.map(s => `<span class='text-xs'>${s}</span>`).join(' › ');
             try {
-                const res = await fetch(`https://${state.language}.wikipedia.org/w/api.php?origin=*&action=parse&page=${encodeURIComponent(title)}&prop=text&format=json&disableeditsection=true&redirects=true`);
+                const res = await fetch(`https://en.wikipedia.org/w/api.php?origin=*&action=parse&page=${encodeURIComponent(title)}&prop=text&format=json&redirects=true`);
                 const data = await res.json();
-                const content = document.getElementById('wiki-content-area');
-                content.innerHTML = data.parse.text['*'];
-                content.querySelectorAll('a').forEach(link => {
-                    const href = link.getAttribute('href');
-                    if (href && href.startsWith('/wiki/') && !href.includes(':') && !href.includes('#')) {
-                        link.onclick = (e) => { e.preventDefault(); handleNavigation(decodeURIComponent(href.replace('/wiki/', '')).replace(/_/g, ' ')); };
-                    } else { link.style.pointerEvents = 'none'; }
+                document.getElementById('wiki-area').innerHTML = data.parse.text['*'];
+                document.querySelectorAll('#wiki-area a').forEach(a => {
+                    const href = a.getAttribute('href');
+                    if(href && href.startsWith('/wiki/') && !href.includes(':')) {
+                        a.onclick = (e) => { e.preventDefault(); navigate(decodeURIComponent(href.replace('/wiki/', '')).replace(/_/g, ' ')); };
+                    } else { a.style.pointerEvents = 'none'; a.style.color = 'black'; }
                 });
-            } catch(e) {} finally { document.getElementById('loader').classList.add('hidden'); }
+            } catch(e) { alert("Error loading page."); }
+            document.getElementById('loader').classList.add('hidden');
         }
 
-        function handleNavigation(title) {
-            state.clicks++; state.path.push(title);
+        function navigate(title) {
+            state.clicks++;
             document.getElementById('click-count').innerText = state.clicks;
-            if (title.toLowerCase() === state.targetTitle.toLowerCase()) {
-                state.finished = true;
-                const reward = ORIGINAL_MODES[currentModeIndex].id === 'classic' ? 1 : 10;
-                state.coins += reward;
-                state.totalRounds++;
-                saveUserData();
-                document.getElementById('final-clicks').innerText = state.clicks;
-                document.getElementById('coin-reward-display').innerText = `+${reward} 🪙`;
-                showScreen('results');
-            } else { loadArticle(title); }
+            if(title.toLowerCase() === state.target.toLowerCase()) {
+                alert(`Victory in ${state.clicks} clicks! +1 🪙`);
+                state.coins += 1;
+                state.streak += 1;
+                saveGame();
+                location.reload();
+            } else { loadWiki(title); }
         }
 
-        function showScreen(id) {
-            ['screen-menu', 'screen-game', 'screen-results'].forEach(s => document.getElementById(s).classList.add('hidden'));
-            document.getElementById('screen-' + id).classList.remove('hidden');
-            window.scrollTo(0,0);
-        }
+        document.getElementById('btn-start').onclick = () => {
+            state.clicks = 0;
+            document.getElementById('target-display').innerText = state.target;
+            document.getElementById('screen-menu').classList.add('hidden');
+            document.getElementById('screen-game').classList.remove('hidden');
+            loadWiki(state.start);
+        };
 
-        document.getElementById('btn-solo-start').onclick = startGame;
-        document.getElementById('btn-home').onclick = () => { updateUI(); showScreen('menu'); };
-        document.getElementById('btn-quit-trigger').onclick = () => showScreen('menu');
-        
-        document.getElementById('lang-en').onclick = () => { state.language = 'en'; updateUI(); rollSoloWords(true); };
-        document.getElementById('lang-de').onclick = () => { state.language = 'de'; updateUI(); rollSoloWords(true); };
-        document.getElementById('lang-es').onclick = () => { state.language = 'es'; updateUI(); rollSoloWords(true); };
+        document.getElementById('btn-quit').onclick = () => location.reload();
+        document.getElementById('btn-logout').onclick = () => location.reload();
     </script>
 </body>
 </html>

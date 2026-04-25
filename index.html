@@ -255,6 +255,11 @@
                         <span class="text-xs font-black uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">Game Mode</span>
                         <span id="daily-notification" class="hidden bg-red-500 text-white text-[10px] font-black px-3 py-1 rounded-full animate-pulse">NEW CHALLENGE</span>
                     </div>
+
+                    <div id="reset-timer-container" class="mb-4 text-center">
+                        <span class="text-[10px] font-black uppercase tracking-widest text-blue-500 dark:text-blue-400" data-i18n="nextDaily">Next Daily in:</span>
+                        <span id="daily-countdown-val" class="ml-1 text-[10px] font-black tabular-nums text-gray-600 dark:text-gray-300">00:00:00</span>
+                    </div>
                     
                     <div class="flex items-center justify-between gap-4">
                         <button id="mode-prev" class="w-12 h-12 flex items-center justify-center rounded-2xl bg-gray-50 dark:bg-slate-700 hover:bg-gray-100 dark:hover:bg-slate-600 text-2xl font-bold text-gray-400">←</button>
@@ -501,6 +506,31 @@
                 span.style.fontSize = 1.5 + Math.random() * 5 + 'rem';
                 container.appendChild(span);
             }
+            
+            // Start Countdown logic
+            updateDailyCountdown();
+            setInterval(updateDailyCountdown, 1000);
+        }
+
+        function updateDailyCountdown() {
+            const now = new Date();
+            const tomorrow = new Date(now);
+            tomorrow.setDate(now.getDate() + 1);
+            tomorrow.setHours(0, 0, 0, 0);
+            
+            const diff = tomorrow - now;
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff / (1000 * 60)) % 60);
+            const seconds = Math.floor((diff / 1000) % 60);
+            
+            const timeStr = [
+                hours.toString().padStart(2, '0'),
+                minutes.toString().padStart(2, '0'),
+                seconds.toString().padStart(2, '0')
+            ].join(':');
+            
+            const el = document.getElementById('daily-countdown-val');
+            if (el) el.innerText = timeStr;
         }
 
         let peer = null;
@@ -545,6 +575,7 @@
                 modeClassic: "Classic", modeHard: "Hardcore", modeDaily: "Daily", modeLimited: "10 Clicks", outOfClicks: "Fuel Empty!",
                 shortcut: "Intel", shortcutDesc: "Approx steps.", jumpTo: "Possible jump", dailyStreak: "🔥 Streak:",
                 recoveryText: "⚠️ Streak at risk! Win Hardcore to restore.",
+                nextDaily: "Next Daily in:",
                 descClassic: "Start at the given article and reach the target with the fewest clicks possible.",
                 descHardcore: "Like Classic, but with extremely difficult and obscure terms. High stakes!",
                 descDaily: "A unique challenge refreshed every 24 hours. Build your streak and earn coins equal to your streak level!",
@@ -564,6 +595,7 @@
                 modeClassic: "Klassisch", modeHard: "Hardcore", modeDaily: "Daily", modeLimited: "10 Clicks", outOfClicks: "Keine Klicks mehr!",
                 shortcut: "Intel", shortcutDesc: "Ca. Schritte.", jumpTo: "Sprung zu", dailyStreak: "🔥 Streak:",
                 recoveryText: "⚠️ Streak in Gefahr! Gewinne Hardcore zur Rettung.",
+                nextDaily: "Nächste Challenge in:",
                 descClassic: "Starte beim ersten Artikel und erreiche das Ziel mit so wenigen Klicks wie möglich.",
                 descHardcore: "Wie Klassisch, aber mit extrem schweren und obskuren Begriffen. Hoher Einsatz!",
                 descDaily: "Eine tägliche Herausforderung. Baue eine Streak auf und erhalte Münzen in Höhe deines Streak-Levels!",
@@ -583,6 +615,7 @@
                 modeClassic: "Clásico", modeHard: "Hardcore", modeDaily: "Diario", modeLimited: "10 Clicks", outOfClicks: "Sin clicks!",
                 shortcut: "Intel", shortcutDesc: "Pasos.", jumpTo: "Salto", dailyStreak: "🔥 Racha:",
                 recoveryText: "⚠️ Racha en riesgo! Gana Hardcore para restaurar.",
+                nextDaily: "Próximo reto en:",
                 descClassic: "Comienza en el artículo dado y llega al objetivo con la menor cantidad de clics.",
                 descHardcore: "Como el clásico, pero con términos extremadamente difíciles. ¡Gran riesgo!",
                 descDaily: "Un desafío único cada 24 horas. ¡Aumenta tu racha y gana monedas según tu nivel de racha!",
@@ -654,6 +687,10 @@
             const todayStr = new Date().toISOString().split('T')[0];
             const showNew = mode.id === 'daily' && state.lastDailyWin !== todayStr;
             document.getElementById('daily-notification').classList.toggle('hidden', !showNew);
+            
+            // Only show timer on daily mode
+            document.getElementById('reset-timer-container').classList.toggle('hidden', mode.id !== 'daily');
+
             const multiTab = document.getElementById('tab-multi');
             if (mode.id !== 'classic') { multiTab.classList.add('opacity-40', 'cursor-not-allowed', 'bg-gray-200'); if (state.isMultiplayer) document.getElementById('tab-solo').click(); }
             else { multiTab.classList.remove('opacity-40', 'cursor-not-allowed', 'bg-gray-200'); }

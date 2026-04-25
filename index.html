@@ -98,6 +98,15 @@
             100% { transform: rotate(360deg); }
         }
 
+        @keyframes slideInRight {
+            0% { transform: translateX(50%); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideInLeft {
+            0% { transform: translateX(-50%); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
+        }
+
         .breadcrumb-scroll::-webkit-scrollbar {
             height: 4px;
         }
@@ -109,114 +118,135 @@
 </head>
 <body class="min-h-screen relative">
 
-    <!-- Language Toggle -->
-    <div class="fixed top-4 right-4 flex gap-1 bg-white p-1 rounded-lg shadow-sm border border-gray-200 z-50">
-        <button id="lang-en" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-md font-bold text-xs transition">EN</button>
-        <button id="lang-de" class="px-3 py-1 text-gray-500 hover:bg-gray-100 rounded-md font-bold text-xs transition">DE</button>
-        <button id="lang-es" class="px-3 py-1 text-gray-500 hover:bg-gray-100 rounded-md font-bold text-xs transition">ES</button>
+    <!-- Top UI (Language & Streak) -->
+    <div class="fixed top-4 right-4 flex items-center gap-3 z-50">
+        <!-- Streak Display -->
+        <div id="streak-top-ui" class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl shadow-sm border border-gray-100 font-black text-gray-700 select-none">
+            <span class="text-orange-500">🔥</span>
+            <span id="streak-val-top">0</span>
+            <button id="btn-calendar" class="ml-1 text-gray-400 hover:text-blue-500 transition">📅</button>
+        </div>
+
+        <div class="flex gap-1 bg-white p-1 rounded-lg shadow-sm border border-gray-200">
+            <button id="lang-en" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-md font-bold text-xs transition">EN</button>
+            <button id="lang-de" class="px-3 py-1 text-gray-500 hover:bg-gray-100 rounded-md font-bold text-xs transition">DE</button>
+            <button id="lang-es" class="px-3 py-1 text-gray-500 hover:bg-gray-100 rounded-md font-bold text-xs transition">ES</button>
+        </div>
     </div>
 
     <!-- Menu Screen -->
-    <div id="screen-menu" class="flex flex-col items-center justify-center min-h-screen p-4 bg-gradient-to-br from-gray-100 to-gray-200">
-        <div class="bg-white p-8 rounded-2xl shadow-xl max-w-lg w-full text-center border border-gray-100">
-            <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl shadow-sm">
-                🌐
-            </div>
-            <h1 class="text-4xl font-black mb-2 text-gray-800 tracking-tight" data-i18n="title">The Wiki Game</h1>
-            <p class="text-gray-500 mb-8 font-medium" data-i18n="subtitle">Race to the target article. First to finish wins!</p>
+    <div id="screen-menu" class="flex flex-col items-center justify-center min-h-screen p-4 bg-gradient-to-br from-gray-100 to-gray-200 overflow-x-hidden relative">
+        
+        <div class="relative w-full max-w-lg flex items-center justify-center mx-auto">
             
-            <!-- Mode Toggle -->
-            <div class="flex gap-2 mb-6 p-1 bg-gray-100 rounded-xl">
-                <button id="tab-solo" class="flex-1 py-2 bg-white text-blue-600 rounded-lg font-bold shadow-sm transition" data-i18n="tabSolo">Single Player</button>
-                <button id="tab-multi" class="flex-1 py-2 text-gray-500 hover:text-gray-700 rounded-lg font-bold transition" data-i18n="tabMulti">Multiplayer</button>
-            </div>
+            <button id="mode-prev" class="absolute -left-12 sm:-left-16 z-30 w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-xl border border-gray-100 hover:bg-gray-50 transition active:scale-95 text-3xl font-bold text-gray-600">&lsaquo;</button>
 
-            <!-- Single Player Setup -->
-            <div id="solo-setup" class="w-full mb-4">
-                <div class="flex flex-col gap-3 mb-6">
-                    <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 text-left">
-                        <span class="text-xs font-bold text-blue-400 uppercase tracking-widest block mb-1" data-i18n="startArticle">Start Article</span>
-                        <div id="solo-start" class="font-bold text-blue-700 text-lg">Loading...</div>
-                    </div>
-                    <div class="flex justify-center -my-5 relative z-10">
-                        <div class="text-gray-300 bg-white p-1 rounded-full shadow-sm border font-bold text-sm">➔</div>
-                    </div>
-                    <div class="bg-red-50 p-4 rounded-xl border border-red-100 text-left">
-                        <span class="text-xs font-bold text-red-400 uppercase tracking-widest block mb-1" data-i18n="targetArticle">Target Article</span>
-                        <div id="solo-target" class="font-bold text-red-700 text-lg">Loading...</div>
-                    </div>
+            <div id="main-menu-box" class="bg-white p-8 rounded-3xl shadow-xl w-full text-center border border-gray-100 z-20 relative">
+                <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl shadow-sm">
+                    🌐
+                </div>
+                <h1 class="text-4xl font-black mb-2 text-gray-800 tracking-tight" data-i18n="title">The Wiki Game</h1>
+                
+                <div class="relative h-10 mb-6 mt-2 flex items-center justify-center overflow-hidden w-full">
+                    <p id="mode-display" class="font-black text-2xl tracking-wide absolute w-full text-center text-blue-600">Classic</p>
+                    <span id="daily-notification" class="hidden absolute right-4 sm:right-12 top-0 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full animate-bounce">NEW!</span>
                 </div>
                 
-                <label class="flex items-center gap-3 p-3 mb-4 bg-gray-50 rounded-xl border border-gray-200 cursor-pointer hover:bg-gray-100 transition">
-                    <input type="checkbox" id="solo-easy-mode" class="w-5 h-5 text-blue-600 rounded">
-                    <span class="text-sm font-bold text-gray-700" data-i18n="enableEasy">Enable Easy Mode (Back Button)</span>
-                </label>
-
-                <div class="flex gap-3">
-                    <button id="btn-solo-roll" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-bold transition shadow-sm active:scale-95" data-i18n="btnRandom">🎲 Random</button>
-                    <button id="btn-solo-start" class="flex-[2] py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition shadow-md active:scale-95" data-i18n="btnStartSolo">🚀 Start Solo Game</button>
-                </div>
-                <div id="personal-record" class="mt-6 text-sm font-semibold text-gray-400">
-                    <span data-i18n="personalRecord">🏆 Personal Record:</span> <span id="record-val" class="text-gray-600">None yet</span>
-                </div>
-            </div>
-
-            <!-- Multiplayer Setup -->
-            <div id="multiplayer-setup" class="hidden w-full mb-4">
-                <!-- Main Buttons -->
-                <div id="role-selection" class="flex gap-4 mb-4">
-                    <button id="btn-host" class="flex-1 py-4 bg-blue-600 text-white rounded-xl font-bold shadow-md hover:bg-blue-700 transition active:scale-95 text-lg" data-i18n="btnHost">Host Session</button>
-                    <button id="btn-show-join" class="flex-1 py-4 bg-white border-2 border-blue-600 text-blue-600 rounded-xl font-bold shadow-sm hover:bg-blue-50 transition active:scale-95 text-lg" data-i18n="btnShowJoin">Join Session</button>
+                <div id="recovery-prompt" class="hidden mb-4 p-3 bg-orange-50 border border-orange-200 rounded-xl text-sm text-orange-700 font-bold animate-pulse" data-i18n="recoveryText">
+                    ⚠️ Streak at risk! Win a Hard game to restore it.
                 </div>
 
-                <!-- Join Input Area -->
-                <div id="join-section" class="hidden flex flex-col gap-2 mb-4 bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <label class="text-xs font-bold text-gray-500 uppercase" data-i18n="enterCode">Enter 6-Character Code</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="join-code" placeholder="XXXXXX" class="flex-1 p-3 border border-gray-300 rounded-lg uppercase font-black text-center tracking-widest text-2xl outline-none focus:border-blue-500 transition" maxlength="6">
-                        <button id="btn-join-submit" class="py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold transition" data-i18n="btnJoin">Join</button>
-                    </div>
-                    <p id="join-error" class="text-red-500 text-sm font-bold hidden mt-1" data-i18n="codeNotFound">Code not found!</p>
+                <p id="multi-subtitle" class="text-gray-500 mb-8 font-medium hidden" data-i18n="subtitle">Race to the target article. First to finish wins!</p>
+                
+                <div class="flex gap-2 mb-6 p-1 bg-gray-100 rounded-xl">
+                    <button id="tab-solo" class="flex-1 py-2 bg-white text-blue-600 rounded-lg font-bold shadow-sm transition" data-i18n="tabSolo">Single Player</button>
+                    <button id="tab-multi" class="flex-1 py-2 text-gray-500 hover:text-gray-700 rounded-lg font-bold transition" data-i18n="tabMulti">Multiplayer</button>
                 </div>
 
-                <!-- Lobby Area -->
-                <div id="lobby-section" class="hidden bg-white border border-gray-200 p-6 rounded-xl text-left shadow-inner">
-                    <div class="mb-6 text-center bg-gray-50 py-3 rounded-lg border border-gray-200">
-                        <span class="text-gray-500 text-xs font-bold uppercase tracking-wider block" data-i18n="sessionCode">Session Code</span>
-                        <div id="display-code" class="text-4xl font-black text-gray-800 tracking-[0.2em] mt-1 select-all">------</div>
-                    </div>
-                    
+                <div id="solo-setup" class="w-full mb-4">
                     <div class="flex flex-col gap-3 mb-6">
-                        <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                        <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 text-left">
                             <span class="text-xs font-bold text-blue-400 uppercase tracking-widest block mb-1" data-i18n="startArticle">Start Article</span>
-                            <div id="lobby-start" class="font-bold text-blue-700 text-lg">Loading...</div>
+                            <div id="solo-start" class="font-bold text-blue-700 text-lg">Loading...</div>
                         </div>
                         <div class="flex justify-center -my-5 relative z-10">
                             <div class="text-gray-300 bg-white p-1 rounded-full shadow-sm border font-bold text-sm">➔</div>
                         </div>
-                        <div class="bg-red-50 p-4 rounded-xl border border-red-100">
+                        <div class="bg-red-50 p-4 rounded-xl border border-red-100 text-left">
                             <span class="text-xs font-bold text-red-400 uppercase tracking-widest block mb-1" data-i18n="targetArticle">Target Article</span>
-                            <div id="lobby-target" class="font-bold text-red-700 text-lg">Loading...</div>
+                            <div id="solo-target" class="font-bold text-red-700 text-lg">Loading...</div>
                         </div>
                     </div>
+                    
+                    <label class="flex items-center gap-3 p-3 mb-4 bg-gray-50 rounded-xl border border-gray-200 cursor-pointer hover:bg-gray-100 transition">
+                        <input type="checkbox" id="solo-easy-mode" class="w-5 h-5 text-blue-600 rounded">
+                        <span class="text-sm font-bold text-gray-700" data-i18n="enableEasy">Enable Easy Mode (Back Button)</span>
+                    </label>
 
-                    <!-- Host Controls -->
-                    <div id="host-controls" class="hidden flex flex-col gap-3">
-                        <button id="btn-lobby-refresh" class="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-bold transition shadow-sm active:scale-95" data-i18n="btnRefresh">🔄 Refresh Words</button>
-                        
-                        <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200 cursor-pointer hover:bg-gray-100 transition">
-                            <input type="checkbox" id="lobby-easy-mode" class="w-5 h-5 text-blue-600 rounded">
-                            <span class="text-sm font-bold text-gray-700" data-i18n="enableEasy">Enable Easy Mode (Back Button)</span>
-                        </label>
-
-                        <button id="btn-lobby-start" class="w-full py-4 bg-green-500 text-white rounded-xl font-black text-lg mt-2 transition shadow-md disabled:opacity-50 disabled:bg-gray-400" disabled>Waiting for P2 to Join...</button>
-                    </div>
-
-                    <!-- Joiner Status -->
-                    <div id="joiner-status" class="hidden text-center text-gray-500 font-bold p-4 bg-gray-50 rounded-xl border border-gray-200 animate-pulse" data-i18n="waitingJoin">
-                        Waiting for Host to start game...
+                    <div class="flex gap-3">
+                        <button id="btn-solo-roll" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-bold transition shadow-sm active:scale-95" data-i18n="btnRandom">🎲 Random</button>
+                        <button id="btn-solo-start" class="flex-[2] py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition shadow-md active:scale-95" data-i18n="btnStartSolo">🚀 Start Solo Game</button>
                     </div>
                 </div>
+
+                <div id="multiplayer-setup" class="hidden w-full mb-4">
+                    <div id="role-selection" class="flex gap-4 mb-4">
+                        <button id="btn-host" class="flex-1 py-4 bg-blue-600 text-white rounded-xl font-bold shadow-md hover:bg-blue-700 transition active:scale-95 text-lg" data-i18n="btnHost">Host Session</button>
+                        <button id="btn-show-join" class="flex-1 py-4 bg-white border-2 border-blue-600 text-blue-600 rounded-xl font-bold shadow-sm hover:bg-blue-50 transition active:scale-95 text-lg" data-i18n="btnShowJoin">Join Session</button>
+                    </div>
+                    <div id="join-section" class="hidden flex flex-col gap-2 mb-4 bg-gray-50 p-4 rounded-xl border border-gray-200">
+                        <label class="text-xs font-bold text-gray-500 uppercase" data-i18n="enterCode">Enter 6-Character Code</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="join-code" placeholder="XXXXXX" class="flex-1 p-3 border border-gray-300 rounded-lg uppercase font-black text-center tracking-widest text-2xl outline-none focus:border-blue-500 transition" maxlength="6">
+                            <button id="btn-join-submit" class="py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold transition" data-i18n="btnJoin">Join</button>
+                        </div>
+                        <p id="join-error" class="text-red-500 text-sm font-bold hidden mt-1" data-i18n="codeNotFound">Code not found!</p>
+                    </div>
+                    <div id="lobby-section" class="hidden bg-white border border-gray-200 p-6 rounded-xl text-left shadow-inner">
+                        <div class="mb-6 text-center bg-gray-50 py-3 rounded-lg border border-gray-200">
+                            <span class="text-gray-500 text-xs font-bold uppercase tracking-wider block" data-i18n="sessionCode">Session Code</span>
+                            <div id="display-code" class="text-4xl font-black text-gray-800 tracking-[0.2em] mt-1 select-all">------</div>
+                        </div>
+                        <div class="flex flex-col gap-3 mb-6">
+                            <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                                <span class="text-xs font-bold text-blue-400 uppercase tracking-widest block mb-1" data-i18n="startArticle">Start Article</span>
+                                <div id="lobby-start" class="font-bold text-blue-700 text-lg">Loading...</div>
+                            </div>
+                            <div class="flex justify-center -my-5 relative z-10"><div class="text-gray-300 bg-white p-1 rounded-full shadow-sm border font-bold text-sm">➔</div></div>
+                            <div class="bg-red-50 p-4 rounded-xl border border-red-100">
+                                <span class="text-xs font-bold text-red-400 uppercase tracking-widest block mb-1" data-i18n="targetArticle">Target Article</span>
+                                <div id="lobby-target" class="font-bold text-red-700 text-lg">Loading...</div>
+                            </div>
+                        </div>
+                        <div id="host-controls" class="hidden flex flex-col gap-3">
+                            <button id="btn-lobby-refresh" class="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-bold transition shadow-sm active:scale-95" data-i18n="btnRefresh">🔄 Refresh</button>
+                            <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200 cursor-pointer hover:bg-gray-100 transition">
+                                <input type="checkbox" id="lobby-easy-mode" class="w-5 h-5 text-blue-600 rounded">
+                                <span class="text-sm font-bold text-gray-700" data-i18n="enableEasy">Enable Easy Mode (Back Button)</span>
+                            </label>
+                            <button id="btn-lobby-start" class="w-full py-4 bg-green-500 text-white rounded-xl font-black text-lg mt-2 transition shadow-md disabled:opacity-50 disabled:bg-gray-400" disabled>Waiting for P2 to Join...</button>
+                        </div>
+                        <div id="joiner-status" class="hidden text-center text-gray-500 font-bold p-4 bg-gray-50 rounded-xl border border-gray-200 animate-pulse" data-i18n="waitingJoin">Waiting for Host...</div>
+                    </div>
+                </div>
+            </div>
+
+            <button id="mode-next" class="absolute -right-12 sm:-right-16 z-30 w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-xl border border-gray-100 hover:bg-gray-50 transition active:scale-95 text-3xl font-bold text-gray-600">&rsaquo;</button>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="modal-calendar" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-black text-gray-800">History</h3>
+                <button id="calendar-close" class="text-gray-400 hover:text-gray-600">✕</button>
+            </div>
+            <div id="calendar-grid" class="grid grid-cols-7 gap-2 mb-4 text-center">
+                <!-- Day cells -->
+            </div>
+            <div class="border-t pt-4 text-center">
+                <p class="text-sm text-gray-500">Total Rounds: <span id="total-rounds-val" class="font-bold text-blue-600">0</span></p>
             </div>
         </div>
     </div>
@@ -231,29 +261,32 @@
                         <span id="game-target-display" class="font-bold text-red-600">Target</span>
                     </div>
                     <div class="flex items-center gap-6">
+                        <div id="multiplayer-countdown" class="hidden bg-red-50 px-3 py-1 rounded-full border border-red-100 flex items-center gap-2">
+                            <span class="text-xs font-bold text-red-500 animate-pulse">⏰</span>
+                            <span id="countdown-val" class="text-sm font-black text-red-600">120</span>
+                        </div>
                         <div id="easy-controls" class="hidden">
                             <button id="btn-back" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 border rounded text-sm font-bold transition" data-i18n="btnBack">← Back</button>
                         </div>
                         <div class="text-center">
                             <span class="block text-xs text-gray-400 uppercase font-bold" data-i18n="clicks">Clicks</span>
-                            <span id="click-count" class="font-bold text-xl">0</span>
+                            <div class="font-bold text-xl text-gray-800">
+                                <span id="click-count">0</span><span id="click-max" class="hidden text-gray-400 text-sm"> / 10</span>
+                            </div>
                         </div>
                         <button id="btn-quit-trigger" class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 font-bold text-gray-600" data-i18n="btnGiveUp">Give Up</button>
                     </div>
                 </div>
-                <div class="flex items-center gap-2 overflow-x-auto whitespace-nowrap pb-1 breadcrumb-scroll text-sm text-gray-500 border-t pt-2" id="game-breadcrumbs">
-                </div>
-                <div id="opponent-progress-container" class="hidden flex items-center gap-2 overflow-x-auto whitespace-nowrap pb-1 breadcrumb-scroll text-sm text-gray-400 border-t pt-2 mt-1">
+                <div class="flex items-center gap-2 overflow-x-auto whitespace-nowrap pb-1 breadcrumb-scroll text-sm text-gray-500 border-t pt-2" id="game-breadcrumbs"></div>
+                <div id="opponent-progress-container" class="hidden items-center gap-2 overflow-x-auto whitespace-nowrap pb-1 breadcrumb-scroll text-sm text-gray-400 border-t pt-2 mt-1">
                     <span class="font-bold text-gray-500 text-xs uppercase"><span data-i18n="oppProgress">Opponent</span> (<span id="opp-live-clicks">0</span>):</span>
                     <div id="opp-live-path" class="flex items-center gap-2"></div>
                 </div>
             </div>
         </header>
-
         <main class="flex-grow max-w-4xl mx-auto w-full p-6 bg-white shadow-sm mt-4 mb-10 rounded-lg">
             <h1 id="current-title" class="text-3xl font-serif border-b pb-2 mb-6">Article Title</h1>
-            <div id="wiki-content-area" class="wiki-content">
-            </div>
+            <div id="wiki-content-area" class="wiki-content"></div>
             <div id="loader" class="hidden flex flex-col items-center py-20">
                 <div class="loading-spinner mb-4"></div>
                 <p class="text-gray-500 font-medium" data-i18n="fetching">Fetching Wikipedia data...</p>
@@ -261,287 +294,140 @@
         </main>
     </div>
 
-    <!-- Results Screen -->
+    <!-- Result Screen -->
     <div id="screen-results" class="hidden flex flex-col items-center justify-center min-h-screen p-4 bg-gray-50">
-        <div class="bg-white p-10 rounded-3xl shadow-2xl max-w-2xl w-full text-center border border-gray-100">
-            <div id="result-icon" class="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl">
-                🏁
-            </div>
+        <div class="bg-white p-10 rounded-3xl shadow-2xl max-w-4xl w-full text-center border border-gray-100">
+            <div id="result-icon" class="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl">🏁</div>
             <h1 id="result-title" class="text-5xl font-black mb-2 text-gray-800" data-i18n="victoryTitle">Victory!</h1>
-            <p id="result-subtitle" class="text-gray-500 mb-10 text-lg font-medium" data-i18n="victorySub">You navigated through the web of knowledge.</p>
-
-            <div class="grid grid-cols-2 gap-6 mb-10">
-                <div class="p-6 bg-blue-50 rounded-2xl border border-blue-100">
+            <p id="result-subtitle" class="text-gray-500 mb-10 text-lg font-medium" data-i18n="victorySub">Success!</p>
+            <div class="flex flex-wrap gap-6 mb-10 items-center justify-center">
+                <div class="p-6 bg-blue-50 rounded-2xl border border-blue-100 min-w-[150px]">
                     <span class="block text-xs text-blue-400 font-bold uppercase tracking-widest mb-1" data-i18n="yourClicks">Your Clicks</span>
                     <span id="final-clicks" class="text-4xl font-black text-blue-700">0</span>
                 </div>
-                <div id="opponent-clicks-container" class="p-6 bg-gray-50 rounded-2xl border border-gray-200">
+                <div id="opponent-clicks-container" class="p-6 bg-gray-50 rounded-2xl border border-gray-200 min-w-[150px] hidden">
                     <span class="block text-xs text-gray-400 font-bold uppercase tracking-widest mb-1" data-i18n="oppClicks">Opponent Clicks</span>
                     <span id="opponent-clicks" class="text-4xl font-black text-gray-700">?</span>
                 </div>
-                <div id="personal-best-container" class="hidden p-6 bg-green-50 rounded-2xl border border-green-100">
-                    <span class="block text-xs text-green-400 font-bold uppercase tracking-widest mb-1" data-i18n="personalBest">Personal Best</span>
-                    <span id="final-record" class="text-4xl font-black text-green-700">0</span>
-                </div>
             </div>
-
-            <div class="flex flex-col md:flex-row gap-6 mb-10">
-                <div class="flex-1 text-left w-full">
-                    <h3 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
-                        <span>📍</span> <span data-i18n="yourPath">Your Path</span>
-                    </h3>
-                    <div id="path-list" class="text-sm text-gray-600 space-y-2 max-h-52 overflow-y-auto p-4 bg-gray-50 rounded-xl border">
-                        <!-- Path items -->
-                    </div>
-                </div>
+            <div class="flex flex-col md:flex-row gap-6 mb-10 text-left">
+                <div class="flex-1"><h3 class="font-bold mb-3">📍 Your Path</h3><div id="path-list" class="text-sm space-y-2 p-4 bg-gray-50 rounded-xl border max-h-40 overflow-y-auto"></div></div>
+                <div class="flex-1"><h3 class="font-bold mb-3">⚡ Shortcut</h3><div id="theoretical-path-display" class="p-4 bg-amber-50 rounded-xl border text-sm italic">Loading...</div></div>
             </div>
-
-            <button id="btn-home" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold text-xl transition-all shadow-lg hover:shadow-blue-200 active:scale-95" data-i18n="btnBackMenu">Back to Menu</button>
+            <button id="btn-home" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold text-xl transition-all shadow-lg active:scale-95" data-i18n="btnBackMenu">Back to Menu</button>
         </div>
     </div>
 
     <!-- Quit Modal -->
     <div id="modal-quit" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl text-center">
-            <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
-                ❓
-            </div>
+        <div class="bg-white rounded-3xl p-8 max-sm w-full shadow-2xl text-center">
             <h3 class="text-2xl font-black text-gray-800 mb-2" data-i18n="giveUpTitle">Give Up?</h3>
-            <p class="text-gray-500 mb-8 font-medium" data-i18n="giveUpSub">Are you sure you want to quit this run?</p>
-            <div class="flex gap-3">
-                <button id="modal-cancel" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl font-bold transition" data-i18n="btnStay">Stay</button>
-                <button id="modal-confirm" class="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition shadow-md" data-i18n="btnQuit">Quit</button>
+            <div class="flex gap-3 mt-8">
+                <button id="modal-cancel" class="flex-1 py-3 bg-gray-100 rounded-xl font-bold transition" data-i18n="btnStay">Stay</button>
+                <button id="modal-confirm" class="flex-1 py-3 bg-red-600 text-white rounded-xl font-bold transition shadow-md" data-i18n="btnQuit">Quit</button>
             </div>
         </div>
     </div>
 
-    <!-- MULTIPLAYER AND GAME LOGIC -->
     <script>
         // --- PeerJS Setup ---
         let peer = null;
         let peerConn = null;
-
-        function sendPeerData(data) {
-            if (peerConn && peerConn.open) {
-                peerConn.send(data);
-            }
-        }
-
+        function sendPeerData(data) { if (peerConn && peerConn.open) peerConn.send(data); }
         function handlePeerData(data) {
             if (data.type === 'lobbyUpdate') {
                 state.startTitle = data.startTitle;
                 state.targetTitle = data.targetTitle;
                 state.easyMode = data.easyMode;
-                if (data.language && data.language !== state.language) {
-                    state.language = data.language;
-                    updateLanguageButtonsUI(state.language);
-                    updateUI();
-                }
+                if (data.language && data.language !== state.language) { state.language = data.language; updateLanguageButtonsUI(state.language); updateUI(); }
                 updateLobbyWords();
-            } else if (data.type === 'startGame') {
-                startGame();
-            } else if (data.type === 'progress') {
-                state.opponentClicks = data.clicks;
-                state.opponentPath = data.path;
-                updateOpponentProgressUI();
-            } else if (data.type === 'finish') {
-                finishGame(false, data.clicks);
-            }
+            } else if (data.type === 'startGame') { startGame(); }
+            else if (data.type === 'progress') { state.opponentClicks = data.clicks; state.opponentPath = data.path; updateOpponentProgressUI(); }
+            else if (data.type === 'finish') { state.opponentFinishedClicks = data.clicks; startCountdown(); }
         }
 
-        // --- Translation Data ---
         const uiDict = {
             en: {
                 title: "The Wiki Game", subtitle: "Race to the target article. First to finish wins!", tabSolo: "Single Player", tabMulti: "Multiplayer",
-                startArticle: "Start Article", targetArticle: "Target Article", enableEasy: "Enable Easy Mode (Back Button)", btnRandom: "🎲 Random",
-                btnStartSolo: "🚀 Start Solo Game", personalRecord: "🏆 Personal Record:", noneYet: "None yet", btnHost: "Host Session",
-                btnShowJoin: "Join Session", enterCode: "Enter 6-Character Code", btnJoin: "Join", codeNotFound: "Code not found!", sessionCode: "Session Code",
-                btnRefresh: "🔄 Refresh Words", target: "Target", clicks: "Clicks", btnBack: "← Back", btnGiveUp: "Give Up", fetching: "Fetching Wikipedia data...",
-                victoryTitle: "Victory!", victorySub: "You navigated through the web of knowledge.", yourClicks: "Your Clicks", oppClicks: "Opponent Clicks",
-                personalBest: "Personal Best", yourPath: "Your Path", btnBackMenu: "Back to Menu", giveUpTitle: "Give Up?", giveUpSub: "Are you sure you want to quit this run?",
-                btnStay: "Stay", btnQuit: "Quit", loading: "Loading...", waitHostStart: "Start Game", waitHostWait: "Waiting for P2 to Join...", waitJoiner: "Waiting for Host to start game...",
-                youWon: "You Won!", success: "Success!", wonSub: "You reached the target first!", youLost: "You Lost!", lostSub: "Opponent found the path faster.",
-                notFinished: "Not finished", clickStr: " clicks", multiErr: "Multiplayer connection failed.", oppProgress: "Opponent"
+                startArticle: "Start Article", targetArticle: "Target Article", enableEasy: "Easy Mode (Back Button)", btnRandom: "🎲 Random",
+                btnStartSolo: "🚀 Start Solo Game", noneYet: "None yet", btnHost: "Host Session",
+                btnShowJoin: "Join Session", enterCode: "Code", btnJoin: "Join", codeNotFound: "Not found!", sessionCode: "Session Code",
+                btnRefresh: "🔄 Refresh", target: "Target", clicks: "Clicks", btnBack: "← Back", btnGiveUp: "Give Up", fetching: "Loading...",
+                victoryTitle: "Victory!", victorySub: "You won!", yourClicks: "Your Clicks", oppClicks: "Opponent Clicks",
+                yourPath: "Your Path", btnBackMenu: "Back to Menu", giveUpTitle: "Give Up?", giveUpSub: "Sure?",
+                btnStay: "Stay", btnQuit: "Quit", loading: "Loading...", waitHostStart: "Start Game", waitHostWait: "Wait for P2...", waitJoiner: "Wait for Host...",
+                youWon: "You Won!", success: "Success!", wonSub: "Winner!", youLost: "You Lost!", lostSub: "Try again.",
+                notFinished: "Not finished", clickStr: " clicks", multiErr: "Connection failed.", oppProgress: "Opponent",
+                modeClassic: "Classic", modeHard: "Hard Mode", modeDaily: "Daily Challenge", modeLimited: "Limited (10 Max)", outOfClicks: "Out of clicks!",
+                shortcut: "Shortcut", shortcutDesc: "Approx steps.", jumpTo: "Possible jump", dailyStreak: "🔥 Daily Streak:",
+                recoveryText: "⚠️ Streak at risk! Win a Hard game to restore it."
             },
             de: {
                 title: "Das Wiki Spiel", subtitle: "Finde als Erster den Zielartikel!", tabSolo: "Einzelspieler", tabMulti: "Mehrspieler",
-                startArticle: "Startartikel", targetArticle: "Zielartikel", enableEasy: "Einfacher Modus (Zurück-Button erlauben)", btnRandom: "🎲 Zufall",
-                btnStartSolo: "🚀 Spiel starten", personalRecord: "🏆 Rekord:", noneYet: "Noch keiner", btnHost: "Spiel erstellen",
-                btnShowJoin: "Spiel beitreten", enterCode: "6-stelligen Code eingeben", btnJoin: "Beitreten", codeNotFound: "Code nicht gefunden!", sessionCode: "Spielcode",
-                btnRefresh: "🔄 Neue Begriffe", target: "Ziel", clicks: "Klicks", btnBack: "← Zurück", btnGiveUp: "Aufgeben", fetching: "Lade Wikipedia-Daten...",
-                victoryTitle: "Gewonnen!", victorySub: "Du hast dich durch das Netz des Wissens geklickt.", yourClicks: "Deine Klicks", oppClicks: "Gegner Klicks",
-                personalBest: "Dein Rekord", yourPath: "Dein Weg", btnBackMenu: "Zurück zum Menü", giveUpTitle: "Aufgeben?", giveUpSub: "Bist du sicher, dass du abbrechen willst?",
-                btnStay: "Bleiben", btnQuit: "Aufgeben", loading: "Lädt...", waitHostStart: "Spiel starten", waitHostWait: "Warte auf P2...", waitJoiner: "Warte auf den Host...",
-                youWon: "Gewonnen!", success: "Erfolg!", wonSub: "Du hast das Ziel zuerst erreicht!", youLost: "Verloren!", lostSub: "Der Gegner war schneller.",
-                notFinished: "Nicht fertig", clickStr: " Klicks", multiErr: "Multiplayer-Verbindung fehlgeschlagen.", oppProgress: "Gegner"
+                startArticle: "Startartikel", targetArticle: "Zielartikel", enableEasy: "Einfach (Zurück-Button)", btnRandom: "🎲 Zufall",
+                btnStartSolo: "🚀 Spiel starten", noneYet: "Keiner", btnHost: "Hosten",
+                btnShowJoin: "Beitreten", enterCode: "Code", btnJoin: "Join", codeNotFound: "Nicht gefunden!", sessionCode: "Code",
+                btnRefresh: "🔄 Refresh", target: "Ziel", clicks: "Klicks", btnBack: "← Zurück", btnGiveUp: "Aufgeben", fetching: "Lädt...",
+                victoryTitle: "Sieg!", victorySub: "Gewonnen!", yourClicks: "Deine Klicks", oppClicks: "Gegner Klicks",
+                yourPath: "Dein Weg", btnBackMenu: "Menü", giveUpTitle: "Aufgeben?", giveUpSub: "Sicher?",
+                btnStay: "Bleiben", btnQuit: "Aufgeben", loading: "Lädt...", waitHostStart: "Starten", waitHostWait: "Warte auf P2...", waitJoiner: "Warte auf Host...",
+                youWon: "Gewonnen!", success: "Erfolg!", wonSub: "Sieg!", youLost: "Verloren!", lostSub: "Pech gehabt.",
+                notFinished: "Nicht fertig", clickStr: " Klicks", multiErr: "Fehlgeschlagen.", oppProgress: "Gegner",
+                modeClassic: "Klassisch", modeHard: "Schwer", modeDaily: "Daily", modeLimited: "Limitiert", outOfClicks: "Keine Klicks mehr!",
+                shortcut: "Abkürzung", shortcutDesc: "Ca. Schritte.", jumpTo: "Sprung zu", dailyStreak: "🔥 Daily Streak:",
+                recoveryText: "⚠️ Streak in Gefahr! Gewinne ein schweres Spiel zur Rettung."
             },
             es: {
-                title: "El Juego de Wiki", subtitle: "¡Llega primero al artículo destino!", tabSolo: "Un Jugador", tabMulti: "Multijugador",
-                startArticle: "Artículo Inicial", targetArticle: "Artículo Destino", enableEasy: "Modo Fácil (Permitir botón atrás)", btnRandom: "🎲 Aleatorio",
-                btnStartSolo: "🚀 Iniciar Juego", personalRecord: "🏆 Mejor Récord:", noneYet: "Ninguno", btnHost: "Crear Sala",
-                btnShowJoin: "Unirse a Sala", enterCode: "Ingresa el código de 6 letras", btnJoin: "Unirse", codeNotFound: "¡Código no encontrado!", sessionCode: "Código de Sala",
-                btnRefresh: "🔄 Nuevas Palabras", target: "Destino", clicks: "Clics", btnBack: "← Atrás", btnGiveUp: "Rendirse", fetching: "Cargando datos...",
-                victoryTitle: "¡Victoria!", victorySub: "Has navegado por la red del conocimiento.", yourClicks: "Tus Clics", oppClicks: "Clics del Oponente",
-                personalBest: "Mejor Récord", yourPath: "Tu Camino", btnBackMenu: "Volver al Menú", giveUpTitle: "¿Rendirse?", giveUpSub: "¿Estás seguro de que quieres salir?",
-                btnStay: "Quedarse", btnQuit: "Salir", loading: "Cargando...", waitHostStart: "Iniciar Juego", waitHostWait: "Esperando a J2...", waitJoiner: "Esperando al anfitrión...",
-                youWon: "¡Ganaste!", success: "¡Éxito!", wonSub: "¡Llegaste primero al destino!", youLost: "¡Perdiste!", lostSub: "El oponente fue más rápido.",
-                notFinished: "No terminó", clickStr: " clics", multiErr: "Fallo en la conexión multijugador.", oppProgress: "Oponente"
+                title: "El Juego de Wiki", subtitle: "¡Llega primero!", tabSolo: "Un Jugador", tabMulti: "Multijugador",
+                startArticle: "Inicial", targetArticle: "Destino", enableEasy: "Modo Fácil", btnRandom: "🎲 Azar",
+                btnStartSolo: "🚀 Jugar", noneYet: "Ninguno", btnHost: "Host",
+                btnShowJoin: "Unirse", enterCode: "Código", btnJoin: "Join", codeNotFound: "Error", sessionCode: "Código",
+                btnRefresh: "🔄 Reset", target: "Destino", clicks: "Clicks", btnBack: "← Atrás", btnGiveUp: "Rendirse", fetching: "Cargando...",
+                victoryTitle: "Victoria!", victorySub: "Ganaste!", yourClicks: "Tus Clicks", oppClicks: "Clicks Oponente",
+                yourPath: "Tu Camino", btnBackMenu: "Menú", giveUpTitle: "Rendirse?", giveUpSub: "Seguro?",
+                btnStay: "Quedarse", btnQuit: "Salir", loading: "Cargando...", waitHostStart: "Jugar", waitHostWait: "Espera...", waitJoiner: "Espera host...",
+                youWon: "Ganaste!", success: "Éxito!", wonSub: "Victoria!", youLost: "Perdiste!", lostSub: "Inténtalo de nuevo.",
+                notFinished: "No terminó", clickStr: " clicks", multiErr: "Error conexión.", oppProgress: "Oponente",
+                modeClassic: "Clásico", modeHard: "Difícil", modeDaily: "Diario", modeLimited: "Límite", outOfClicks: "Sin clicks!",
+                shortcut: "Atajo", shortcutDesc: "Pasos.", jumpTo: "Salto", dailyStreak: "🔥 Racha:",
+                recoveryText: "⚠️ ¡Racha en riesgo! Gana un juego difícil para restaurarla."
             }
         };
 
-        // --- Game Setup Data ---
         const state = {
             language: 'en',
-            isMultiplayer: false,
-            isHost: false,
-            isPlaying: false,
-            sessionCode: '',
-            startTitle: '',
-            targetTitle: '',
-            currentTitle: '',
-            clicks: 0,
-            path: [],
-            easyMode: false,
-            finished: false,
-            opponentClicks: 0,
-            opponentPath: [],
-            record: localStorage.getItem('wiki_game_record') || null
+            isMultiplayer: false, isHost: false, isPlaying: false, sessionCode: '', startTitle: '', targetTitle: '', currentTitle: '',
+            clicks: 0, maxClicks: null, path: [], easyMode: false, finished: false,
+            opponentClicks: 0, opponentPath: [], opponentFinishedClicks: null, countdownInterval: null,
+            dailyStreak: parseInt(localStorage.getItem('wiki_daily_streak')) || 0,
+            lastDailyWin: localStorage.getItem('wiki_last_daily_win') || null,
+            history: JSON.parse(localStorage.getItem('wiki_history')) || {},
+            totalRounds: parseInt(localStorage.getItem('wiki_total_rounds')) || 0,
+            recoveryStreak: parseInt(localStorage.getItem('wiki_recovery_streak')) || 0
         };
 
         const getApiUrl = () => `https://${state.language}.wikipedia.org/w/api.php?origin=*&action=`;
         
         const POPULAR_TOPICS = {
-            en: [
-                "Apple Inc.", "Albert Einstein", "Ancient Egypt", "Artificial Intelligence", "Australia", 
-                "Batman", "Beer", "Berlin", "Bitcoin", "Brazil", "Canada", "Cat", "Chess", "Chocolate", 
-                "Coffee", "Cristiano Ronaldo", "Dinosaur", "Dog", "Earth", "Elon Musk", "English language", 
-                "Europe", "Facebook", "Football", "France", "Germany", "Google", "Harry Potter", "History", 
-                "Ice cream", "India", "Internet", "iPhone", "Italy", "Japan", "John F. Kennedy", "Jupiter", 
-                "Leonardo da Vinci", "London", "Mars", "Mathematics", "Michael Jackson", "Microsoft", 
-                "Moon", "Music", "NASA", "Netflix", "New York City", "Olympic Games", "Pacific Ocean", 
-                "Paris", "Physics", "Pizza", "Pokemon", "Pyramid", "Queen (band)", "Rome", "Russia", 
-                "Science", "Smartphone", "SpaceX", "Star Wars", "Super Mario", "Sushi", "Tea", "Tennis", 
-                "The Beatles", "The Simpsons", "Tiger", "Tokyo", "United Kingdom", "United States", 
-                "Video game", "Water", "Wikipedia", "World War II", "Youtube", "Zebra"
-            ],
-            de: [
-                "Apple", "Albert Einstein", "Altes Ägypten", "Künstliche Intelligenz", "Australien", 
-                "Batman", "Bier", "Berlin", "Bitcoin", "Brasilien", "Kanada", "Hauskatze", "Schach", "Schokolade", 
-                "Kaffee", "Cristiano Ronaldo", "Dinosaurier", "Haushund", "Erde", "Elon Musk", "Englische Sprache", 
-                "Europa", "Facebook", "Fußball", "Frankreich", "Deutschland", "Google", "Harry Potter", "Geschichte", 
-                "Speiseeis", "Indien", "Internet", "IPhone", "Italien", "Japan", "John F. Kennedy", "Jupiter", 
-                "Leonardo da Vinci", "London", "Mars", "Mathematik", "Michael Jackson", "Microsoft", 
-                "Mond", "Musik", "NASA", "Netflix", "New York City", "Olympische Spiele", "Pazifischer Ozean", 
-                "Paris", "Physik", "Pizza", "Pokémon", "Pyramide (Bauwerk)", "Queen (Band)", "Rom", "Russland", 
-                "Naturwissenschaft", "Smartphone", "SpaceX", "Star Wars", "Super Mario", "Sushi", "Tee", "Tennis", 
-                "The Beatles", "Die Simpsons", "Tiger", "Tokio", "Vereinigtes Königreich", "Vereinigte Staaten", 
-                "Computerspiel", "Wasser", "Wikipedia", "Zweiter Weltkrieg", "YouTube", "Zebra"
-            ],
-            es: [
-                "Apple", "Albert Einstein", "Antiguo Egipto", "Inteligencia artificial", "Australia", 
-                "Batman", "Cerveza", "Berlín", "Bitcoin", "Brasil", "Canadá", "Felis silvestris catus", "Ajedrez", "Chocolate", 
-                "Café", "Cristiano Ronaldo", "Dinosauria", "Canis familiaris", "Tierra", "Elon Musk", "Idioma inglés", 
-                "Europa", "Facebook", "Fútbol", "Francia", "Alemania", "Google", "Harry Potter", "Historia", 
-                "Helado", "India", "Internet", "IPhone", "Italia", "Japón", "John F. Kennedy", "Júpiter (planeta)", 
-                "Leonardo da Vinci", "Londres", "Marte (planeta)", "Matemáticas", "Michael Jackson", "Microsoft", 
-                "Luna", "Música", "NASA", "Netflix", "Nueva York", "Juegos Olímpicos", "Océano Pacífico", 
-                "París", "Física", "Pizza", "Pokémon", "Pirámide", "Queen", "Roma", "Rusia", 
-                "Ciencia", "Teléfono inteligente", "SpaceX", "Star Wars", "Super Mario", "Sushi", "Té", "Tenis", 
-                "The Beatles", "Los Simpson", "Panthera tigris", "Tokio", "Reino Unido", "Estados Unidos", 
-                "Videojuego", "Agua", "Wikipedia", "Segunda Guerra Mundial", "YouTube", "Cebra"
-            ]
+            en: ["Apple Inc.", "Albert Einstein", "Ancient Egypt", "Artificial Intelligence", "Australia", "Batman", "Beer", "Berlin", "Bitcoin", "Brazil", "Canada", "Cat", "Chess", "Chocolate", "Coffee", "Cristiano Ronaldo", "Dinosaur", "Dog", "Earth", "Elon Musk", "Facebook", "Football", "France", "Germany", "Google", "Harry Potter", "History", "India", "Internet", "iPhone", "Italy", "Japan", "Mars", "Music", "NASA", "Netflix", "New York City", "Physics", "Pizza", "Pokemon", "Rome", "Russia", "SpaceX", "Star Wars", "Sushi", "Tea", "Tennis", "United Kingdom", "United States", "Video game", "Water", "World War II", "Youtube", "Marie Curie", "Amazon River", "Basketball", "Mount Everest", "Stonehenge"],
+            de: ["Apple", "Albert Einstein", "Altes Ägypten", "Künstliche Intelligenz", "Australien", "Batman", "Bier", "Berlin", "Bitcoin", "Brasilien", "Kanada", "Hauskatze", "Schach", "Schokolade", "Kaffee", "Cristiano Ronaldo", "Dinosaurier", "Haushund", "Erde", "Elon Musk", "Europa", "Facebook", "Fußball", "Frankreich", "Deutschland", "Google", "Harry Potter", "Geschichte", "Speiseeis", "Indien", "Internet", "IPhone", "Italien", "Japan", "Jupiter", "London", "Mars", "Musik", "NASA", "Netflix", "New York City", "Pazifik", "Paris", "Physik", "Pizza", "Pokémon", "Rom", "Russland", "Smartphone", "SpaceX", "Star Wars", "Sushi", "Tee", "Tennis", "Tiger", "Tokio", "Zweiter Weltkrieg", "YouTube"],
+            es: ["Apple", "Albert Einstein", "Antiguo Egipto", "Inteligencia artificial", "Australia", "Batman", "Cerveza", "Berlín", "Bitcoin", "Brasil", "Canadá", "Gato", "Ajedrez", "Chocolate", "Café", "Cristiano Ronaldo", "Dinosaurio", "Perro", "Tierra", "Elon Musk", "Facebook", "Fútbol", "Francia", "Alemania", "Google", "Harry Potter", "Historia", "Helado", "India", "Internet", "IPhone", "Italia", "Japón", "Londres", "Marte", "Música", "NASA", "Netflix", "Nueva York", "Océano Pacífico", "París", "Física", "Pizza", "Pokémon", "Roma", "Rusia", "Ciencia", "SpaceX", "Star Wars", "Sushi", "Té", "Tenis", "YouTube"]
+        };
+        const HARD_TOPICS = {
+            en: ["Quantum entanglement", "Byzantine Empire", "Tardigrade", "Non-Euclidean geometry", "Glagolitic script", "Isotopes of gold", "Photosynthesis", "Linguistics", "Cuneiform", "Oort cloud", "Standard Model", "Voynich manuscript"],
+            de: ["Quantenverschränkung", "Byzantinisches Reich", "Bärtierchen", "Nichteuklidische Geometrie", "Glagolitische Schrift", "Goldisotope", "Photosynthese", "Linguistik", "Keilschrift", "Standardmodell", "Voynich-Manuskript"],
+            es: ["Entrelazamiento cuántico", "Imperio bizantino", "Tardigrada", "Geometría no euclidiana", "Alfabeto glagolítico", "Isótopos de oro", "Fotosíntesis", "Lingüística", "Modelo estándar", "Manuscrito Voynich"]
         };
 
-        const screens = {
-            menu: document.getElementById('screen-menu'),
-            game: document.getElementById('screen-game'),
-            results: document.getElementById('screen-results')
-        };
+        let currentModeIndex = 0;
+        let currentMODES = [];
+        const ORIGINAL_MODES = [
+            { id: 'daily', i18n: 'modeDaily', color: 'text-orange-500' },
+            { id: 'classic', i18n: 'modeClassic', color: 'text-blue-600' },
+            { id: 'hard', i18n: 'modeHard', color: 'text-red-600' },
+            { id: 'limited', i18n: 'modeLimited', color: 'text-purple-600' }
+        ];
 
-        function showScreen(screenId) {
-            Object.values(screens).forEach(s => s.classList.add('hidden'));
-            screens[screenId].classList.remove('hidden');
-            window.scrollTo(0, 0);
-        }
-
-        function updateUI() {
-            const lang = state.language;
-            const dict = uiDict[lang];
-
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (dict[key]) {
-                    if (el.tagName === 'INPUT' && el.type === 'text') {
-                        el.placeholder = dict[key];
-                    } else {
-                        el.innerText = dict[key];
-                    }
-                }
-            });
-
-            document.getElementById('joiner-status').innerText = dict.waitJoiner;
-            
-            const startBtn = document.getElementById('btn-lobby-start');
-            if (startBtn.disabled) {
-                startBtn.innerText = dict.waitHostWait;
-            } else {
-                startBtn.innerText = dict.waitHostStart;
-            }
-
-            if (state.record) {
-                document.getElementById('record-val').innerText = state.record + dict.clickStr;
-            } else {
-                document.getElementById('record-val').innerText = dict.noneYet;
-            }
-
-            ['solo-start', 'solo-target', 'lobby-start', 'lobby-target'].forEach(id => {
-                const el = document.getElementById(id);
-                if(el && el.innerText.includes("Load") || el.innerText.includes("Läd") || el.innerText.includes("Carg")) {
-                    el.innerText = dict.loading;
-                }
-            });
-        }
-
-        function updateLanguageButtonsUI(lang) {
-            const btnEn = document.getElementById('lang-en');
-            const btnDe = document.getElementById('lang-de');
-            const btnEs = document.getElementById('lang-es');
-            
-            const activeClass = "px-3 py-1 bg-blue-100 text-blue-700 rounded-md font-bold text-xs transition";
-            const inactiveClass = "px-3 py-1 text-gray-500 hover:bg-gray-100 rounded-md font-bold text-xs transition";
-            
-            btnEn.className = lang === 'en' ? activeClass : inactiveClass;
-            btnDe.className = lang === 'de' ? activeClass : inactiveClass;
-            btnEs.className = lang === 'es' ? activeClass : inactiveClass;
-        }
-
-        // --- Language Toggle Logic ---
-        function setLanguage(lang) {
-            if (state.isMultiplayer && !state.isHost) return;
-            state.language = lang;
-            
-            updateLanguageButtonsUI(lang);
-            updateUI();
-
-            if (!state.isMultiplayer || (state.isMultiplayer && state.isHost)) {
-                rollSoloWords(); 
-                if (state.isMultiplayer && peerConn && peerConn.open) {
-                    sendPeerData({ 
-                        type: 'lobbyUpdate',
-                        language: lang,
-                        startTitle: state.startTitle,
-                        targetTitle: state.targetTitle,
-                        easyMode: state.easyMode
-                    });
-                }
-            }
-        }
-
-        document.getElementById('lang-en').addEventListener('click', () => setLanguage('en'));
-        document.getElementById('lang-de').addEventListener('click', () => setLanguage('de'));
-        document.getElementById('lang-es').addEventListener('click', () => setLanguage('es'));
-
-        // --- Multiplayer Functions ---
         function generateCode() {
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
             let code = '';
@@ -551,158 +437,117 @@
             return code;
         }
 
-        function getRandomTopics() {
-            const topics = POPULAR_TOPICS[state.language];
-            const shuffled = [...topics].sort(() => 0.5 - Math.random());
+        function checkStreak() {
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            if (!state.lastDailyWin) return;
+            
+            const lastWinDate = new Date(state.lastDailyWin);
+            lastWinDate.setHours(0,0,0,0);
+            const diffDays = Math.floor((today - lastWinDate) / (1000 * 60 * 60 * 24));
+            
+            if (diffDays > 1 && state.dailyStreak > 0) {
+                state.recoveryStreak = state.dailyStreak;
+                state.dailyStreak = 0;
+                localStorage.setItem('wiki_daily_streak', 0);
+                localStorage.setItem('wiki_recovery_streak', state.recoveryStreak);
+                document.getElementById('recovery-prompt').classList.remove('hidden');
+            } else if (diffDays <= 1) {
+                state.recoveryStreak = 0;
+                localStorage.setItem('wiki_recovery_streak', 0);
+                document.getElementById('recovery-prompt').classList.add('hidden');
+            }
+        }
+
+        function updateUI() {
+            const lang = state.language;
+            const dict = uiDict[lang];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) el.innerText = dict[key];
+            });
+            document.getElementById('streak-val-top').innerText = state.dailyStreak;
+            document.getElementById('total-rounds-val').innerText = state.totalRounds;
+            
+            const todayStr = new Date().toISOString().split('T')[0];
+            const hasPlayedDaily = state.lastDailyWin === todayStr;
+            currentMODES = hasPlayedDaily ? ORIGINAL_MODES.filter(m => m.id !== 'daily') : [...ORIGINAL_MODES];
+            
+            if (currentModeIndex >= currentMODES.length) currentModeIndex = 0;
+        }
+
+        function updateModeDisplay(dir = 'none') {
+            if (currentMODES.length === 0) updateUI();
+            const modeDisplay = document.getElementById('mode-display');
+            if (dir !== 'none') {
+                modeDisplay.style.animation = 'none';
+                void modeDisplay.offsetWidth;
+                modeDisplay.style.animation = dir === 'next' ? 'slideInRight 0.3s ease-out forwards' : 'slideInLeft 0.3s ease-out forwards';
+            }
+            const mode = currentMODES[currentModeIndex];
+            modeDisplay.innerText = uiDict[state.language][mode.i18n];
+            modeDisplay.className = `font-black text-2xl tracking-wide absolute w-full text-center ${mode.color}`;
+            
+            const todayStr = new Date().toISOString().split('T')[0];
+            const showNew = mode.id === 'daily' && state.lastDailyWin !== todayStr;
+            document.getElementById('daily-notification').classList.toggle('hidden', !showNew);
+            
+            const multiTab = document.getElementById('tab-multi');
+            if (mode.id !== 'classic') {
+                multiTab.classList.add('opacity-40', 'cursor-not-allowed', 'bg-gray-200');
+                if (state.isMultiplayer) document.getElementById('tab-solo').click();
+            } else {
+                multiTab.classList.remove('opacity-40', 'cursor-not-allowed', 'bg-gray-200');
+            }
+            rollSoloWords();
+        }
+
+        document.getElementById('mode-prev').addEventListener('click', () => {
+            currentModeIndex = (currentModeIndex - 1 + currentMODES.length) % currentMODES.length;
+            updateModeDisplay('prev');
+        });
+        document.getElementById('mode-next').addEventListener('click', () => {
+            currentModeIndex = (currentModeIndex + 1) % currentMODES.length;
+            updateModeDisplay('next');
+        });
+
+        function rollSoloWords() {
+            let topics;
+            const mode = currentMODES[currentModeIndex].id;
+            state.maxClicks = mode === 'limited' ? 10 : null;
+            if (mode === 'hard') topics = getRandomTopics(HARD_TOPICS[state.language]);
+            else if (mode === 'daily') topics = getDailyTopics(POPULAR_TOPICS[state.language]);
+            else topics = getRandomTopics(POPULAR_TOPICS[state.language]);
+            state.startTitle = topics.start; state.targetTitle = topics.target;
+            document.getElementById('solo-start').innerText = state.startTitle;
+            document.getElementById('solo-target').innerText = state.targetTitle;
+            if (state.isMultiplayer && state.isHost) {
+                updateLobbyWords();
+                sendPeerData({ type: 'lobbyUpdate', startTitle: state.startTitle, targetTitle: state.targetTitle, easyMode: state.easyMode, language: state.language });
+            }
+        }
+
+        function getRandomTopics(list) {
+            const shuffled = [...list].sort(() => 0.5 - Math.random());
             return { start: shuffled[0], target: shuffled[1] };
         }
 
-        // --- Menu Tabs Logic ---
-        document.getElementById('tab-solo').addEventListener('click', () => {
-            document.getElementById('tab-solo').classList.replace('text-gray-500', 'text-blue-600');
-            document.getElementById('tab-solo').classList.add('bg-white', 'shadow-sm');
-            document.getElementById('tab-solo').classList.remove('hover:text-gray-700');
-            
-            document.getElementById('tab-multi').classList.replace('text-blue-600', 'text-gray-500');
-            document.getElementById('tab-multi').classList.remove('bg-white', 'shadow-sm');
-            document.getElementById('tab-multi').classList.add('hover:text-gray-700');
-
-            document.getElementById('solo-setup').classList.remove('hidden');
-            document.getElementById('multiplayer-setup').classList.add('hidden');
-            state.isMultiplayer = false;
-        });
-
-        document.getElementById('tab-multi').addEventListener('click', () => {
-            document.getElementById('tab-multi').classList.replace('text-gray-500', 'text-blue-600');
-            document.getElementById('tab-multi').classList.add('bg-white', 'shadow-sm');
-            document.getElementById('tab-multi').classList.remove('hover:text-gray-700');
-            
-            document.getElementById('tab-solo').classList.replace('text-blue-600', 'text-gray-500');
-            document.getElementById('tab-solo').classList.remove('bg-white', 'shadow-sm');
-            document.getElementById('tab-solo').classList.add('hover:text-gray-700');
-
-            document.getElementById('multiplayer-setup').classList.remove('hidden');
-            document.getElementById('solo-setup').classList.add('hidden');
-            state.isMultiplayer = true;
-        });
-
-        // --- Solo Setup Logic ---
-        function rollSoloWords() {
-            const topics = getRandomTopics();
-            state.startTitle = topics.start;
-            state.targetTitle = topics.target;
-            
-            if (!state.isMultiplayer) {
-                document.getElementById('solo-start').innerText = state.startTitle;
-                document.getElementById('solo-target').innerText = state.targetTitle;
-            } else if (state.isHost) {
-                document.getElementById('lobby-start').innerText = state.startTitle;
-                document.getElementById('lobby-target').innerText = state.targetTitle;
-            }
+        function getDailyTopics(list) {
+            const today = new Date();
+            const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+            const random1 = Math.abs(Math.sin(seed) * 10000) % list.length;
+            const random2 = Math.abs(Math.cos(seed) * 10000) % list.length;
+            let idx1 = Math.floor(random1);
+            let idx2 = Math.floor(random2);
+            if(idx1 === idx2) idx2 = (idx2 + 1) % list.length;
+            return { start: list[idx1], target: list[idx2] };
         }
-
-        document.getElementById('btn-solo-roll').addEventListener('click', rollSoloWords);
-
-        document.getElementById('btn-solo-start').addEventListener('click', () => {
-            state.easyMode = document.getElementById('solo-easy-mode').checked;
-            startGame();
-        });
-
-        // UI Handlers for Multiplayer
-        document.getElementById('btn-host').addEventListener('click', () => {
-            state.isHost = true;
-            state.sessionCode = generateCode();
-            state.easyMode = false;
-            
-            rollSoloWords();
-            setupLobbyUI();
-
-            document.getElementById('host-controls').classList.add('hidden');
-            document.getElementById('joiner-status').classList.remove('hidden');
-            document.getElementById('joiner-status').innerText = uiDict[state.language].loading;
-
-            try {
-                peer = new Peer('wikigame-v1-' + state.sessionCode);
-                peer.on('open', () => {
-                    document.getElementById('joiner-status').innerText = uiDict[state.language].waitHostWait;
-                });
-                peer.on('connection', (conn) => {
-                    peerConn = conn;
-                    peerConn.on('data', handlePeerData);
-                    
-                    document.getElementById('host-controls').classList.remove('hidden');
-                    document.getElementById('joiner-status').classList.add('hidden');
-
-                    const startBtn = document.getElementById('btn-lobby-start');
-                    startBtn.disabled = false;
-                    startBtn.innerText = uiDict[state.language].waitHostStart;
-                    startBtn.classList.replace('bg-gray-400', 'bg-green-500');
-                    startBtn.classList.add('hover:bg-green-600', 'active:scale-95');
-
-                    sendPeerData({
-                        type: 'lobbyUpdate',
-                        startTitle: state.startTitle,
-                        targetTitle: state.targetTitle,
-                        easyMode: state.easyMode,
-                        language: state.language
-                    });
-                });
-                peer.on('error', (err) => {
-                    console.error(err);
-                    alert(uiDict[state.language].multiErr + " (Host)");
-                });
-            } catch(e) {
-                console.error(e);
-                alert(uiDict[state.language].multiErr);
-            }
-        });
-
-        document.getElementById('btn-show-join').addEventListener('click', () => {
-            document.getElementById('role-selection').classList.add('hidden');
-            document.getElementById('join-section').classList.remove('hidden');
-        });
-
-        document.getElementById('btn-join-submit').addEventListener('click', () => {
-            const codeInput = document.getElementById('join-code').value.toUpperCase();
-            if (codeInput.length !== 6) return;
-
-            document.getElementById('btn-join-submit').innerText = "...";
-            document.getElementById('join-error').classList.add('hidden');
-
-            try {
-                peer = new Peer();
-                peer.on('open', () => {
-                    peerConn = peer.connect('wikigame-v1-' + codeInput);
-                    peerConn.on('open', () => {
-                        document.getElementById('btn-join-submit').innerText = uiDict[state.language].btnJoin;
-                        state.isHost = false;
-                        state.sessionCode = codeInput;
-                        setupLobbyUI();
-                        peerConn.on('data', handlePeerData);
-                    });
-                    peerConn.on('error', () => {
-                        document.getElementById('join-error').classList.remove('hidden');
-                        document.getElementById('btn-join-submit').innerText = uiDict[state.language].btnJoin;
-                    });
-                });
-                peer.on('error', (err) => {
-                    document.getElementById('join-error').classList.remove('hidden');
-                    document.getElementById('btn-join-submit').innerText = uiDict[state.language].btnJoin;
-                });
-            } catch (e) {
-                console.error(e);
-                document.getElementById('join-error').classList.remove('hidden');
-                document.getElementById('btn-join-submit').innerText = uiDict[state.language].btnJoin;
-            }
-        });
 
         function setupLobbyUI() {
             document.getElementById('role-selection').classList.add('hidden');
             document.getElementById('join-section').classList.add('hidden');
             document.getElementById('lobby-section').classList.remove('hidden');
-            
             document.getElementById('display-code').innerText = state.sessionCode;
-            
             if (state.isHost) {
                 document.getElementById('host-controls').classList.remove('hidden');
                 document.getElementById('joiner-status').classList.add('hidden');
@@ -719,66 +564,133 @@
             document.getElementById('lobby-easy-mode').checked = state.easyMode;
         }
 
-        // Host Control Actions
-        document.getElementById('btn-lobby-refresh').addEventListener('click', () => {
-            if (!state.isHost) return;
-            rollSoloWords();
-            sendPeerData({ 
-                type: 'lobbyUpdate', 
-                startTitle: state.startTitle, 
-                targetTitle: state.targetTitle, 
-                easyMode: state.easyMode, 
-                language: state.language 
-            });
-        });
-
-        document.getElementById('lobby-easy-mode').addEventListener('change', (e) => {
-            if (!state.isHost) return;
-            state.easyMode = e.target.checked;
-            sendPeerData({ 
-                type: 'lobbyUpdate', 
-                startTitle: state.startTitle, 
-                targetTitle: state.targetTitle, 
-                easyMode: state.easyMode, 
-                language: state.language 
-            });
-        });
-
-        document.getElementById('btn-lobby-start').addEventListener('click', () => {
-            if (!state.isHost) return;
-            sendPeerData({ type: 'startGame' });
-            startGame();
-        });
-
-        // --- Core Game Logic ---
-        function startGame() {
-            state.isPlaying = true;
-            state.clicks = 0;
-            state.path = [state.startTitle];
-            state.currentTitle = state.startTitle;
-            state.finished = false;
-            state.opponentClicks = 0;
-            state.opponentPath = [state.startTitle];
+        function finishGame(isWinner, oppClicks = "?", reason = "") {
+            if (state.finished) return;
+            state.finished = true;
+            if (state.countdownInterval) clearInterval(state.countdownInterval);
             
+            if (isWinner) {
+                state.totalRounds++;
+                localStorage.setItem('wiki_total_rounds', state.totalRounds);
+                const todayStr = new Date().toISOString().split('T')[0];
+                state.history[todayStr] = (state.history[todayStr] || 0) + 1;
+                localStorage.setItem('wiki_history', JSON.stringify(state.history));
+                
+                const mode = currentMODES[currentModeIndex].id;
+                if (mode === 'daily' && state.lastDailyWin !== todayStr) {
+                    state.dailyStreak++;
+                    state.lastDailyWin = todayStr;
+                    localStorage.setItem('wiki_daily_streak', state.dailyStreak);
+                    localStorage.setItem('wiki_last_daily_win', todayStr);
+                }
+                
+                // Recovery Logic
+                if (mode === 'hard' && state.recoveryStreak > 0) {
+                    state.dailyStreak = state.recoveryStreak;
+                    state.recoveryStreak = 0;
+                    localStorage.setItem('wiki_daily_streak', state.dailyStreak);
+                    localStorage.setItem('wiki_recovery_streak', 0);
+                    document.getElementById('recovery-prompt').classList.add('hidden');
+                }
+            }
+            
+            const dict = uiDict[state.language];
+            document.getElementById('final-clicks').innerText = state.clicks;
+            if (state.isMultiplayer) {
+                document.getElementById('opponent-clicks-container').classList.remove('hidden');
+                document.getElementById('opponent-clicks').innerText = oppClicks;
+            } else {
+                document.getElementById('opponent-clicks-container').classList.add('hidden');
+            }
+            document.getElementById('path-list').innerHTML = state.path.map((step, idx) => `<div class='flex gap-2 text-xs'><span class='bg-gray-200 px-1 rounded'>${idx}</span>${step}</div>`).join('');
+            showScreen('results');
+        }
+
+        // Calendar Logic
+        document.getElementById('btn-calendar').addEventListener('click', () => {
+            const grid = document.getElementById('calendar-grid');
+            grid.innerHTML = '';
+            const today = new Date();
+            for (let i = 13; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(today.getDate() - i);
+                const dateStr = date.toISOString().split('T')[0];
+                const count = state.history[dateStr] || 0;
+                const cell = document.createElement('div');
+                cell.className = `p-2 rounded-lg text-[10px] flex flex-col items-center ${count > 0 ? 'bg-blue-100 text-blue-700 font-bold border border-blue-200' : 'bg-gray-50 text-gray-400'}`;
+                cell.innerHTML = `<span>${date.getDate()}</span><span class='text-[8px]'>${count > 0 ? count : ''}</span>`;
+                grid.appendChild(cell);
+            }
+            document.getElementById('modal-calendar').classList.remove('hidden');
+        });
+        document.getElementById('calendar-close').addEventListener('click', () => document.getElementById('modal-calendar').classList.add('hidden'));
+
+        // Standard Logic
+        function startGame() {
+            state.isPlaying = true; state.clicks = 0; state.path = [state.startTitle]; state.currentTitle = state.startTitle; state.finished = false;
             document.getElementById('click-count').innerText = '0';
             document.getElementById('game-target-display').innerText = state.targetTitle;
-            
-            if (state.easyMode) {
-                document.getElementById('easy-controls').classList.remove('hidden');
-            } else {
-                document.getElementById('easy-controls').classList.add('hidden');
-            }
+            showScreen('game'); loadArticle(state.startTitle);
+        }
+        function showScreen(screenId) {
+            Object.values(screens).forEach(s => s.classList.add('hidden'));
+            screens[screenId].classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
 
+        function startCountdown() {
+            if (!state.isMultiplayer || state.finished) return;
+            document.getElementById('multiplayer-countdown').classList.remove('hidden');
+            let timeLeft = 120;
+            document.getElementById('countdown-val').innerText = timeLeft;
+            state.countdownInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('countdown-val').innerText = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(state.countdownInterval);
+                    finishGame(false, state.opponentFinishedClicks, "timeout");
+                }
+            }, 1000);
+        }
+
+        async function loadArticle(title) {
+            document.getElementById('loader').classList.remove('hidden');
+            document.getElementById('current-title').innerText = title;
+            const container = document.getElementById('game-breadcrumbs');
+            container.innerHTML = state.path.map(s => `<span class='text-xs'>${s}</span>`).join(' › ');
+            try {
+                const res = await fetch(`${getApiUrl()}parse&page=${encodeURIComponent(title)}&prop=text&format=json&disableeditsection=true&redirects=true`);
+                const data = await res.json();
+                const content = document.getElementById('wiki-content-area');
+                content.innerHTML = data.parse.text['*'];
+                content.querySelectorAll('a').forEach(link => {
+                    const href = link.getAttribute('href');
+                    if (href && href.startsWith('/wiki/') && !href.includes(':') && !href.includes('#')) {
+                        link.onclick = (e) => { e.preventDefault(); handleNavigation(decodeURIComponent(href.replace('/wiki/', '')).replace(/_/g, ' ')); };
+                    } else link.style.pointerEvents = 'none';
+                });
+            } catch(e) {} finally { document.getElementById('loader').classList.add('hidden'); }
+        }
+        function handleNavigation(title) {
+            if (state.finished) return;
+            state.clicks++; state.path.push(title);
+            document.getElementById('click-count').innerText = state.clicks;
             if (state.isMultiplayer) {
-                document.getElementById('opponent-progress-container').classList.remove('hidden');
-                updateOpponentProgressUI();
                 sendPeerData({ type: 'progress', clicks: state.clicks, path: state.path });
-            } else {
-                document.getElementById('opponent-progress-container').classList.add('hidden');
             }
-
-            showScreen('game');
-            loadArticle(state.startTitle);
+            if (title.toLowerCase() === state.targetTitle.toLowerCase()) {
+                if (state.isMultiplayer && state.opponentFinishedClicks === null) {
+                    sendPeerData({ type: 'finish', clicks: state.clicks });
+                    finishGame(true, "?");
+                } else if (state.isMultiplayer) {
+                    clearInterval(state.countdownInterval);
+                    finishGame(state.clicks <= state.opponentFinishedClicks, state.opponentFinishedClicks);
+                } else {
+                    finishGame(true);
+                }
+            }
+            else if (state.maxClicks && state.clicks >= state.maxClicks) finishGame(false, "?", "limit");
+            else loadArticle(title);
         }
 
         function updateOpponentProgressUI() {
@@ -787,221 +699,153 @@
             const container = document.getElementById('opp-live-path');
             container.innerHTML = state.opponentPath.map((step, index) => {
                 const isLast = index === state.opponentPath.length - 1;
-                const isKnown = state.path.includes(step) || step === state.startTitle || step === state.targetTitle;
-                const displayStep = isKnown ? step : '???';
-                return `
-                    <span class="flex items-center gap-2">
-                        <span class="${isLast ? 'text-gray-500 font-bold' : 'text-gray-400'}">${displayStep}</span>
-                        ${!isLast ? '<span class="text-gray-300">›</span>' : ''}
-                    </span>
-                `;
+                return `<span class="flex items-center gap-1"><span class="${isLast ? 'text-gray-500 font-bold' : 'text-gray-400'}">${step}</span>${!isLast ? '<span class="text-gray-300">›</span>' : ''}</span>`;
             }).join('');
         }
 
-        async function loadArticle(title) {
-            const dict = uiDict[state.language];
-            document.getElementById('wiki-content-area').innerHTML = '';
-            document.getElementById('loader').classList.remove('hidden');
-            document.getElementById('current-title').innerText = title;
-            updateBreadcrumbs();
-            
+        document.getElementById('btn-host').addEventListener('click', () => {
+            state.isHost = true;
+            state.sessionCode = generateCode();
+            state.easyMode = false;
+            state.maxClicks = null;
+            setupLobbyUI();
             try {
-                const response = await fetch(`${getApiUrl()}parse&page=${encodeURIComponent(title)}&prop=text&format=json&disableeditsection=true&redirects=true`);
-                const data = await response.json();
-                
-                if (data.error) {
-                    document.getElementById('wiki-content-area').innerHTML = `<div class='p-4 bg-red-50 text-red-500 rounded'>${dict.errorLoading || "Error loading article:"} ${data.error.info}</div>`;
-                } else {
-                    const html = data.parse.text['*'];
-                    const container = document.getElementById('wiki-content-area');
-                    container.innerHTML = html;
-                    
-                    const images = container.querySelectorAll('img');
-                    images.forEach(img => {
-                        const src = img.getAttribute('src');
-                        if (src && src.startsWith('//')) {
-                            img.setAttribute('src', 'https:' + src);
-                        }
-                    });
-                    
-                    processLinks(container);
-                }
-            } catch (err) {
-                document.getElementById('wiki-content-area').innerHTML = `<div class='p-4 bg-red-50 text-red-500 rounded'>${dict.connError || "Connection error."}</div>`;
-            } finally {
-                document.getElementById('loader').classList.add('hidden');
-                window.scrollTo(0, 0);
-            }
-        }
+                peer = new Peer('wikigame-v1-' + state.sessionCode);
+                peer.on('open', () => {
+                    document.getElementById('joiner-status').innerText = uiDict[state.language].waitHostWait;
+                });
+                peer.on('connection', (conn) => {
+                    peerConn = conn;
+                    peerConn.on('data', handlePeerData);
+                    document.getElementById('host-controls').classList.remove('hidden');
+                    document.getElementById('joiner-status').classList.add('hidden');
+                    const startBtn = document.getElementById('btn-lobby-start');
+                    startBtn.disabled = false;
+                    startBtn.innerText = uiDict[state.language].waitHostStart;
+                    sendPeerData({ type: 'lobbyUpdate', startTitle: state.startTitle, targetTitle: state.targetTitle, easyMode: state.easyMode, language: state.language });
+                });
+            } catch(e) {}
+        });
 
-        function updateBreadcrumbs() {
-            const container = document.getElementById('game-breadcrumbs');
-            container.innerHTML = state.path.map((step, index) => {
-                const isLast = index === state.path.length - 1;
-                return `
-                    <span class="flex items-center gap-2">
-                        <span class="${isLast ? 'text-blue-600 font-bold' : 'text-gray-400'}">${step}</span>
-                        ${!isLast ? '<span class="text-gray-300">›</span>' : ''}
-                    </span>
-                `;
-            }).join('');
-            container.scrollLeft = container.scrollWidth;
-        }
+        document.getElementById('btn-show-join').addEventListener('click', () => {
+            document.getElementById('role-selection').classList.add('hidden');
+            document.getElementById('join-section').classList.remove('hidden');
+        });
 
-        function processLinks(container) {
-            const links = container.querySelectorAll('a');
-            links.forEach(link => {
-                const href = link.getAttribute('href');
-                if (href && href.startsWith('/wiki/') && !href.includes(':') && !href.includes('#')) {
-                    link.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        const nextTitle = decodeURIComponent(href.replace('/wiki/', '')).replace(/_/g, ' ');
-                        handleNavigation(nextTitle);
-                    });
-                } else {
-                    link.style.pointerEvents = 'none';
-                    if (!link.querySelector('img')) {
-                        link.style.color = '#72777d';
-                    }
-                }
+        document.getElementById('btn-join-submit').addEventListener('click', () => {
+            const codeInput = document.getElementById('join-code').value.toUpperCase();
+            if (codeInput.length !== 6) return;
+            peer = new Peer();
+            peer.on('open', () => {
+                peerConn = peer.connect('wikigame-v1-' + codeInput);
+                peerConn.on('open', () => {
+                    state.isHost = false;
+                    state.sessionCode = codeInput;
+                    setupLobbyUI();
+                    peerConn.on('data', handlePeerData);
+                });
             });
-        }
+        });
 
-        function handleNavigation(title) {
-            if (state.finished) return;
-            state.clicks++;
-            state.path.push(title);
-            state.currentTitle = title;
-            document.getElementById('click-count').innerText = state.clicks;
+        document.getElementById('btn-lobby-refresh').addEventListener('click', () => {
+            if (!state.isHost) return;
+            rollSoloWords();
+        });
 
-            if (state.isMultiplayer) {
-                sendPeerData({ type: 'progress', clicks: state.clicks, path: state.path });
-                updateOpponentProgressUI(); 
-            }
+        document.getElementById('lobby-easy-mode').addEventListener('change', (e) => {
+            if (!state.isHost) return;
+            state.easyMode = e.target.checked;
+            sendPeerData({ type: 'lobbyUpdate', startTitle: state.startTitle, targetTitle: state.targetTitle, easyMode: state.easyMode, language: state.language });
+        });
 
-            if (title.toLowerCase() === state.targetTitle.toLowerCase()) {
-                finishGame(true); // I won!
-            } else {
-                loadArticle(title);
-            }
-        }
+        document.getElementById('btn-lobby-start').addEventListener('click', () => {
+            if (!state.isHost) return;
+            sendPeerData({ type: 'startGame' });
+            startGame();
+        });
 
+        document.getElementById('tab-solo').addEventListener('click', () => {
+            document.getElementById('tab-solo').classList.replace('text-gray-500', 'text-blue-600');
+            document.getElementById('tab-solo').classList.add('bg-white', 'shadow-sm');
+            document.getElementById('tab-solo').classList.remove('hover:text-gray-700');
+            document.getElementById('tab-multi').classList.replace('text-blue-600', 'text-gray-500');
+            document.getElementById('tab-multi').classList.remove('bg-white', 'shadow-sm');
+            if (currentMODES[currentModeIndex].id === 'classic') document.getElementById('tab-multi').classList.add('hover:text-gray-700');
+            document.getElementById('solo-setup').classList.remove('hidden');
+            document.getElementById('multiplayer-setup').classList.add('hidden');
+            document.getElementById('mode-prev').classList.remove('hidden');
+            document.getElementById('mode-next').classList.remove('hidden');
+            document.getElementById('multi-subtitle').classList.add('hidden');
+            state.isMultiplayer = false;
+        });
+
+        document.getElementById('tab-multi').addEventListener('click', () => {
+            if (currentMODES[currentModeIndex].id !== 'classic') return;
+            document.getElementById('tab-multi').classList.replace('text-gray-500', 'text-blue-600');
+            document.getElementById('tab-multi').classList.add('bg-white', 'shadow-sm');
+            document.getElementById('tab-multi').classList.remove('hover:text-gray-700');
+            document.getElementById('tab-solo').classList.replace('text-blue-600', 'text-gray-500');
+            document.getElementById('tab-solo').classList.remove('bg-white', 'shadow-sm');
+            document.getElementById('tab-solo').classList.add('hover:text-gray-700');
+            document.getElementById('multiplayer-setup').classList.remove('hidden');
+            document.getElementById('solo-setup').classList.add('hidden');
+            document.getElementById('mode-prev').classList.add('hidden');
+            document.getElementById('mode-next').classList.add('hidden');
+            document.getElementById('multi-subtitle').classList.remove('hidden');
+            state.isMultiplayer = true;
+        });
+
+        document.getElementById('btn-solo-start').onclick = startGame;
+        document.getElementById('btn-home').onclick = () => { updateUI(); updateModeDisplay(); showScreen('menu'); };
+        document.getElementById('lang-en').onclick = () => setLanguage('en');
+        document.getElementById('lang-de').onclick = () => setLanguage('de');
+        document.getElementById('lang-es').onclick = () => setLanguage('es');
+        
         document.getElementById('btn-back').addEventListener('click', () => {
             if (state.finished) return;
             if (state.path.length > 1) {
                 state.path.pop();
-                const previousTitle = state.path[state.path.length - 1];
-                state.currentTitle = previousTitle;
+                const prev = state.path[state.path.length - 1];
                 state.clicks++;
                 document.getElementById('click-count').innerText = state.clicks;
-                
-                if (state.isMultiplayer) {
-                    sendPeerData({ type: 'progress', clicks: state.clicks, path: state.path });
-                    updateOpponentProgressUI();
-                }
-                
-                loadArticle(previousTitle);
+                loadArticle(prev);
             }
         });
 
-        // --- End Game Handling ---
-        function finishGame(isWinner, oppClicks = "?") {
-            if (state.finished) return;
-            state.finished = true;
-
-            const dict = uiDict[state.language];
-
-            if (state.isMultiplayer && isWinner) {
-                sendPeerData({ type: 'finish', clicks: state.clicks });
-            }
-
-            const icon = document.getElementById('result-icon');
-            const title = document.getElementById('result-title');
-            const subtitle = document.getElementById('result-subtitle');
-
-            if (isWinner) {
-                icon.className = "w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl animate-bounce";
-                icon.innerText = "🏆";
-                title.innerText = state.isMultiplayer ? dict.youWon : dict.success;
-                title.className = "text-5xl font-black mb-2 text-green-600";
-                subtitle.innerText = dict.wonSub;
-            } else {
-                icon.className = "w-24 h-24 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl";
-                icon.innerText = "💀";
-                title.innerText = dict.youLost;
-                title.className = "text-5xl font-black mb-2 text-red-600";
-                subtitle.innerText = dict.lostSub;
-            }
-
-            document.getElementById('final-clicks').innerText = state.clicks;
-            
-            if (state.isMultiplayer) {
-                document.getElementById('opponent-clicks-container').classList.remove('hidden');
-                document.getElementById('personal-best-container').classList.add('hidden');
-                document.getElementById('opponent-clicks').innerText = isWinner ? dict.notFinished : oppClicks;
-            } else {
-                document.getElementById('opponent-clicks-container').classList.add('hidden');
-                document.getElementById('personal-best-container').classList.remove('hidden');
-                
-                const numericRecord = state.record ? parseInt(state.record) : Infinity;
-                if (state.clicks < numericRecord) {
-                    state.record = state.clicks;
-                    localStorage.setItem('wiki_game_record', state.clicks);
-                    if (document.getElementById('record-val')) {
-                        document.getElementById('record-val').innerText = state.record + dict.clickStr;
-                    }
-                }
-                document.getElementById('final-record').innerText = state.record || state.clicks;
-            }
-
-            const pathList = document.getElementById('path-list');
-            pathList.innerHTML = state.path.map((step, index) => 
-                `<div class="flex items-start gap-2">
-                    <span class="bg-gray-200 text-gray-600 text-[10px] px-1.5 py-0.5 rounded font-mono mt-1">${index}</span> 
-                    <span class="${index === state.path.length-1 ? (isWinner ? 'text-green-600 font-bold' : 'text-gray-800') : ''}">${step}</span>
-                </div>`
-            ).join('');
-
-            showScreen('results');
-        }
-
-        // --- Modals & Cleanup ---
-        document.getElementById('btn-home').addEventListener('click', () => {
-            const dict = uiDict[state.language];
-            
-            if (peerConn) { peerConn.close(); peerConn = null; }
-            if (peer) { peer.destroy(); peer = null; }
-
-            state.isPlaying = false;
-
-            document.getElementById('role-selection').classList.remove('hidden');
-            document.getElementById('join-section').classList.add('hidden');
-            document.getElementById('lobby-section').classList.add('hidden');
-            document.getElementById('join-code').value = '';
-            
-            const startBtn = document.getElementById('btn-lobby-start');
-            startBtn.disabled = true;
-            startBtn.innerText = dict.waitHostWait;
-            startBtn.className = "w-full py-4 bg-gray-400 text-white rounded-xl font-black text-lg mt-2 transition shadow-md opacity-50";
-
-            showScreen('menu');
-        });
-
-        const quitTrigger = document.getElementById('btn-quit-trigger');
-        const modalQuit = document.getElementById('modal-quit');
-        const modalCancel = document.getElementById('modal-cancel');
-        const modalConfirm = document.getElementById('modal-confirm');
-
-        quitTrigger.addEventListener('click', () => modalQuit.classList.remove('hidden'));
-        modalCancel.addEventListener('click', () => modalQuit.classList.add('hidden'));
-        modalConfirm.addEventListener('click', () => {
-            modalQuit.classList.add('hidden');
+        document.getElementById('btn-quit-trigger').addEventListener('click', () => document.getElementById('modal-quit').classList.remove('hidden'));
+        document.getElementById('modal-cancel').addEventListener('click', () => document.getElementById('modal-quit').classList.add('hidden'));
+        document.getElementById('modal-confirm').addEventListener('click', () => {
+            document.getElementById('modal-quit').classList.add('hidden');
             document.getElementById('btn-home').click();
         });
 
-        // Init language and words on load
+        function setLanguage(lang) {
+            state.language = lang;
+            updateLanguageButtonsUI(lang);
+            updateUI();
+            rollSoloWords();
+        }
+
+        function updateLanguageButtonsUI(lang) {
+            const btnEn = document.getElementById('lang-en');
+            const btnDe = document.getElementById('lang-de');
+            const btnEs = document.getElementById('lang-es');
+            const activeClass = "px-3 py-1 bg-blue-100 text-blue-700 rounded-md font-bold text-xs transition";
+            const inactiveClass = "px-3 py-1 text-gray-500 hover:bg-gray-100 rounded-md font-bold text-xs transition";
+            btnEn.className = lang === 'en' ? activeClass : inactiveClass;
+            btnDe.className = lang === 'de' ? activeClass : inactiveClass;
+            btnEs.className = lang === 'es' ? activeClass : inactiveClass;
+        }
+
+        const screens = {
+            menu: document.getElementById('screen-menu'),
+            game: document.getElementById('screen-game'),
+            results: document.getElementById('screen-results')
+        };
+
+        checkStreak();
         updateUI();
-        rollSoloWords();
+        updateModeDisplay('none');
     </script>
 </body>
 </html>

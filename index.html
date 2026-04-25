@@ -32,6 +32,7 @@
             margin-bottom: 1rem;
         }
 
+        /* Verstecke unnötige Wiki-Elemente, aber lass Bilder und Infoboxen zu */
         .wiki-content .mw-editsection,
         .wiki-content .reflist,
         .wiki-content .reference,
@@ -50,9 +51,13 @@
             margin-bottom: 1rem;
         }
 
+        /* Bilder-Styling */
         .wiki-content img {
             max-width: 100%;
             height: auto;
+            display: block;
+            margin: 0.5rem 0;
+            border-radius: 4px;
         }
 
         .wiki-content .infobox {
@@ -60,16 +65,24 @@
             clear: right;
             margin: 0 0 1em 1em;
             border: 1px solid #a2a9b1;
-            padding: 0.2em;
+            padding: 0.5em;
             background-color: #f8f9fa;
             font-size: 88%;
-            max-width: 300px;
+            max-width: 280px;
         }
 
         .wiki-content .thumb {
             margin-bottom: 0.5em;
             width: auto;
             background-color: transparent;
+            border: 1px solid #c8ccd1;
+            padding: 3px;
+            background-color: #f8f9fa;
+            font-size: 88%;
+        }
+        
+        .wiki-content .thumbinner {
+            width: 100% !important;
         }
 
         .wiki-content table {
@@ -135,76 +148,82 @@
 
     <!-- Menu Screen -->
     <div id="screen-menu" class="flex flex-col items-center justify-center min-h-screen p-4 bg-gradient-to-br from-gray-100 to-gray-200 overflow-x-hidden relative">
-        <div class="relative w-full max-w-lg flex items-center justify-center mx-auto">
-            <button id="mode-prev" class="absolute -left-12 sm:-left-16 z-30 w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-xl border border-gray-100 hover:bg-gray-50 transition active:scale-95 text-3xl font-bold text-gray-600">&lsaquo;</button>
-            <div id="main-menu-box" class="bg-white p-8 rounded-3xl shadow-xl w-full text-center border border-gray-100 z-20 relative">
-                <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl shadow-sm">🌐</div>
-                <h1 class="text-4xl font-black mb-2 text-gray-800 tracking-tight" data-i18n="title">The Wiki Game</h1>
-                <div class="relative h-10 mb-6 mt-2 flex items-center justify-center overflow-hidden w-full">
-                    <p id="mode-display" class="font-black text-2xl tracking-wide absolute w-full text-center text-blue-600">Classic</p>
-                    <span id="daily-notification" class="hidden absolute right-4 sm:right-12 top-0 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full animate-bounce">NEW!</span>
-                </div>
-                <div id="recovery-prompt" class="hidden mb-4 p-3 bg-orange-50 border border-orange-200 rounded-xl text-sm text-orange-700 font-bold animate-pulse" data-i18n="recoveryText">⚠️ Streak at risk! Win a Hard game to restore it.</div>
-                <p id="multi-subtitle" class="text-gray-500 mb-8 font-medium hidden" data-i18n="subtitle">Race to the target article. First to finish wins!</p>
-                <div class="flex gap-2 mb-6 p-1 bg-gray-100 rounded-xl">
-                    <button id="tab-solo" class="flex-1 py-2 bg-white text-blue-600 rounded-lg font-bold shadow-sm transition" data-i18n="tabSolo">Single Player</button>
-                    <button id="tab-multi" class="flex-1 py-2 text-gray-500 hover:text-gray-700 rounded-lg font-bold transition" data-i18n="tabMulti">Multiplayer</button>
-                </div>
-                <div id="solo-setup" class="w-full mb-4">
-                    <div class="flex flex-col gap-3 mb-6">
-                        <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 text-left">
-                            <span class="text-xs font-bold text-blue-400 uppercase tracking-widest block mb-1" data-i18n="startArticle">Start Article</span>
-                            <div id="solo-start" class="font-bold text-blue-700 text-lg">Loading...</div>
-                        </div>
-                        <div class="flex justify-center -my-5 relative z-10"><div class="text-gray-300 bg-white p-1 rounded-full shadow-sm border font-bold text-sm">➔</div></div>
-                        <div class="bg-red-50 p-4 rounded-xl border border-red-100 text-left">
-                            <span class="text-xs font-bold text-red-400 uppercase tracking-widest block mb-1" data-i18n="targetArticle">Target Article</span>
-                            <div id="solo-target" class="font-bold text-red-700 text-lg">Loading...</div>
-                        </div>
+        <div class="relative w-full max-w-lg flex flex-col items-center justify-center mx-auto">
+            <div class="relative w-full flex items-center justify-center">
+                <button id="mode-prev" class="absolute -left-12 sm:-left-16 z-30 w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-xl border border-gray-100 hover:bg-gray-50 transition active:scale-95 text-3xl font-bold text-gray-600">&lsaquo;</button>
+                <div id="main-menu-box" class="bg-white p-8 rounded-3xl shadow-xl w-full text-center border border-gray-100 z-20 relative">
+                    <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl shadow-sm">🌐</div>
+                    <h1 class="text-4xl font-black mb-2 text-gray-800 tracking-tight" data-i18n="title">The Wiki Game</h1>
+                    <div class="relative h-10 mb-6 mt-2 flex items-center justify-center overflow-hidden w-full">
+                        <p id="mode-display" class="font-black text-2xl tracking-wide absolute w-full text-center text-blue-600">Classic</p>
+                        <span id="daily-notification" class="hidden absolute right-4 sm:right-12 top-0 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full animate-bounce">NEW!</span>
                     </div>
-                    <div class="flex gap-3">
-                        <button id="btn-solo-roll" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-bold transition shadow-sm active:scale-95" data-i18n="btnRandom">🎲 Random</button>
-                        <button id="btn-solo-start" class="flex-[2] py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition shadow-md active:scale-95" data-i18n="btnStartSolo">🚀 Start Solo Game</button>
+                    <div id="recovery-prompt" class="hidden mb-4 p-3 bg-orange-50 border border-orange-200 rounded-xl text-sm text-orange-700 font-bold animate-pulse" data-i18n="recoveryText">⚠️ Streak at risk! Win a Hard game to restore it.</div>
+                    <p id="multi-subtitle" class="text-gray-500 mb-8 font-medium hidden" data-i18n="subtitle">Race to the target article. First to finish wins!</p>
+                    <div class="flex gap-2 mb-6 p-1 bg-gray-100 rounded-xl">
+                        <button id="tab-solo" class="flex-1 py-2 bg-white text-blue-600 rounded-lg font-bold shadow-sm transition" data-i18n="tabSolo">Single Player</button>
+                        <button id="tab-multi" class="flex-1 py-2 text-gray-500 hover:text-gray-700 rounded-lg font-bold transition" data-i18n="tabMulti">Multiplayer</button>
                     </div>
-                </div>
-                <div id="multiplayer-setup" class="hidden w-full mb-4">
-                    <div id="role-selection" class="flex gap-4 mb-4">
-                        <button id="btn-host" class="flex-1 py-4 bg-blue-600 text-white rounded-xl font-bold shadow-md hover:bg-blue-700 transition active:scale-95 text-lg" data-i18n="btnHost">Host Session</button>
-                        <button id="btn-show-join" class="flex-1 py-4 bg-white border-2 border-blue-600 text-blue-600 rounded-xl font-bold shadow-sm hover:bg-blue-50 transition active:scale-95 text-lg" data-i18n="btnShowJoin">Join Session</button>
-                    </div>
-                    <div id="join-section" class="hidden flex flex-col gap-2 mb-4 bg-gray-50 p-4 rounded-xl border border-gray-200">
-                        <label class="text-xs font-bold text-gray-500 uppercase" data-i18n="enterCode">Enter 6-Character Code</label>
-                        <div class="flex gap-2">
-                            <input type="text" id="join-code" placeholder="XXXXXX" class="flex-1 p-3 border border-gray-300 rounded-lg uppercase font-black text-center tracking-widest text-2xl outline-none focus:border-blue-500 transition" maxlength="6">
-                            <button id="btn-join-submit" class="py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold transition" data-i18n="btnJoin">Join</button>
-                        </div>
-                        <p id="join-error" class="text-red-500 text-sm font-bold hidden mt-1" data-i18n="codeNotFound">Code not found!</p>
-                    </div>
-                    <div id="lobby-section" class="hidden bg-white border border-gray-200 p-6 rounded-xl text-left shadow-inner">
-                        <div class="mb-6 text-center bg-gray-50 py-3 rounded-lg border border-gray-200">
-                            <span class="text-gray-500 text-xs font-bold uppercase tracking-wider block" data-i18n="sessionCode">Session Code</span>
-                            <div id="display-code" class="text-4xl font-black text-gray-800 tracking-[0.2em] mt-1 select-all">------</div>
-                        </div>
+                    <div id="solo-setup" class="w-full mb-4">
                         <div class="flex flex-col gap-3 mb-6">
-                            <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                            <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 text-left">
                                 <span class="text-xs font-bold text-blue-400 uppercase tracking-widest block mb-1" data-i18n="startArticle">Start Article</span>
-                                <div id="lobby-start" class="font-bold text-blue-700 text-lg">Loading...</div>
+                                <div id="solo-start" class="font-bold text-blue-700 text-lg">Loading...</div>
                             </div>
                             <div class="flex justify-center -my-5 relative z-10"><div class="text-gray-300 bg-white p-1 rounded-full shadow-sm border font-bold text-sm">➔</div></div>
-                            <div class="bg-red-50 p-4 rounded-xl border border-red-100">
+                            <div class="bg-red-50 p-4 rounded-xl border border-red-100 text-left">
                                 <span class="text-xs font-bold text-red-400 uppercase tracking-widest block mb-1" data-i18n="targetArticle">Target Article</span>
-                                <div id="lobby-target" class="font-bold text-red-700 text-lg">Loading...</div>
+                                <div id="solo-target" class="font-bold text-red-700 text-lg">Loading...</div>
                             </div>
                         </div>
-                        <div id="host-controls" class="hidden flex flex-col gap-3">
-                            <button id="btn-lobby-refresh" class="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-bold transition shadow-sm active:scale-95" data-i18n="btnRefresh">🔄 Refresh</button>
-                            <button id="btn-lobby-start" class="w-full py-4 bg-green-500 text-white rounded-xl font-black text-lg mt-2 transition shadow-md disabled:opacity-50 disabled:bg-gray-400" disabled>Waiting for P2 to Join...</button>
+                        <div class="flex gap-3">
+                            <button id="btn-solo-roll" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-bold transition shadow-sm active:scale-95" data-i18n="btnRandom">🎲 Random</button>
+                            <button id="btn-solo-start" class="flex-[2] py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition shadow-md active:scale-95" data-i18n="btnStartSolo">🚀 Start Solo Game</button>
                         </div>
-                        <div id="joiner-status" class="hidden text-center text-gray-500 font-bold p-4 bg-gray-50 rounded-xl border border-gray-200 animate-pulse" data-i18n="waitingJoin">Waiting for Host...</div>
+                    </div>
+                    <div id="multiplayer-setup" class="hidden w-full mb-4">
+                        <div id="role-selection" class="flex gap-4 mb-4">
+                            <button id="btn-host" class="flex-1 py-4 bg-blue-600 text-white rounded-xl font-bold shadow-md hover:bg-blue-700 transition active:scale-95 text-lg" data-i18n="btnHost">Host Session</button>
+                            <button id="btn-show-join" class="flex-1 py-4 bg-white border-2 border-blue-600 text-blue-600 rounded-xl font-bold shadow-sm hover:bg-blue-50 transition active:scale-95 text-lg" data-i18n="btnShowJoin">Join Session</button>
+                        </div>
+                        <div id="join-section" class="hidden flex flex-col gap-2 mb-4 bg-gray-50 p-4 rounded-xl border border-gray-200">
+                            <label class="text-xs font-bold text-gray-500 uppercase" data-i18n="enterCode">Enter 6-Character Code</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="join-code" placeholder="XXXXXX" class="flex-1 p-3 border border-gray-300 rounded-lg uppercase font-black text-center tracking-widest text-2xl outline-none focus:border-blue-500 transition" maxlength="6">
+                                <button id="btn-join-submit" class="py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold transition" data-i18n="btnJoin">Join</button>
+                            </div>
+                            <p id="join-error" class="text-red-500 text-sm font-bold hidden mt-1" data-i18n="codeNotFound">Code not found!</p>
+                        </div>
+                        <div id="lobby-section" class="hidden bg-white border border-gray-200 p-6 rounded-xl text-left shadow-inner">
+                            <div class="mb-6 text-center bg-gray-50 py-3 rounded-lg border border-gray-200">
+                                <span class="text-gray-500 text-xs font-bold uppercase tracking-wider block" data-i18n="sessionCode">Session Code</span>
+                                <div id="display-code" class="text-4xl font-black text-gray-800 tracking-[0.2em] mt-1 select-all">------</div>
+                            </div>
+                            <div class="flex flex-col gap-3 mb-6">
+                                <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                                    <span class="text-xs font-bold text-blue-400 uppercase tracking-widest block mb-1" data-i18n="startArticle">Start Article</span>
+                                    <div id="lobby-start" class="font-bold text-blue-700 text-lg">Loading...</div>
+                                </div>
+                                <div class="flex justify-center -my-5 relative z-10"><div class="text-gray-300 bg-white p-1 rounded-full shadow-sm border font-bold text-sm">➔</div></div>
+                                <div class="bg-red-50 p-4 rounded-xl border border-red-100">
+                                    <span class="text-xs font-bold text-red-400 uppercase tracking-widest block mb-1" data-i18n="targetArticle">Target Article</span>
+                                    <div id="lobby-target" class="font-bold text-red-700 text-lg">Loading...</div>
+                                </div>
+                            </div>
+                            <div id="host-controls" class="hidden flex flex-col gap-3">
+                                <button id="btn-lobby-refresh" class="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-bold transition shadow-sm active:scale-95" data-i18n="btnRefresh">🔄 Refresh</button>
+                                <button id="btn-lobby-start" class="w-full py-4 bg-green-500 text-white rounded-xl font-black text-lg mt-2 transition shadow-md disabled:opacity-50 disabled:bg-gray-400" disabled>Waiting for P2 to Join...</button>
+                            </div>
+                            <div id="joiner-status" class="hidden text-center text-gray-500 font-bold p-4 bg-gray-50 rounded-xl border border-gray-200 animate-pulse" data-i18n="waitingJoin">Waiting for Host...</div>
+                        </div>
                     </div>
                 </div>
+                <button id="mode-next" class="absolute -right-12 sm:-right-16 z-30 w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-xl border border-gray-100 hover:bg-gray-50 transition active:scale-95 text-3xl font-bold text-gray-600">&rsaquo;</button>
             </div>
-            <button id="mode-next" class="absolute -right-12 sm:-right-16 z-30 w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-xl border border-gray-100 hover:bg-gray-50 transition active:scale-95 text-3xl font-bold text-gray-600">&rsaquo;</button>
+            <!-- Menu Developer Link -->
+            <div class="mt-8 text-gray-500 text-sm font-semibold tracking-wide">
+                Developed by <a href="https://discordapp.com/users/1056147064569987163" target="_blank" class="text-blue-500 hover:text-blue-700 transition underline decoration-blue-500/30">kinetx</a>
+            </div>
         </div>
     </div>
 
@@ -271,6 +290,11 @@
             <div class="flex gap-3 mt-8"><button id="modal-cancel" class="flex-1 py-3 bg-gray-100 rounded-xl font-bold transition" data-i18n="btnStay">Stay</button><button id="modal-confirm" class="flex-1 py-3 bg-red-600 text-white rounded-xl font-bold transition shadow-md" data-i18n="btnQuit">Quit</button></div>
         </div>
     </div>
+
+    <!-- Developer Footer -->
+    <footer class="text-center py-10 text-gray-500 text-sm select-none">
+        Developed by <a href="https://discordapp.com/users/1056147064569987163" target="_blank" class="font-bold text-blue-500 hover:text-blue-700 transition underline decoration-blue-500/20">kinetx</a>
+    </footer>
 
     <script>
         // --- PeerJS Setup ---
@@ -339,7 +363,7 @@
                 btnShowJoin: "Unirse", enterCode: "Código", btnJoin: "Join", codeNotFound: "Error", sessionCode: "Código",
                 btnRefresh: "🔄 Reset", target: "Destino", clicks: "Clicks", btnBack: "← Atrás", btnGiveUp: "Rendirse", fetching: "Cargando...",
                 victoryTitle: "Victoria!", victorySub: "Ganaste!", yourClicks: "Tus Clicks", oppClicks: "Clicks Oponente",
-                yourPath: "Tu Camino", btnBackMenu: "Menú", giveUpTitle: "Rendirse?", giveUpSub: "Seguro?",
+                yourPath: "Tu Camino", btnBackMenu: "Menü", giveUpTitle: "Rendirse?", giveUpSub: "Seguro?",
                 btnStay: "Quedarse", btnQuit: "Salir", loading: "Cargando...", waitHostStart: "Jugar", waitHostWait: "Espera...", waitJoiner: "Espera host...",
                 youWon: "Ganaste!", success: "Éxito!", wonSub: "Victoria!", youLost: "Perdiste!", lostSub: "Inténtalo de nuevo.",
                 notFinished: "No terminó", clickStr: " clicks", multiErr: "Error conexión.", oppProgress: "Oponente",
@@ -504,12 +528,23 @@
                 const data = await res.json();
                 const content = document.getElementById('wiki-content-area');
                 content.innerHTML = data.parse.text['*'];
+                
+                // Behandle Links und Bilder
                 content.querySelectorAll('a').forEach(link => {
                     const href = link.getAttribute('href');
                     if (href && href.startsWith('/wiki/') && !href.includes(':') && !href.includes('#')) {
                         link.onclick = (e) => { e.preventDefault(); handleNavigation(decodeURIComponent(href.replace('/wiki/', '')).replace(/_/g, ' ')); };
-                    } else link.style.pointerEvents = 'none';
+                    } else if (!link.querySelector('img')) {
+                        link.style.pointerEvents = 'none';
+                    }
                 });
+
+                // Stelle sicher, dass Bilder geladen werden (Wiki nutzt oft Protokoll-relative URLs)
+                content.querySelectorAll('img').forEach(img => {
+                    let src = img.getAttribute('src');
+                    if (src && src.startsWith('//')) img.setAttribute('src', 'https:' + src);
+                });
+
             } catch(e) {} finally { document.getElementById('loader').classList.add('hidden'); }
         }
 

@@ -236,9 +236,6 @@
         <button id="btn-profile" class="flex items-center gap-2 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md px-4 py-2 rounded-2xl shadow-lg border border-white/50 dark:border-slate-700/50 font-black text-gray-800 dark:text-gray-200">
             <span class="text-xl">👤</span> <span class="hidden sm:inline">Profile</span>
         </button>
-        <button id="btn-changelog" class="flex items-center gap-2 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md px-3 py-2 rounded-2xl shadow-lg border border-white/50 dark:border-slate-700/50 font-black text-gray-800 dark:text-gray-200" title="Patch Notes">
-            <span class="text-xl">⚙️</span>
-        </button>
 
         <!-- New Ticket Banner & Info Box -->
         <div class="group relative flex items-center gap-2 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md px-3 py-2 rounded-2xl shadow-lg border border-white/50 dark:border-slate-700/50 font-black text-gray-800 dark:text-gray-200 cursor-help">
@@ -358,7 +355,6 @@
                                 <div class="w-12 h-12 rounded-2xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-xl font-black text-red-600 dark:text-red-400 z-10 shadow-sm border-4 border-white dark:border-slate-800">T</div>
                                 <div class="flex-1 pt-1 text-left">
                                     <span class="text-[10px] font-black uppercase tracking-widest text-red-400" data-i18n="targetArticle">Target Destination</span>
-                                    <!-- FIXED: Duplicate ID 'solo-start' changed to 'solo-target' -->
                                     <div id="solo-target" class="text-2xl font-black text-gray-800 dark:text-gray-100 leading-tight mt-1">Loading...</div>
                                 </div>
                             </div>
@@ -532,90 +528,6 @@
                 <div class="flex gap-2">
                     <button id="btn-export-save" class="flex-1 py-3 bg-blue-100 dark:bg-blue-900/30 hover:bg-blue-200 dark:hover:bg-blue-800/50 text-blue-700 dark:text-blue-400 rounded-xl font-bold text-sm transition-all shadow-sm">Copy Code</button>
                     <button id="btn-import-save" class="flex-1 py-3 bg-green-100 dark:bg-green-900/30 hover:bg-green-200 dark:hover:bg-green-800/50 text-green-700 dark:text-green-400 rounded-xl font-bold text-sm transition-all shadow-sm">Load Code</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Changelog / Patch Notes Modal -->
-    <div id="modal-changelog" class="hidden fixed inset-0 bg-gray-900/60 backdrop-blur-md flex items-center justify-center z-[200] p-6">
-        <div class="bg-white dark:bg-slate-800 rounded-[3rem] p-10 max-md w-full shadow-2xl border border-white dark:border-slate-700 max-h-[80vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-3xl font-black text-gray-900 dark:text-white tracking-tight">Patch Notes</h3>
-                <button id="changelog-close" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-slate-700 flex items-center justify-center text-gray-500 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600 transition-all font-bold">✕</button>
-            </div>
-            <div class="space-y-6 text-left">
-                <!-- Patch Notes List -->
-                <div>
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.9 - Current</h4>
-                    <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
-                        <li>MMR loss for Giving Up (-10) and Refreshing (-5) added.</li>
-                        <li>MMR loss now active from Platinum rank upwards.</li>
-                        <li>Tutorial expanded with a new Penalty page.</li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.8</h4>
-                    <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
-                        <li>MMR Complexity Bonus raised.</li>
-                        <li>Tutorial-Info.</li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.7</h4>
-                    <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
-                        <li>MMR complexity bonus (1% - 10%) added to Victory Screen.</li>
-                        <li>Tutorial updated with detailed MMR click-table.</li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.6</h4>
-                    <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
-                        <li>API Rate Limit Error now show a countdown.</li>
-                        <li>Dynamic background based on rank.</li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.5</h4>
-                    <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
-                        <li>Disabled Multiplayer temporarily for maintenance (red cross added).</li>
-                        <li>Added this Changelog/Patch Notes menu in the top left.</li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.4</h4>
-                    <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
-                        <li>Implemented Lobby system and P2P connection via PeerJS.</li>
-                        <li>Added live opponent progress tracking.</li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.3</h4>
-                    <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
-                        <li>Added Daily Challenges with Streak tracking.</li>
-                        <li>Introduced Coin economy and "Randomize" re-roll feature.</li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.2</h4>
-                    <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
-                        <li>Added Player Profile with local save data.</li>
-                        <li>Added Export/Import save codes.</li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.1</h4>
-                    <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
-                        <li>Introduced Rank Map and MMR progression system.</li>
-                        <li>Added theoretical shortest path calculation (Intel).</li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.0</h4>
-                    <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
-                        <li>Initial Release: Classic, Hardcore, and 10 Clicks modes.</li>
-                        <li>Wikipedia API integration.</li>
-                    </ul>
                 </div>
             </div>
         </div>
@@ -921,7 +833,6 @@
 
         const getApiUrl = () => `https://${state.language}.wikipedia.org/w/api.php?origin=*&action=`;
         
-        // --- UPDATED AND EXPANDED TOPICS ---
         const EASY_TOPICS = {
             en: ["Apple Inc.", "Cat", "Dog", "Earth", "Water", "Facebook", "Google", "Football", "Pizza", "Music", "Sun", "Moon", "Car", "Fish", "Bird", "Color", "Book", "Movie", "Internet", "Television", "Coca-Cola", "Nike, Inc.", "Coffee", "Tea", "YouTube", "Twitter", "Amazon (company)", "Microsoft", "Netflix", "Disney", "McDonald's", "Chocolate", "Ice cream", "Basketball", "Tennis", "Gold", "Diamond", "Forest", "Ocean", "Volcano", "London", "Paris", "New York City", "Tokyo", "Berlin", "Sky", "Fire", "Time", "Money", "Happiness", "Guitar", "Piano", "Ship", "Airplane", "Bicycle", "School", "University", "Library", "Museum", "Doctor", "Chef", "Farmer", "Police", "Soldier", "King", "Queen", "United States", "China", "India", "Brazil", "Australia", "Canada", "France", "Germany", "Italy", "Spain", "Japan", "Russia", "Africa", "Europe", "Asia", "Antarctica", "Mars", "Jupiter", "Saturn", "Venus"],
             de: ["Apple", "Hauskatze", "Haushund", "Erde", "Wasser", "Facebook", "Google", "Fußball", "Pizza", "Musik", "Sonne", "Mond", "Auto", "Fische", "Vögel", "Farbe", "Buch", "Film", "Internet", "Fernsehen", "Coca-Cola", "Nike", "Kaffee", "Tee", "YouTube", "Twitter", "Amazon", "Microsoft", "Netflix", "Disney", "McDonald’s", "Schokolade", "Eiscreme", "Basketball", "Tennis", "Gold", "Diamant", "Wald", "Ozean", "Vulkan", "London", "Paris", "New York City", "Tokio", "Berlin", "Himmel", "Feuer", "Zeit", "Geld", "Glück", "Gitarre", "Klavier", "Schiff", "Flugzeug", "Fahrrad", "Schule", "Universität", "Bibliothek", "Museum", "Arzt", "Koch", "Bauer", "Polizei", "Soldat", "König", "Königin", "Vereinigte Staaten", "China", "Indien", "Brasilien", "Australien", "Kanada", "Frankreich", "Deutschland", "Italien", "Spanien", "Japan", "Russland", "Afrika", "Europa", "Asien", "Antarktis", "Mars", "Jupiter", "Saturn", "Venus"],
@@ -1151,7 +1062,6 @@
             const multiTab = document.getElementById('tab-multi');
             if (mode.id !== 'classic') { 
                 multiTab.classList.add('opacity-40', 'cursor-not-allowed', 'bg-gray-200'); 
-                // Fix for disabled structure inside relative container
                 multiTab.parentElement.classList.add('opacity-40', 'cursor-not-allowed');
                 if (state.isMultiplayer) document.getElementById('tab-solo').click(); 
             }
@@ -1178,10 +1088,9 @@
                 return;
             }
 
-            let topics;
+            let topicsList;
             state.maxClicks = mode === 'limited' ? 10 : null;
             
-            let topicsList;
             const rInfo = getRankInfo();
 
             if (mode === 'hard') {
@@ -1189,25 +1098,20 @@
             } else if (mode === 'daily') {
                 topicsList = MEDIUM_TOPICS[state.language];
             } else {
-                // --- GRANULAR RANK-BASED DIFFICULTY SCALING ---
                 if (rInfo.tierIdx === -1 || rInfo.tierIdx === 0) {
-                    // Unranked / Bronze: Easy only
                     topicsList = EASY_TOPICS[state.language];
                 } else if (rInfo.tierIdx === 1) {
-                    // Silver: Mixture of Easy/Medium
                     topicsList = Math.random() > 0.6 ? EASY_TOPICS[state.language] : MEDIUM_TOPICS[state.language];
                 } else if (rInfo.tierIdx <= 3) {
-                    // Gold / Platinum: Medium topics
                     topicsList = MEDIUM_TOPICS[state.language];
                 } else if (rInfo.tierIdx <= 5) {
-                    // Diamond / Master: Mixture of Medium/Hard
                     topicsList = Math.random() > 0.5 ? MEDIUM_TOPICS[state.language] : HARD_TOPICS[state.language];
                 } else {
-                    // Grand Champion / Legend: Hard topics only
                     topicsList = HARD_TOPICS[state.language];
                 }
             }
 
+            let topics;
             if (mode === 'daily') topics = getDailyTopics(topicsList);
             else topics = getRandomTopics(topicsList);
             
@@ -1217,7 +1121,6 @@
             localStorage.setItem('wiki_start_' + mode, state.startTitle);
             localStorage.setItem('wiki_target_' + mode, state.targetTitle);
             
-            // CRITICAL: Updated innerText for solo-start and solo-target
             const startEl = document.getElementById('solo-start');
             const targetEl = document.getElementById('solo-target');
             if (startEl) startEl.innerText = state.startTitle;
@@ -1382,7 +1285,6 @@
                 if (info.tierIdx >= 5) complexityBonus += 40; 
                 if (state.startTitle.length > 15 || state.targetTitle.length > 15) complexityBonus += 30; 
                 
-                // Maximum +150% extra MMR
                 complexityBonus = Math.min(150, complexityBonus);
 
                 // Apply complexity bonus
@@ -1521,7 +1423,6 @@
         });
         document.getElementById('calendar-close').addEventListener('click', () => document.getElementById('modal-calendar').classList.add('hidden'));
 
-        // Profile Logic
         function getRankNameFromXp(xp) {
             let currentTierIdx = 0;
             for (let i = 0; i < TIERS.length; i++) {
@@ -1560,14 +1461,6 @@
 
         document.getElementById('profile-close').addEventListener('click', () => document.getElementById('modal-profile').classList.add('hidden'));
         
-        // Changelog Logic
-        document.getElementById('btn-changelog').addEventListener('click', () => {
-            document.getElementById('modal-changelog').classList.remove('hidden');
-        });
-        document.getElementById('changelog-close').addEventListener('click', () => {
-            document.getElementById('modal-changelog').classList.add('hidden');
-        });
-
         document.getElementById('btn-export-save').onclick = () => {
             const data = {
                 xp: state.xp, highestXp: state.highestXp, coins: state.coins, dailyStreak: state.dailyStreak, 
@@ -1717,15 +1610,12 @@
             document.getElementById('tab-solo').classList.replace('text-gray-500', 'text-blue-600'); document.getElementById('tab-solo').classList.add('bg-white', 'shadow-lg'); document.getElementById('tab-multi').classList.replace('text-blue-600', 'text-gray-500'); document.getElementById('tab-multi').classList.remove('bg-white', 'shadow-lg');
             document.getElementById('solo-setup').classList.remove('hidden'); document.getElementById('multiplayer-setup').classList.add('hidden'); document.getElementById('mode-prev').classList.remove('hidden'); document.getElementById('mode-next').classList.remove('hidden'); document.getElementById('mode-display').classList.remove('hidden'); document.getElementById('instruction-field').classList.remove('hidden'); state.isMultiplayer = false;
         };
-        document.getElementById('tab-multi').onclick = () => {
-            // Disabled
-            return;
-        };
+        document.getElementById('tab-multi').onclick = () => { return; };
 
         document.getElementById('btn-solo-roll').onclick = () => {
             if (state.coins >= 2) {
                 state.coins -= 2;
-                state.xp = Math.max(0, state.xp - 5); // Refresh costs 5 MMR
+                state.xp = Math.max(0, state.xp - 5); 
                 localStorage.setItem('wiki_coins', state.coins);
                 localStorage.setItem('wiki_xp', state.xp);
                 updateUI();
@@ -1744,7 +1634,7 @@
         document.getElementById('modal-cancel').onclick = () => document.getElementById('modal-quit').classList.add('hidden');
         document.getElementById('modal-confirm').onclick = () => { 
             document.getElementById('modal-quit').classList.add('hidden'); 
-            state.xp = Math.max(0, state.xp - 10); // Give up costs 10 MMR
+            state.xp = Math.max(0, state.xp - 10); 
             localStorage.setItem('wiki_xp', state.xp);
             updateUI();
             document.getElementById('btn-home').click(); 
@@ -1813,7 +1703,6 @@
 
         const screens = { menu: document.getElementById('screen-menu'), game: document.getElementById('screen-game'), results: document.getElementById('screen-results') };
         
-        // Timer Logic for Tickets 
         function updateTopRateTimer() {
             const now = new Date();
             const nextHour = new Date(now);
@@ -1832,7 +1721,6 @@
         updateUI(); 
         updateModeDisplay('none');
 
-        // Auto-show Tutorial on very first visit
         if (!localStorage.getItem('wiki_tutorial_seen')) {
             setTimeout(() => document.getElementById('btn-info-tutorial').click(), 500);
         }

@@ -158,6 +158,24 @@
             100% { transform: translateX(0); opacity: 1; }
         }
 
+        /* NEW ANIMATIONS FOR VICTORY SCREEN */
+        @keyframes popIn {
+            0% { transform: scale(0.8) translateY(10px); opacity: 0; }
+            80% { transform: scale(1.05) translateY(-2px); opacity: 1; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+        @keyframes victoryScale {
+            0% { transform: scale(0.95); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-pop-in { 
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; 
+            opacity: 0; /* Starts hidden until animation triggers */
+        }
+        .animate-victory { 
+            animation: victoryScale 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; 
+        }
+
         .breadcrumb-scroll::-webkit-scrollbar {
             height: 4px;
         }
@@ -214,7 +232,7 @@
     <!-- Background Layer for Menu -->
     <div id="menu-background" class="fixed inset-0 pointer-events-none overflow-hidden z-0"></div>
 
-    <div class="fixed top-6 right-6 flex items-center gap-4 z-50">
+    <div id="top-ui-bar" class="fixed top-6 right-6 flex items-center gap-4 z-50 transition-opacity duration-300">
         <!-- Dark Mode Toggle -->
         <button id="btn-dark-mode" class="p-2.5 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl shadow-lg border border-white/50 dark:border-slate-700/50 text-xl">
             <span id="dark-icon">🌙</span>
@@ -230,7 +248,22 @@
                 <span class="text-xl">🪙</span>
                 <span id="coins-val-top" class="text-lg">0</span>
             </div>
-            <button id="btn-calendar" class="text-xl p-1">📅</button>
+            <div class="h-6 w-px bg-gray-200 dark:bg-gray-700"></div>
+            
+            <!-- Rank XP Widget -->
+            <div id="btn-rank-map" class="flex items-center gap-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-700/50 p-1.5 -m-1.5 rounded-xl transition-all">
+                <span class="text-2xl">🏆</span>
+                <div class="flex flex-col min-w-[80px]">
+                    <span id="rank-val-top" class="text-[11px] font-black uppercase tracking-widest leading-none text-gray-400">Unranked</span>
+                    <span id="rank-xp-top" class="text-[9px] text-gray-500 dark:text-gray-400 font-bold leading-none mt-1">0/10 Games</span>
+                    <div class="w-full h-1.5 bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden mt-1 relative">
+                        <div id="rank-progress-bar" class="h-full bg-gray-400 w-0 transition-all"></div>
+                    </div>
+                </div>
+            </div>
+
+            <button id="btn-calendar" class="text-xl p-1 ml-2">📅</button>
+            <button id="btn-info-tutorial" class="text-xl p-1 ml-1 opacity-70 hover:opacity-100 transition-opacity" title="How to play">ℹ️</button>
         </div>
 
         <div class="flex p-1 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl shadow-lg border border-white/50 dark:border-slate-700/50">
@@ -371,6 +404,64 @@
     </div>
 
     <!-- Modals & Rest -->
+    <div id="modal-tutorial" class="hidden fixed inset-0 bg-gray-900/80 backdrop-blur-sm flex items-center justify-center z-[200] p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-[3rem] p-8 md:p-10 max-w-2xl w-full shadow-2xl border border-white dark:border-slate-700 relative overflow-hidden">
+            <!-- Header -->
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-3xl font-black text-blue-600 dark:text-blue-400">How to Play</h3>
+                <button id="btn-close-tutorial" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-slate-700 flex items-center justify-center text-gray-500 font-bold hover:bg-gray-200 dark:hover:bg-slate-600 transition-all">✕</button>
+            </div>
+
+            <!-- Content Container -->
+            <div id="tutorial-content" class="min-h-[250px]">
+                <!-- Step 1: Basics -->
+                <div class="tutorial-step space-y-4 text-gray-700 dark:text-gray-300">
+                    <h4 class="text-xl font-bold text-gray-900 dark:text-white">🏁 The Objective</h4>
+                    <p>Navigate from a <strong class="text-blue-500">Start Article</strong> to a <strong class="text-red-500">Target Article</strong> using only the links within the Wikipedia pages!</p>
+                    <ul class="list-disc pl-5 space-y-2 font-medium">
+                        <li><strong>Solo Mission:</strong> Play at your own pace and earn Rank MMR.</li>
+                        <li><strong>Multiplayer:</strong> Race against a friend using a Lobby Code.</li>
+                        <li><strong>Coins (🪙):</strong> Earned by winning. Spend 2 coins on "🎲 Randomize" to re-roll difficult words before you start.</li>
+                    </ul>
+                </div>
+                <!-- Step 2: Modes -->
+                <div class="tutorial-step hidden space-y-4 text-gray-700 dark:text-gray-300">
+                    <h4 class="text-xl font-bold text-gray-900 dark:text-white">🎮 Game Modes</h4>
+                    <p>Use the <strong class="bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded">←</strong> and <strong class="bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded">→</strong> arrows in the menu to change modes!</p>
+                    <ul class="space-y-3 font-medium">
+                        <li><strong class="text-blue-500">Classic:</strong> Standard difficulty. Finding the fastest path is key.</li>
+                        <li><strong class="text-red-500">Hardcore:</strong> Obscure, difficult topics. High risk, high reward.</li>
+                        <li><strong class="text-orange-500">Daily:</strong> A unique challenge every 24h. Build your streak (🔥)!</li>
+                        <li><strong class="text-purple-500">10 Clicks:</strong> Reach the target in 10 clicks or less. Efficiency is everything!</li>
+                    </ul>
+                </div>
+                <!-- Step 3: Ranks -->
+                <div class="tutorial-step hidden space-y-4 text-gray-700 dark:text-gray-300">
+                    <h4 class="text-xl font-bold text-gray-900 dark:text-white">🏆 Ranking System</h4>
+                    <p>You start as <strong>Unranked</strong> for your first 10 games. After that, you're placed into a tier!</p>
+                    <div class="flex flex-wrap gap-2 text-sm font-bold my-2">
+                        <span class="text-amber-600">Bronze</span> › <span class="text-slate-400">Silver</span> › <span class="text-yellow-500">Gold</span> › <span class="text-cyan-500">Platinum</span> › <span class="text-blue-500">Diamond</span> › <span class="text-purple-600">Master</span> › <span class="text-rose-500">Champion</span> › <span class="text-fuchsia-500">Grand Champion</span> › <span class="text-yellow-400">Legend</span>
+                    </div>
+                    <ul class="list-disc pl-5 space-y-2 font-medium text-sm">
+                        <li>The fewer clicks you use compared to the perfect theoretical path, the more <strong>MMR</strong> you earn.</li>
+                        <li>Reaching the top of your tier triggers a <strong>PROMO</strong>: Win a <em>10 Clicks</em> game to advance!</li>
+                        <li>Beware: In Platinum and above, using way too many clicks will lose you MMR!</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Footer / Controls -->
+            <div class="flex justify-between items-center mt-8 pt-6 border-t dark:border-slate-700">
+                <div class="flex gap-2" id="tutorial-dots">
+                    <div class="w-3 h-3 rounded-full bg-blue-600 transition-all"></div>
+                    <div class="w-3 h-3 rounded-full bg-gray-300 dark:bg-slate-600 transition-all"></div>
+                    <div class="w-3 h-3 rounded-full bg-gray-300 dark:bg-slate-600 transition-all"></div>
+                </div>
+                <button id="btn-tutorial-next" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black shadow-lg transition-all">Next ➔</button>
+            </div>
+        </div>
+    </div>
+
     <div id="modal-calendar" class="hidden fixed inset-0 bg-gray-900/40 dark:bg-slate-950/60 backdrop-blur-md flex items-center justify-center z-[100] p-6">
         <div class="bg-white dark:bg-slate-800 rounded-[3rem] p-10 max-w-md w-full shadow-2xl border border-white dark:border-slate-700">
             <div class="flex justify-between items-center mb-8">
@@ -382,6 +473,16 @@
                 <p class="text-gray-400 font-bold uppercase tracking-widest text-xs mb-1">Lifetime Score</p>
                 <div id="total-rounds-val" class="text-4xl font-black text-blue-600 dark:text-blue-400">0</div>
             </div>
+        </div>
+    </div>
+
+    <div id="modal-rank-map" class="hidden fixed inset-0 bg-gray-900/60 backdrop-blur-md flex items-center justify-center z-[100] p-6">
+        <div class="bg-white dark:bg-slate-800 rounded-[3rem] p-10 max-w-md w-full shadow-2xl border border-white dark:border-slate-700 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-8 sticky top-0 bg-white dark:bg-slate-800 z-20 pt-2 pb-4 border-b dark:border-slate-700">
+                <h3 class="text-3xl font-black text-gray-900 dark:text-white tracking-tight">Rank Map</h3>
+                <button id="rank-map-close" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-slate-700 flex items-center justify-center text-gray-500 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600 transition-all font-bold">✕</button>
+            </div>
+            <div class="relative py-4" id="rank-map-container"></div>
         </div>
     </div>
 
@@ -422,12 +523,13 @@
     </div>
 
     <div id="screen-results" class="hidden flex flex-col items-center justify-center min-h-screen p-4 bg-gray-50 dark:bg-slate-950 relative z-20">
-        <div class="bg-white dark:bg-slate-800 p-10 rounded-3xl shadow-2xl max-w-4xl w-full text-center border border-gray-100 dark:border-slate-700">
-            <div id="result-icon" class="w-24 h-24 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl">🏁</div>
-            <h1 id="result-title" class="text-5xl font-black mb-2 text-gray-800 dark:text-white" data-i18n="victoryTitle">Victory!</h1>
-            <div id="coin-reward-display" class="mb-4 text-2xl font-black text-yellow-600 dark:text-yellow-400 flex items-center justify-center gap-2"></div>
-            <p id="result-subtitle" class="text-gray-500 dark:text-gray-400 mb-10 text-lg font-medium" data-i18n="victorySub">Success!</p>
-            <div class="flex flex-wrap gap-6 mb-10 items-center justify-center">
+        <div class="bg-white dark:bg-slate-800 p-10 rounded-3xl shadow-2xl max-w-4xl w-full text-center border border-gray-100 dark:border-slate-700 animate-victory">
+            <div id="result-icon" class="w-24 h-24 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl animate-pop-in" style="animation-delay: 100ms;">🏁</div>
+            <h1 id="result-title" class="text-5xl font-black mb-2 text-gray-800 dark:text-white animate-pop-in" style="animation-delay: 200ms;" data-i18n="victoryTitle">Victory!</h1>
+            <div id="coin-reward-display" class="mb-1 text-2xl font-black text-yellow-600 dark:text-yellow-400 flex items-center justify-center gap-2"></div>
+            <div id="xp-reward-display" class="mb-4 flex items-center justify-center min-h-[40px]"></div>
+            <p id="result-subtitle" class="text-gray-500 dark:text-gray-400 mb-10 text-lg font-medium animate-pop-in" style="animation-delay: 300ms;" data-i18n="victorySub">Success!</p>
+            <div class="flex flex-wrap gap-6 mb-10 items-center justify-center animate-pop-in" style="animation-delay: 400ms;">
                 <div class="p-6 bg-blue-50 dark:bg-blue-900/20 rounded-2xl border border-blue-100 dark:border-blue-900/30 min-w-[150px]">
                     <span class="block text-xs text-blue-400 dark:text-blue-500 font-bold uppercase tracking-widest mb-1" data-i18n="yourClicks">Your Clicks</span>
                     <span id="final-clicks" class="text-4xl font-black text-blue-700 dark:text-blue-400">0</span>
@@ -437,17 +539,17 @@
                     <span id="opponent-clicks" class="text-4xl font-black text-gray-700 dark:text-white">?</span>
                 </div>
             </div>
-            <div class="flex flex-col md:flex-row gap-6 mb-10 text-left">
+            <div class="flex flex-col md:flex-row gap-6 mb-10 text-left animate-pop-in" style="animation-delay: 500ms;">
                 <div class="flex-1">
                     <h3 class="font-bold mb-3 dark:text-white">📍 Your Path</h3>
                     <div id="path-list" class="text-sm space-y-2 p-4 bg-gray-50 dark:bg-slate-900/50 rounded-xl border dark:border-slate-700 max-h-40 overflow-y-auto"></div>
                 </div>
                 <div class="flex-1">
                     <h3 class="font-bold mb-3 dark:text-white">⚡ Shortcut</h3>
-                    <div id="theoretical-path-display" class="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border dark:border-amber-900/30 text-sm italic dark:text-amber-200">Shortcut calculation unavailable.</div>
+                    <div id="theoretical-path-display" class="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border dark:border-amber-900/30 text-sm italic dark:text-amber-200">Waiting for calculation...</div>
                 </div>
             </div>
-            <div class="flex flex-col gap-3">
+            <div class="flex flex-col gap-3 animate-pop-in" style="animation-delay: 600ms;">
                 <button id="btn-play-again-multi" class="hidden w-full py-4 bg-green-500 hover:bg-green-600 text-white rounded-2xl font-bold text-xl transition-all shadow-lg active:scale-95">Play Again (0/2)</button>
                 <button id="btn-home" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold text-xl transition-all shadow-lg active:scale-95" data-i18n="btnBackMenu">Back to Menu</button>
             </div>
@@ -484,6 +586,7 @@
             darkMode = !darkMode;
             localStorage.setItem('wiki_dark_mode', darkMode);
             updateTheme();
+            if (typeof updateRankBackground === 'function') updateRankBackground();
         };
         updateTheme();
 
@@ -625,21 +728,28 @@
 
         const state = {
             language: 'en', isMultiplayer: false, isHost: false, isPlaying: false, sessionCode: '', 
-            startTitle: '', 
-            targetTitle: '', 
-            currentTitle: '',
+            startTitle: '', targetTitle: '', currentTitle: '',
             clicks: 0, maxClicks: null, path: [], finished: false, opponentClicks: 0, opponentPath: [], opponentFinishedClicks: null, countdownInterval: null,
             dailyStreak: parseInt(localStorage.getItem('wiki_daily_streak')) || 0, lastDailyWin: localStorage.getItem('wiki_last_daily_win') || null,
             coins: parseInt(localStorage.getItem('wiki_coins')) || 0,
-            history: JSON.parse(localStorage.getItem('wiki_history')) || {}, totalRounds: parseInt(localStorage.getItem('wiki_total_rounds')) || 0, recoveryStreak: parseInt(localStorage.getItem('wiki_recovery_streak')) || 0,
+            history: JSON.parse(localStorage.getItem('wiki_history')) || {}, 
+            totalRounds: parseInt(localStorage.getItem('wiki_total_rounds')) || 0, 
+            recoveryStreak: parseInt(localStorage.getItem('wiki_recovery_streak')) || 0,
+            xp: parseInt(localStorage.getItem('wiki_xp')) || 0,
+            isPromo: localStorage.getItem('wiki_promo') === 'true',
             localPlayAgain: false, opponentPlayAgain: false
         };
 
         const getApiUrl = () => `https://${state.language}.wikipedia.org/w/api.php?origin=*&action=`;
-        const POPULAR_TOPICS = {
-            en: ["Apple Inc.", "Albert Einstein", "Ancient Egypt", "Artificial Intelligence", "Australia", "Batman", "Beer", "Berlin", "Bitcoin", "Brazil", "Canada", "Cat", "Chess", "Chocolate", "Coffee", "Cristiano Ronaldo", "Dinosaur", "Dog", "Earth", "Elon Musk", "Facebook", "Football", "France", "Germany", "Google", "Harry Potter", "History", "India", "Internet", "iPhone", "Italy", "Japan", "Mars", "Music", "NASA", "Netflix", "New York City", "Physics", "Pizza", "Pokemon", "Rome", "Russia", "SpaceX", "Star Wars", "Sushi", "Tea", "Tennis", "United Kingdom", "United States", "Video game", "Water", "World War II", "Youtube", "Marie Curie", "Amazon River", "Basketball", "Mount Everest", "Stonehenge"],
-            de: ["Apple", "Albert Einstein", "Altes Ägypten", "Künstliche Intelligenz", "Australien", "Batman", "Bier", "Berlin", "Bitcoin", "Brasilien", "Kanada", "Hauskatze", "Schach", "Schokolade", "Kaffee", "Cristiano Ronaldo", "Dinosaurier", "Haushund", "Erde", "Elon Musk", "Europa", "Facebook", "Fußball", "Frankreich", "Deutschland", "Google", "Harry Potter", "Geschichte", "Indien", "Internet", "IPhone", "Italien", "Japan", "Jupiter", "London", "Mars", "Musik", "NASA", "Netflix", "New York City", "Physik", "Pizza", "Pokémon", "Rom", "Russland", "SpaceX", "Star Wars", "Sushi", "Tee", "Tennis", "Zweiter Weltkrieg", "YouTube"],
-            es: ["Apple", "Albert Einstein", "Antiguo Egipto", "Inteligencia artificial", "Australia", "Batman", "Cerveza", "Berlín", "Bitcoin", "Brasil", "Canadá", "Gato", "Ajedrez", "Chocolate", "Café", "Cristiano Ronaldo", "Dinosaurio", "Perro", "Tierra", "Elon Musk", "Facebook", "Fútbol", "Francia", "Alemania", "Google", "Harry Potter", "Historia", "India", "Internet", "IPhone", "Italia", "Japón", "Londres", "Marte", "Música", "NASA", "Netflix", "Nueva York", "Física", "Pizza", "Pokémon", "Roma", "Rusia", "SpaceX", "Star Wars", "Sushi", "Té", "Tenis", "YouTube"]
+        const EASY_TOPICS = {
+            en: ["Apple Inc.", "Cat", "Dog", "Earth", "Water", "Facebook", "Google", "Football", "Pizza", "Music", "Sun", "Moon", "Car", "Fish", "Bird", "Color", "Book", "Movie", "Internet", "Television"],
+            de: ["Apple", "Hauskatze", "Haushund", "Erde", "Wasser", "Facebook", "Google", "Fußball", "Pizza", "Musik", "Sonne", "Mond", "Auto", "Fische", "Vögel", "Farbe", "Buch", "Film", "Internet", "Fernsehen"],
+            es: ["Apple", "Gato", "Perro", "Tierra", "Agua", "Facebook", "Google", "Fútbol", "Pizza", "Música", "Sol", "Luna", "Automóvil", "Pez", "Aves", "Color", "Libro", "Película", "Internet", "Televisión"]
+        };
+        const MEDIUM_TOPICS = {
+            en: ["Albert Einstein", "Ancient Egypt", "Bitcoin", "Chess", "Harry Potter", "World War II", "Dinosaur", "Physics", "Artificial Intelligence", "Black hole", "Leonardo da Vinci", "Pyramid", "DNA", "Bluetooth", "Renaissance"],
+            de: ["Albert Einstein", "Altes Ägypten", "Bitcoin", "Schach", "Harry Potter", "Zweiter Weltkrieg", "Dinosaurier", "Physik", "Künstliche Intelligenz", "Schwarzes Loch", "Leonardo da Vinci", "Pyramide", "DNA", "Bluetooth", "Renaissance"],
+            es: ["Albert Einstein", "Antiguo Egipto", "Bitcoin", "Ajedrez", "Harry Potter", "Segunda Guerra Mundial", "Dinosaurio", "Física", "Inteligencia artificial", "Agujero negro", "Leonardo da Vinci", "Pirámide", "ADN", "Bluetooth", "Renacimiento"]
         };
         const HARD_TOPICS = {
             en: ["Quantum entanglement", "Byzantine Empire", "Tardigrade", "Non-Euclidean geometry", "Glagolitic script", "Isotopes of gold", "Photosynthesis", "Linguistics", "Cuneiform", "Oort cloud", "Standard Model", "Voynich manuscript"],
@@ -659,12 +769,144 @@
         function generateCode() { const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'; let code = ''; for(let i = 0; i < 6; i++) { code += chars.charAt(Math.floor(Math.random() * chars.length)); } return code; }
         function checkStreak() { const today = new Date(); today.setHours(0,0,0,0); if (!state.lastDailyWin) return; const lastWinDate = new Date(state.lastDailyWin); lastWinDate.setHours(0,0,0,0); const diffDays = Math.floor((today - lastWinDate) / (1000 * 60 * 60 * 24)); if (diffDays > 1 && state.dailyStreak > 0) { state.recoveryStreak = state.dailyStreak; state.dailyStreak = 0; localStorage.setItem('wiki_daily_streak', 0); localStorage.setItem('wiki_recovery_streak', state.recoveryStreak); document.getElementById('recovery-prompt').classList.remove('hidden'); } else if (diffDays <= 1) { state.recoveryStreak = 0; localStorage.setItem('wiki_recovery_streak', 0); document.getElementById('recovery-prompt').classList.add('hidden'); } }
 
+        function getRankInfo() {
+            if (state.totalRounds < 10) {
+                return { title: "Unranked", div: "", text: `Unranked`, xpStr: `${state.xp} MMR`, color: "text-gray-400", p: (state.totalRounds/10)*100, tierIdx: -1 };
+            }
+            
+            const TIERS = [
+                { name: "Bronze", cap: 500, color: "text-amber-600" },
+                { name: "Silver", cap: 1000, color: "text-slate-400" },
+                { name: "Gold", cap: 1500, color: "text-yellow-500" },
+                { name: "Platinum", cap: 2000, color: "text-cyan-500" },
+                { name: "Diamond", cap: 2500, color: "text-blue-500" },
+                { name: "Master", cap: 3000, color: "text-purple-600" },
+                { name: "Champion", cap: 3500, color: "text-rose-500" },
+                { name: "Grand Champion", cap: 4000, color: "text-fuchsia-500" },
+                { name: "Legend", cap: Infinity, color: "text-yellow-400" }
+            ];
+            
+            let currentTierIdx = 0;
+            for (let i=0; i<TIERS.length; i++) {
+                if (state.xp < TIERS[i].cap || i === TIERS.length - 1) {
+                    currentTierIdx = i;
+                    break;
+                }
+            }
+            
+            const tier = TIERS[currentTierIdx];
+            const prevCap = currentTierIdx > 0 ? TIERS[currentTierIdx-1].cap : 0;
+            const tierXP = state.xp - prevCap;
+            
+            let div = 5 - Math.floor(tierXP / 100);
+            if (div < 1) div = 1;
+            if (tier.name === "Legend") div = "";
+            
+            let text = `${tier.name} ${div}`;
+            let xpStr = `${state.xp} MMR (${tierXP % 100}/100)`;
+            let p = (tierXP % 100);
+            
+            if (state.isPromo) {
+                text = `PROMO (${tier.name} 1)`;
+                xpStr = "Win 10-Clicks!";
+                p = 100;
+            } else if (tier.name === "Legend") {
+                xpStr = `${state.xp} MMR`;
+                p = 100;
+            }
+            
+            return { title: tier.name, div: div, text: text.trim(), xpStr: xpStr, color: tier.color, p: p, tierIdx: currentTierIdx };
+        }
+
+        function updateRankBackground() {
+            const rInfo = getRankInfo();
+            const rankBgColors = {
+                "Unranked": { light: "#f0f2f5", dark: "#0f172a" },
+                "Bronze": { light: "#fffbeb", dark: "#291400" },
+                "Silver": { light: "#f8fafc", dark: "#1e293b" },
+                "Gold": { light: "#fefce8", dark: "#422006" },
+                "Platinum": { light: "#ecfeff", dark: "#083344" },
+                "Diamond": { light: "#eff6ff", dark: "#172554" },
+                "Master": { light: "#faf5ff", dark: "#3b0764" },
+                "Champion": { light: "#fff1f2", dark: "#4c0519" },
+                "Grand Champion": { light: "#fdf4ff", dark: "#4a044e" },
+                "Legend": { light: "#fef08a", dark: "#713f12" }
+            };
+            const colors = rankBgColors[rInfo.title] || rankBgColors["Unranked"];
+            document.body.style.backgroundColor = darkMode ? colors.dark : colors.light;
+        }
+
+        function showRankMap() {
+            const container = document.getElementById('rank-map-container');
+            const rInfo = getRankInfo();
+            
+            const tiers = [
+                { id: -1, name: "Unranked", color: "text-gray-500", bgG: "from-gray-400 to-gray-300" },
+                { id: 0, name: "Bronze", color: "text-amber-700", bgG: "from-amber-600 to-amber-400" },
+                { id: 1, name: "Silver", color: "text-slate-500", bgG: "from-slate-500 to-slate-300" },
+                { id: 2, name: "Gold", color: "text-yellow-600", bgG: "from-yellow-500 to-yellow-300" },
+                { id: 3, name: "Platinum", color: "text-cyan-600", bgG: "from-cyan-500 to-cyan-300" },
+                { id: 4, name: "Diamond", color: "text-blue-500", bgG: "from-blue-500 to-blue-300" },
+                { id: 5, name: "Master", color: "text-purple-600", bgG: "from-purple-600 to-purple-400" },
+                { id: 6, name: "Champion", color: "text-rose-500", bgG: "from-rose-500 to-rose-400" },
+                { id: 7, name: "Grand Champion", color: "text-fuchsia-500", bgG: "from-fuchsia-600 to-fuchsia-400" },
+                { id: 8, name: "Legend", color: "text-yellow-400", bgG: "from-yellow-400 to-yellow-200" }
+            ];
+            
+            const currentTierId = state.totalRounds < 10 ? -1 : rInfo.tierIdx;
+            
+            let html = '<div class="absolute left-[38px] top-6 bottom-6 w-2 bg-gray-100 dark:bg-slate-700/50 rounded-full z-0"></div><div class="space-y-4 relative z-10">';
+            
+            tiers.forEach(t => {
+                const isActive = t.id === currentTierId;
+                const isPast = t.id < currentTierId;
+                
+                let cardClass = isActive ? "bg-white dark:bg-slate-700 shadow-xl border border-gray-200 dark:border-slate-600 scale-105" : "bg-transparent hover:bg-gray-50 dark:hover:bg-slate-800 border border-transparent";
+                let iconBox = isPast 
+                    ? `bg-gradient-to-br ${t.bgG} text-white shadow-md` 
+                    : (isActive ? `bg-gradient-to-br ${t.bgG} text-white shadow-[0_0_15px_rgba(0,0,0,0.2)] ring-4 ring-offset-2 dark:ring-offset-slate-800 ring-opacity-50 ring-current ${t.color}` : `bg-gray-200 dark:bg-slate-700 text-gray-400 dark:text-gray-500`);
+                
+                let extra = "";
+                if (isActive) {
+                    extra = `<div class="text-xs text-gray-500 dark:text-gray-300 mt-1 font-medium bg-gray-100 dark:bg-slate-800 inline-block px-2 py-1 rounded-md">${rInfo.text} • ${rInfo.xpStr}</div>`;
+                    if(state.isPromo && t.id !== -1) extra += `<div class="text-[10px] bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 px-2 py-1 rounded-md mt-2 inline-block font-bold animate-pulse border border-red-200 dark:border-red-800">🔥 PROMO: Win "10 Clicks" to Advance!</div>`;
+                }
+
+                html += `
+                    <div class="flex items-center gap-5 p-3 rounded-2xl transition-all ${cardClass}">
+                        <div class="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl z-10 relative flex-shrink-0 ${iconBox}">
+                            ${isPast ? '✓' : (isActive ? '🎯' : '🔒')}
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="uppercase tracking-widest font-black text-lg ${isActive ? t.color : (isPast ? 'text-gray-500 dark:text-gray-400' : 'text-gray-300 dark:text-gray-600')}">${t.name}</span>
+                            ${extra}
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+            document.getElementById('modal-rank-map').classList.remove('hidden');
+        }
+
+        document.getElementById('btn-rank-map').addEventListener('click', showRankMap);
+        document.getElementById('rank-map-close').addEventListener('click', () => document.getElementById('modal-rank-map').classList.add('hidden'));
+
         function updateUI() {
+            if (typeof updateRankBackground === 'function') updateRankBackground();
             const dict = uiDict[state.language];
             document.querySelectorAll('[data-i18n]').forEach(el => { const key = el.getAttribute('data-i18n'); if (dict[key]) el.innerText = dict[key]; });
             document.getElementById('streak-val-top').innerText = state.dailyStreak;
             document.getElementById('coins-val-top').innerText = state.coins;
-            document.getElementById('total-rounds-val').innerText = state.totalRounds;
+
+            const rInfo = getRankInfo();
+            const rankEl = document.getElementById('rank-val-top');
+            rankEl.innerText = rInfo.text;
+            rankEl.className = `text-[11px] font-black uppercase tracking-widest leading-none ${rInfo.color}`;
+            document.getElementById('rank-xp-top').innerText = rInfo.xpStr;
+            document.getElementById('rank-progress-bar').style.width = rInfo.p + '%';
+            document.getElementById('rank-progress-bar').className = `h-full transition-all ${rInfo.color.replace('text-', 'bg-')}`;
+
             const todayStr = new Date().toISOString().split('T')[0];
             const hasPlayedDaily = state.lastDailyWin === todayStr;
             currentMODES = hasPlayedDaily ? ORIGINAL_MODES.filter(m => m.id !== 'daily') : [...ORIGINAL_MODES];
@@ -688,7 +930,6 @@
             const showNew = mode.id === 'daily' && state.lastDailyWin !== todayStr;
             document.getElementById('daily-notification').classList.toggle('hidden', !showNew);
             
-            // Only show timer on daily mode
             document.getElementById('reset-timer-container').classList.toggle('hidden', mode.id !== 'daily');
 
             const multiTab = document.getElementById('tab-multi');
@@ -715,9 +956,21 @@
 
             let topics;
             state.maxClicks = mode === 'limited' ? 10 : null;
-            if (mode === 'hard') topics = getRandomTopics(HARD_TOPICS[state.language]);
-            else if (mode === 'daily') topics = getDailyTopics(POPULAR_TOPICS[state.language]);
-            else topics = getRandomTopics(POPULAR_TOPICS[state.language]);
+            
+            let topicsList;
+            if (mode === 'hard') {
+                topicsList = HARD_TOPICS[state.language];
+            } else if (mode === 'daily') {
+                topicsList = MEDIUM_TOPICS[state.language];
+            } else {
+                const rInfo = getRankInfo();
+                if (rInfo.tierIdx <= 1) topicsList = EASY_TOPICS[state.language];
+                else if (rInfo.tierIdx <= 3) topicsList = MEDIUM_TOPICS[state.language];
+                else topicsList = HARD_TOPICS[state.language];
+            }
+
+            if (mode === 'daily') topics = getDailyTopics(topicsList);
+            else topics = getRandomTopics(topicsList);
             
             state.startTitle = topics.start; 
             state.targetTitle = topics.target;
@@ -744,7 +997,7 @@
 
         async function findShortestPath(start, target) {
             const display = document.getElementById('theoretical-path-display');
-            display.innerHTML = `<div class="flex items-center gap-2"><div class="loading-spinner w-4 h-4 border-2"></div> Calculating fastest route...</div>`;
+            display.innerHTML = `<div class="flex items-center gap-3 font-bold animate-pulse text-amber-500"><div class="loading-spinner w-4 h-4 border-2 border-amber-500"></div> Analyzing Wiki-Matrix...</div>`;
             
             try {
                 const checkDirect = await fetch(`${getApiUrl()}query&titles=${encodeURIComponent(start)}&prop=links&pllimit=max&format=json`);
@@ -753,50 +1006,80 @@
                 const linksDirect = dataDirect.query.pages[pageIdDirect].links || [];
                 
                 if (linksDirect.some(l => l.title === target)) {
-                    display.innerHTML = `<div class='flex flex-wrap gap-2 items-center'><span>${start}</span><span>→</span><span class='font-bold text-amber-700'>${target}</span> <span class='ml-2 text-xs text-gray-400'>(1 Step)</span></div>`;
-                    return;
+                    let path = [start, target];
+                    display.innerHTML = `<div class='flex flex-wrap gap-2 items-center animate-pop-in'><span>${start}</span><span>→</span><span class='font-bold text-amber-700'>${target}</span> <span class='ml-2 text-xs text-gray-400'>(1 Step)</span></div>`;
+                    return path;
                 }
 
-                const topLinks = linksDirect.slice(0, 50).map(l => l.title);
-                if (topLinks.length > 0) {
-                    const batchSize = 10;
-                    for (let i = 0; i < topLinks.length; i += batchSize) {
-                        const batch = topLinks.slice(i, i + batchSize);
-                        const multiCheck = await fetch(`${getApiUrl()}query&titles=${encodeURIComponent(batch.join('|'))}&prop=links&pllimit=max&format=json`);
-                        const multiData = await multiCheck.json();
-                        const pages = multiData.query.pages;
+                const topLinks = linksDirect.map(l => l.title);
+                let queue = topLinks.map(t => [start, t]);
+                let visited = new Set(topLinks.map(t => t.toLowerCase()));
+                visited.add(start.toLowerCase());
+
+                const batchSize = 40; 
+                for (let i = 0; i < queue.length; i += batchSize) {
+                    const batch = queue.slice(i, i + batchSize);
+                    const titles = batch.map(p => p[p.length - 1]);
+                    
+                    const multiCheck = await fetch(`${getApiUrl()}query&titles=${encodeURIComponent(titles.join('|'))}&prop=links&pllimit=max&format=json`);
+                    const multiData = await multiCheck.json();
+                    const pages = multiData.query.pages;
+                    
+                    for (const pid in pages) {
+                        const pLinks = pages[pid].links || [];
+                        const parentTitle = pages[pid].title;
+                        const parentPath = batch.find(p => p[p.length - 1].toLowerCase() === parentTitle.toLowerCase()) || [];
+
+                        if (pLinks.some(l => l.title.toLowerCase() === target.toLowerCase())) {
+                            let finalPath = [...parentPath, target];
+                            let steps = finalPath.length - 1;
+                            display.innerHTML = `<div class='flex flex-wrap gap-2 items-center animate-pop-in'>` + finalPath.map((s, idx) => `<span class="${idx === steps ? 'font-bold text-amber-700' : ''}">${s}</span>`).join('<span>→</span>') + `<span class='ml-2 text-xs text-gray-400'>(${steps} Steps)</span></div>`;
+                            return finalPath;
+                        }
                         
-                        for (const pid in pages) {
-                            const pLinks = pages[pid].links || [];
-                            if (pLinks.some(l => l.title === target)) {
-                                display.innerHTML = `<div class='flex flex-wrap gap-2 items-center'><span>${start}</span><span>→</span><span>${pages[pid].title}</span><span>→</span><span class='font-bold text-amber-700'>${target}</span> <span class='ml-2 text-xs text-gray-400'>(2 Steps)</span></div>`;
-                                return;
+                        // Dynamisches Queueing für unbegrenzte Tiefe (Sicherheits-Cap gegen Absturz)
+                        for(let l of pLinks) {
+                            if(!visited.has(l.title.toLowerCase()) && queue.length < 15000) { 
+                                visited.add(l.title.toLowerCase());
+                                queue.push([...parentPath, l.title]);
                             }
                         }
                     }
                 }
-                display.innerHTML = "Estimated shortest path: 3+ steps (Calculation limit reached).";
+                display.innerHTML = "Path extremely complex (3+ steps).";
+                return [start, "...", target];
             } catch (e) {
                 display.innerText = "Fastest route calculation failed.";
+                return [start, "...", target];
             }
         }
 
-        function finishGame(isWinner, oppClicks = "?", reason = "") {
+        async function finishGame(isWinner, oppClicks = "?", reason = "") {
             if (state.finished) return;
             state.finished = true;
             if (state.countdownInterval) clearInterval(state.countdownInterval);
             const mode = currentMODES[currentModeIndex].id;
             const rewardEl = document.getElementById('coin-reward-display');
-            rewardEl.innerText = "";
-            const todayStr = new Date().toISOString().split('T')[0];
+            const xpRewardEl = document.getElementById('xp-reward-display');
+            
+            // Sofortige UI-Anpassungen & Animationen
+            document.getElementById('final-clicks').innerText = state.clicks;
+            document.getElementById('path-list').innerHTML = state.path.map((step, idx) => `<div class='flex gap-2 text-xs animate-pop-in' style='animation-delay: ${idx * 40}ms'><span class='bg-gray-200 dark:bg-slate-700 px-1 rounded'>${idx}</span>${step}</div>`).join('');
+            
+            showScreen('results');
 
             if (isWinner) {
-                confetti({ particleCount: 150, spread: 60, origin: { y: 0.6 } });
+                // Erstes kleines Konfetti
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                
                 localStorage.removeItem('wiki_start_' + mode);
                 localStorage.removeItem('wiki_target_' + mode);
 
-                state.totalRounds++; localStorage.setItem('wiki_total_rounds', state.totalRounds); state.history[todayStr] = (state.history[todayStr] || 0) + 1; localStorage.setItem('wiki_history', JSON.stringify(state.history));
+                const todayStr = new Date().toISOString().split('T')[0];
+                state.totalRounds++; localStorage.setItem('wiki_total_rounds', state.totalRounds); 
+                state.history[todayStr] = (state.history[todayStr] || 0) + 1; localStorage.setItem('wiki_history', JSON.stringify(state.history));
                 
+                // Münzen sofort
                 let reward = 1;
                 if (mode === 'hard' || mode === 'limited') reward = 10;
                 
@@ -818,10 +1101,114 @@
 
                 state.coins += reward;
                 localStorage.setItem('wiki_coins', state.coins);
-                rewardEl.innerText = `+${reward} 🪙`;
+                rewardEl.innerHTML = `<span class="animate-pop-in inline-block" style="animation-delay: 200ms;">+${reward} 🪙</span>`;
+
+                // MMR Lade-Animation starten
+                xpRewardEl.innerHTML = `<div class="flex items-center gap-2 text-sm text-gray-400 font-bold animate-pulse"><div class="loading-spinner w-4 h-4 border-2"></div> Calculating MMR...</div>`;
+                
+                // Warten auf tatsächlichen kürzesten Weg
+                const shortestPath = await findShortestPath(state.startTitle, state.targetTitle);
+                let shortestLen = shortestPath ? shortestPath.length - 1 : 3;
+                if (shortestLen < 1) shortestLen = 1;
+
+                let diff = state.clicks - shortestLen;
+                let gainedMMR = 0;
+
+                // Rank System MMR Logic based on diff
+                let gain = 20;
+                
+                if (diff <= 0) gain = 50;       // Perfekter Weg!
+                else if (diff === 1) gain = 35; // Sehr gut
+                else if (diff === 2) gain = 20; // Gut
+                else if (diff <= 5) gain = 10;  // Okay
+                else gain = 5;                  // Ziemlich schlecht
+
+                if (mode === 'hard') gain += 15;
+                if (mode === 'daily') gain += 10;
+                if (mode === 'limited') gain += 20;
+
+                let info = getRankInfo();
+                
+                // Minus MMR for Platinum+ if you needed WAY more clicks than optimal
+                if (info.tierIdx >= 3) {
+                    if (diff >= 10) gain = -15;
+                    if (diff >= 20) gain = -30;
+                }
+
+                if (state.totalRounds < 10) { 
+                    gain = 75 + Math.max(0, (20 - diff * 2) * 5);
+                    let nextXP = state.xp + gain;
+                    if (nextXP > 1499) nextXP = 1499; 
+                    gainedMMR = nextXP - state.xp;
+                    state.xp = nextXP;
+                } else { 
+                    if (state.isPromo && gain > 0) {
+                        if (mode === 'limited') {
+                            state.isPromo = false;
+                            state.xp += gain;
+                            gainedMMR = gain;
+                        } else {
+                            gainedMMR = 0; 
+                        }
+                    } else {
+                        let nextXP = state.xp + gain;
+                        if (nextXP < 0) nextXP = 0;
+                        
+                        const TIERS = [500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, Infinity];
+                        let currentCap = info.tierIdx >= 0 ? TIERS[info.tierIdx] : 500;
+                        
+                        if (gain > 0 && nextXP >= currentCap && currentCap !== Infinity) {
+                            if (mode === 'limited') {
+                                state.xp = nextXP;
+                                state.isPromo = false;
+                                gainedMMR = gain;
+                            } else {
+                                state.xp = currentCap - 1;
+                                state.isPromo = true;
+                                gainedMMR = state.xp - (nextXP - gain);
+                            }
+                        } else {
+                            gainedMMR = nextXP - state.xp;
+                            state.xp = nextXP;
+                            if (gain < 0 && state.isPromo) state.isPromo = false;
+                        }
+                    }
+                }
+                localStorage.setItem('wiki_xp', state.xp);
+                localStorage.setItem('wiki_promo', state.isPromo);
+
+                // MMR fertig -> Zweites Konfetti & Anzeige!
+                xpRewardEl.innerHTML = '';
+                let newSpan = document.createElement('span');
+                newSpan.className = "animate-pop-in inline-block font-black text-2xl drop-shadow-md";
+                
+                if (gainedMMR > 0) {
+                    newSpan.innerText = `+${gainedMMR} MMR`;
+                    newSpan.classList.add('text-purple-500', 'dark:text-purple-400');
+                    // Extra fettes MMR Konfetti
+                    setTimeout(() => confetti({ particleCount: 80, spread: 100, origin: { y: 0.65 }, colors: ['#a855f7', '#d946ef', '#fbcfe8'] }), 100);
+                } else if (gainedMMR < 0) {
+                    newSpan.innerText = `${gainedMMR} MMR`;
+                    newSpan.classList.add('text-red-500', 'dark:text-red-400');
+                } else {
+                    if (state.totalRounds < 10) {
+                        newSpan.innerText = `Unranked (${state.totalRounds}/10)`;
+                        newSpan.classList.add('text-gray-500', 'dark:text-gray-400');
+                    } else if (state.isPromo && mode !== 'limited') {
+                        newSpan.innerText = `Win "10 Clicks" to advance!`;
+                        newSpan.classList.add('text-blue-500', 'dark:text-blue-400');
+                    } else {
+                        newSpan.innerText = `+0 MMR`;
+                        newSpan.classList.add('text-gray-500', 'dark:text-gray-400');
+                    }
+                }
+                xpRewardEl.appendChild(newSpan);
+
+            } else {
+                rewardEl.innerText = "";
+                xpRewardEl.innerText = "";
             }
 
-            document.getElementById('final-clicks').innerText = state.clicks;
             if (state.isMultiplayer) { 
                 document.getElementById('opponent-clicks-container').classList.remove('hidden'); document.getElementById('opponent-clicks').innerText = oppClicks;
                 document.getElementById('btn-play-again-multi').classList.remove('hidden');
@@ -830,11 +1217,8 @@
                 document.getElementById('opponent-clicks-container').classList.add('hidden'); 
                 document.getElementById('btn-play-again-multi').classList.add('hidden');
             }
-            document.getElementById('path-list').innerHTML = state.path.map((step, idx) => `<div class='flex gap-2 text-xs'><span class='bg-gray-200 dark:bg-slate-700 px-1 rounded'>${idx}</span>${step}</div>`).join('');
             
-            showScreen('results');
             updateUI();
-            findShortestPath(state.startTitle, state.targetTitle);
         }
 
         function updatePlayAgainUI() {
@@ -859,6 +1243,7 @@
         document.getElementById('btn-calendar').addEventListener('click', () => {
             const grid = document.getElementById('calendar-grid'); grid.innerHTML = ''; const today = new Date();
             for (let i = 13; i >= 0; i--) { const date = new Date(); date.setDate(today.getDate() - i); const dateStr = date.toISOString().split('T')[0]; const count = state.history[dateStr] || 0; const cell = document.createElement('div'); cell.className = `p-2 rounded-lg text-[10px] flex flex-col items-center ${count > 0 ? 'bg-blue-100 text-blue-700 font-bold border border-blue-200' : 'bg-gray-50 text-gray-400 dark:bg-slate-700 dark:text-gray-500'}`; cell.innerHTML = `<span>${date.getDate()}</span><span class='text-[8px]'>${count > 0 ? count : ''}</span>`; grid.appendChild(cell); }
+            document.getElementById('total-rounds-val').innerText = state.totalRounds;
             document.getElementById('modal-calendar').classList.remove('hidden');
         });
         document.getElementById('calendar-close').addEventListener('click', () => document.getElementById('modal-calendar').classList.add('hidden'));
@@ -873,7 +1258,15 @@
         function showScreen(screenId) { 
             Object.values(screens).forEach(s => s.classList.add('hidden')); 
             screens[screenId].classList.remove('hidden'); 
-            if (screenId === 'menu') document.getElementById('menu-background').style.opacity = '1';
+            
+            const topUI = document.getElementById('top-ui-bar');
+            if (screenId === 'game') {
+                topUI.classList.add('opacity-0', 'pointer-events-none');
+                document.getElementById('menu-background').style.opacity = '0';
+            } else {
+                topUI.classList.remove('opacity-0', 'pointer-events-none');
+                if (screenId === 'menu') document.getElementById('menu-background').style.opacity = '1';
+            }
             window.scrollTo(0, 0); 
         }
         function startCountdown() { if (!state.isMultiplayer || state.finished) return; document.getElementById('multiplayer-countdown').classList.remove('hidden'); let timeLeft = 120; document.getElementById('countdown-val').innerText = timeLeft; state.countdownInterval = setInterval(() => { timeLeft--; document.getElementById('countdown-val').innerText = timeLeft; if (timeLeft <= 0) { clearInterval(state.countdownInterval); finishGame(false, state.opponentFinishedClicks, "timeout"); } }, 1000); }
@@ -893,13 +1286,15 @@
                     const href = link.getAttribute('href');
                     if (href && href.startsWith('/wiki/') && !href.includes(':') && !href.includes('#')) {
                         link.onclick = (e) => { e.preventDefault(); handleNavigation(decodeURIComponent(href.replace('/wiki/', '')).replace(/_/g, ' ')); };
-                    } else if (!link.querySelector('img')) {
+                    } else {
                         link.style.pointerEvents = 'none';
                     }
                 });
                 content.querySelectorAll('img').forEach(img => {
                     let src = img.getAttribute('src');
                     if (src && src.startsWith('//')) img.setAttribute('src', 'https:' + src);
+                    let srcset = img.getAttribute('srcset');
+                    if (srcset) img.setAttribute('srcset', srcset.replace(/\/\//g, 'https://'));
                 });
             } catch(e) {} finally { document.getElementById('loader').classList.add('hidden'); }
         }
@@ -988,11 +1383,59 @@
             Object.keys(btns).forEach(k => btns[k].className = k === lang ? active : inactive);
         }
 
+        // Tutorial Logic
+        let currentTutorialStep = 0;
+        const tutorialSteps = document.querySelectorAll('.tutorial-step');
+        const tutorialDots = document.getElementById('tutorial-dots').children;
+
+        function showTutorialStep(step) {
+            tutorialSteps.forEach((el, i) => {
+                el.classList.toggle('hidden', i !== step);
+                tutorialDots[i].className = i === step ? "w-3 h-3 rounded-full bg-blue-600 transition-all" : "w-3 h-3 rounded-full bg-gray-300 dark:bg-slate-600 transition-all";
+            });
+            const btnNext = document.getElementById('btn-tutorial-next');
+            if (step === tutorialSteps.length - 1) {
+                btnNext.innerText = "Let's Play! 🚀";
+                btnNext.classList.replace('bg-blue-600', 'bg-green-500');
+                btnNext.classList.replace('hover:bg-blue-700', 'hover:bg-green-600');
+            } else {
+                btnNext.innerText = "Next ➔";
+                btnNext.classList.replace('bg-green-500', 'bg-blue-600');
+                btnNext.classList.replace('hover:bg-green-600', 'hover:bg-blue-700');
+            }
+        }
+
+        document.getElementById('btn-tutorial-next').onclick = () => {
+            if (currentTutorialStep < tutorialSteps.length - 1) {
+                currentTutorialStep++;
+                showTutorialStep(currentTutorialStep);
+            } else {
+                document.getElementById('modal-tutorial').classList.add('hidden');
+                localStorage.setItem('wiki_tutorial_seen', 'true');
+            }
+        };
+
+        document.getElementById('btn-close-tutorial').onclick = () => {
+            document.getElementById('modal-tutorial').classList.add('hidden');
+            localStorage.setItem('wiki_tutorial_seen', 'true');
+        };
+
+        document.getElementById('btn-info-tutorial').onclick = () => {
+            currentTutorialStep = 0;
+            showTutorialStep(0);
+            document.getElementById('modal-tutorial').classList.remove('hidden');
+        };
+
         const screens = { menu: document.getElementById('screen-menu'), game: document.getElementById('screen-game'), results: document.getElementById('screen-results') };
         initBackground();
         checkStreak(); 
         updateUI(); 
         updateModeDisplay('none');
+
+        // Auto-show Tutorial on very first visit
+        if (!localStorage.getItem('wiki_tutorial_seen')) {
+            setTimeout(() => document.getElementById('btn-info-tutorial').click(), 500);
+        }
     </script>
 </body>
 </html>

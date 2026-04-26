@@ -358,6 +358,7 @@
                                 <div class="w-12 h-12 rounded-2xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-xl font-black text-red-600 dark:text-red-400 z-10 shadow-sm border-4 border-white dark:border-slate-800">T</div>
                                 <div class="flex-1 pt-1 text-left">
                                     <span class="text-[10px] font-black uppercase tracking-widest text-red-400" data-i18n="targetArticle">Target Destination</span>
+                                    <!-- FIXED: Duplicate ID 'solo-start' changed to 'solo-target' -->
                                     <div id="solo-target" class="text-2xl font-black text-gray-800 dark:text-gray-100 leading-tight mt-1">Loading...</div>
                                 </div>
                             </div>
@@ -466,7 +467,6 @@
                     <h4 class="text-xl font-bold text-gray-900 dark:text-white">🏆 MMR & Ranking</h4>
                     <p>MMR is gained based on your efficiency compared to the shortest possible path:</p>
                     <div class="grid grid-cols-2 gap-2 text-xs font-bold my-4 bg-gray-50 dark:bg-slate-900/50 p-4 rounded-2xl border dark:border-slate-700">
-                        <div class="flex justify-between border-b dark:border-slate-700 pb-1"><span>Exact Match:</span> <span class="text-green-500">+400</span></div>
                         <div class="flex justify-between border-b dark:border-slate-700 pb-1"><span>+1 Click:</span> <span class="text-blue-500">+250</span></div>
                         <div class="flex justify-between border-b dark:border-slate-700 pb-1"><span>+2 Clicks:</span> <span class="text-indigo-500">+150</span></div>
                         <div class="flex justify-between border-b dark:border-slate-700 pb-1"><span>+3 Clicks:</span> <span class="text-purple-500">+95</span></div>
@@ -925,7 +925,7 @@
         const EASY_TOPICS = {
             en: ["Apple Inc.", "Cat", "Dog", "Earth", "Water", "Facebook", "Google", "Football", "Pizza", "Music", "Sun", "Moon", "Car", "Fish", "Bird", "Color", "Book", "Movie", "Internet", "Television", "Coca-Cola", "Nike, Inc.", "Coffee", "Tea", "YouTube", "Twitter", "Amazon (company)", "Microsoft", "Netflix", "Disney", "McDonald's", "Chocolate", "Ice cream", "Basketball", "Tennis", "Gold", "Diamond", "Forest", "Ocean", "Volcano", "London", "Paris", "New York City", "Tokyo", "Berlin", "Sky", "Fire", "Time", "Money", "Happiness", "Guitar", "Piano", "Ship", "Airplane", "Bicycle", "School", "University", "Library", "Museum", "Doctor", "Chef", "Farmer", "Police", "Soldier", "King", "Queen", "United States", "China", "India", "Brazil", "Australia", "Canada", "France", "Germany", "Italy", "Spain", "Japan", "Russia", "Africa", "Europe", "Asia", "Antarctica", "Mars", "Jupiter", "Saturn", "Venus"],
             de: ["Apple", "Hauskatze", "Haushund", "Erde", "Wasser", "Facebook", "Google", "Fußball", "Pizza", "Musik", "Sonne", "Mond", "Auto", "Fische", "Vögel", "Farbe", "Buch", "Film", "Internet", "Fernsehen", "Coca-Cola", "Nike", "Kaffee", "Tee", "YouTube", "Twitter", "Amazon", "Microsoft", "Netflix", "Disney", "McDonald’s", "Schokolade", "Eiscreme", "Basketball", "Tennis", "Gold", "Diamant", "Wald", "Ozean", "Vulkan", "London", "Paris", "New York City", "Tokio", "Berlin", "Himmel", "Feuer", "Zeit", "Geld", "Glück", "Gitarre", "Klavier", "Schiff", "Flugzeug", "Fahrrad", "Schule", "Universität", "Bibliothek", "Museum", "Arzt", "Koch", "Bauer", "Polizei", "Soldat", "König", "Königin", "Vereinigte Staaten", "China", "Indien", "Brasilien", "Australien", "Kanada", "Frankreich", "Deutschland", "Italien", "Spanien", "Japan", "Russland", "Afrika", "Europa", "Asien", "Antarktis", "Mars", "Jupiter", "Saturn", "Venus"],
-            es: ["Apple", "Gato", "Perro", "Tierra", "Agua", "Facebook", "Google", "Fútbol", "Pizza", "Música", "Sol", "Luna", "Automóvil", "Pez", "Aves", "Color", "Libro", "Película", "Internet", "Televisión", "Coca-Cola", "Nike", "Café", "Té", "YouTube", "Twitter", "Amazon", "Microsoft", "Netflix", "Disney", "McDonald's", "Chocolate", "Helado", "Baloncesto", "Tenis", "Oro", "Diamante", "Bosque", "Océano", "Volcán", "Londres", "París", "Nueva York", "Tokio", "Berlín", "Cielo", "Fuego", "Tiempo", "Dinero", "Felicidad", "Guitarra", "Piano", "Barco", "Avión", "Bicicleta", "Escuela", "Universidad", "Biblioteca", "Museum", "Doctor", "Chef", "Granjero", "Policía", "Soldado", "Rey", "Reina", "Estados Unidos", "China", "India", "Brasil", "Australia", "Canadá", "Francia", "Alemania", "Italia", "España", "Japón", "Rusia", "África", "Europa", "Asia", "Antártida", "Marte", "Júpiter", "Saturno", "Venus"]
+            es: ["Apple", "Gato", "Perro", "Tierra", "Agua", "Facebook", "Google", "Fútbol", "Pizza", "Música", "Sol", "Luna", "Automóvil", "Pez", "Aves", "Color", "Libro", "Película", "Internet", "Televisión", "Coca-Cola", "Nike", "Café", "Té", "YouTube", "Twitter", "Amazon", "Microsoft", "Netflix", "Disney", "McDonald's", "Chocolate", "Helado", "Baloncesto", "Tenis", "Oro", "Diamante", "Bosque", "Océano", "Volcán", "Londres", "París", "Nueva York", "Tokio", "Berlín", "Cielo", "Fuego", "Tiempo", "Dinero", "Felicidad", "Guitarra", "Piano", "Barco", "Avión", "Bicicleta", "Escuela", "Universidad", "Biblioteca", "Museum", "Doctor", "Chef", "Granjero", "Policía", "Soldado", "Rey", "Reina", "Estados Unidos", "China", "India", "Brasil", "Australia", "Canadá", "Francia", "Alemania", "Italia", "España", "Japón", "Rusia", "África", "Europa", "Asia", "Antártida", "Marte", "Jüpiter", "Saturno", "Venus"]
         };
         const MEDIUM_TOPICS = {
             en: ["Albert Einstein", "Ancient Egypt", "Bitcoin", "Chess", "Harry Potter", "World War II", "Dinosaur", "Physics", "Artificial Intelligence", "Black hole", "Leonardo da Vinci", "Pyramid", "DNA", "Bluetooth", "Renaissance", "Isaac Newton", "Charles Darwin", "Marie Curie", "Nikola Tesla", "Stephen Hawking", "Alexander the Great", "Julius Caesar", "Napoleon", "Abraham Lincoln", "Nelson Mandela", "Mahatma Gandhi", "Martin Luther King Jr.", "George Washington", "Barack Obama", "Elizabeth II", "William Shakespeare", "Ludwig van Beethoven", "Wolfgang Amadeus Mozart", "Vincent van Gogh", "Pablo Picasso", "Steve Jobs", "Bill Gates", "Elon Musk", "Mark Zuckerberg", "Jeff Bezos", "Industrial Revolution", "French Revolution", "American Civil War", "The Great Depression", "Cold War", "Space Race", "Apollo 11", "International Space Station", "Hubble Space Telescope", "Big Bang", "Evolution", "Photosynthesis", "Periodic table", "Atom", "Gravity", "Relativity", "Quantum mechanics", "Psychology", "Sociology", "Economics", "Philosophy", "Buddhism", "Christianity", "Islam", "Hinduism", "Judaism", "Olympics", "FIFA World Cup", "The Beatles", "Michael Jackson", "Elvis Presley", "Star Wars", "The Lord of the Rings", "Marvel Cinematic Universe", "Game of Thrones", "Minecraft", "Super Mario", "The Legend of Zelda", "Grand Theft Auto", "Pokémon"],
@@ -1203,8 +1203,12 @@
             localStorage.setItem('wiki_start_' + mode, state.startTitle);
             localStorage.setItem('wiki_target_' + mode, state.targetTitle);
             
-            document.getElementById('solo-start').innerText = state.startTitle;
-            document.getElementById('solo-target').innerText = state.targetTitle;
+            // CRITICAL: Updated innerText for solo-start and solo-target
+            const startEl = document.getElementById('solo-start');
+            const targetEl = document.getElementById('solo-target');
+            if (startEl) startEl.innerText = state.startTitle;
+            if (targetEl) targetEl.innerText = state.targetTitle;
+            
             if (state.isMultiplayer && state.isHost) { updateLobbyWords(); sendPeerData({ type: 'lobbyUpdate', startTitle: state.startTitle, targetTitle: state.targetTitle, language: state.language }); }
         }
 
@@ -1350,8 +1354,7 @@
 
                 // --- BASE XP REWARDS ---
                 let gain = 20;
-                if (diff <= 0) gain = 400; // Exact/Shortest path
-                else if (diff === 1) gain = 250;
+                if (diff <= 1) gain = 250; 
                 else if (diff === 2) gain = 150;
                 else if (diff === 3) gain = 95;
                 else if (diff === 4) gain = 60;
@@ -1361,9 +1364,9 @@
                 // Bonus logic based on complexity
                 let info = getRankInfo();
                 let complexityBonus = 5; // Base 5%
-                if (mode === 'hard') complexityBonus += 75; // Significantly higher for Hardcore
-                if (info.tierIdx >= 5) complexityBonus += 40; // Master+ bonus
-                if (state.startTitle.length > 15 || state.targetTitle.length > 15) complexityBonus += 30; // Longer titles usually harder
+                if (mode === 'hard') complexityBonus += 75; 
+                if (info.tierIdx >= 5) complexityBonus += 40; 
+                if (state.startTitle.length > 15 || state.targetTitle.length > 15) complexityBonus += 30; 
                 
                 // Maximum +150% extra MMR
                 complexityBonus = Math.min(150, complexityBonus);

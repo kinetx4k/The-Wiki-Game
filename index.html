@@ -227,7 +227,7 @@
         }
     </style>
 </head>
-<body class="min-h-screen relative bg-[#f0f2f5] dark:bg-[#0f172a] text-[#1a1a1a] dark:text-[#f8fafc]">
+<body class="min-h-screen relative text-[#1a1a1a] dark:text-[#f8fafc]">
 
     <!-- Background Layer for Menu -->
     <div id="menu-background" class="fixed inset-0 pointer-events-none overflow-hidden z-0"></div>
@@ -239,18 +239,6 @@
         <button id="btn-changelog" class="flex items-center gap-2 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md px-3 py-2 rounded-2xl shadow-lg border border-white/50 dark:border-slate-700/50 font-black text-gray-800 dark:text-gray-200" title="Patch Notes">
             <span class="text-xl">⚙️</span>
         </button>
-    </div>
-
-    <!-- Ticket UI Center Top -->
-    <div id="ticket-ui" class="fixed top-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md px-4 py-2 rounded-2xl shadow-lg border border-white/50 dark:border-slate-700/50 font-black text-gray-800 dark:text-gray-200 text-sm whitespace-nowrap transition-opacity duration-300">
-        <span>🎟️ Tickets renew in:</span>
-        <span id="ticket-timer-val" class="text-blue-500 dark:text-blue-400 w-12 text-center">00:00</span>
-        <div class="relative group cursor-help ml-1 text-lg">
-            ℹ️
-            <div class="absolute hidden group-hover:block top-full mt-2 left-1/2 -translate-x-1/2 w-48 bg-gray-900 text-white text-xs p-3 rounded-xl shadow-xl text-center font-medium border border-gray-700 pointer-events-none">
-                Wikipedia API rate limits apply. Just wait until the next hour and touch some grass! 🌿
-            </div>
-        </div>
     </div>
 
     <div id="top-ui-bar" class="fixed top-6 right-6 flex items-center gap-4 z-50 transition-opacity duration-300">
@@ -352,8 +340,6 @@
                                 <div class="flex-1 pt-1 text-left">
                                     <span class="text-[10px] font-black uppercase tracking-widest text-blue-400" data-i18n="startArticle">Start Discovery</span>
                                     <div id="solo-start" class="text-2xl font-black text-gray-800 dark:text-gray-100 leading-tight mt-1">Loading...</div>
-                                    <input type="text" id="practice-start-input" list="start-suggestions" class="hidden w-full mt-1 p-3 bg-white dark:bg-slate-800 border-2 border-blue-200 dark:border-slate-600 rounded-xl font-bold text-gray-800 dark:text-white outline-none focus:border-blue-500 transition" placeholder="Enter custom start...">
-                                    <datalist id="start-suggestions"></datalist>
                                 </div>
                             </div>
 
@@ -362,13 +348,11 @@
                                 <div class="flex-1 pt-1 text-left">
                                     <span class="text-[10px] font-black uppercase tracking-widest text-red-400" data-i18n="targetArticle">Target Destination</span>
                                     <div id="solo-target" class="text-2xl font-black text-gray-800 dark:text-gray-100 leading-tight mt-1">Loading...</div>
-                                    <input type="text" id="practice-target-input" list="target-suggestions" class="hidden w-full mt-1 p-3 bg-white dark:bg-slate-800 border-2 border-red-200 dark:border-slate-600 rounded-xl font-bold text-gray-800 dark:text-white outline-none focus:border-red-500 transition" placeholder="Enter custom target...">
-                                    <datalist id="target-suggestions"></datalist>
                                 </div>
                             </div>
                         </div>
 
-                        <div id="solo-btn-container" class="pt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="pt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <button id="btn-solo-roll" class="py-4 bg-gray-50 dark:bg-slate-700 hover:bg-gray-100 dark:hover:bg-slate-600 text-gray-800 dark:text-gray-100 rounded-[1.8rem] font-black flex items-center justify-center gap-3 border border-gray-100 dark:border-slate-600 group">
                                 <span class="group-hover:rotate-12 transition-transform" data-i18n="btnRandom">🎲 Randomize</span>
                                 <span class="text-[10px] bg-yellow-400/20 text-yellow-700 dark:text-yellow-400 px-3 py-1 rounded-full border border-yellow-400/30">-2 🪙</span>
@@ -434,18 +418,6 @@
     </div>
 
     <!-- Modals & Rest -->
-    
-    <!-- RANK UP MODAL -->
-    <div id="modal-rank-up" class="hidden fixed inset-0 bg-gray-900/90 backdrop-blur-md flex items-center justify-center z-[300] p-6">
-        <div class="bg-white dark:bg-slate-800 rounded-[3rem] p-10 max-w-md w-full shadow-2xl border-4 border-yellow-400 text-center animate-victory relative overflow-hidden">
-            <h2 class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 mb-6 uppercase tracking-widest drop-shadow-sm">Rank Up!</h2>
-            <div id="rank-up-icon" class="w-32 h-32 mx-auto rounded-[2rem] bg-gradient-to-br from-yellow-400 to-yellow-200 flex items-center justify-center text-6xl shadow-2xl mb-6 text-white border-4 border-white/20">🏆</div>
-            <p class="text-gray-500 dark:text-gray-400 font-bold mb-2">Welcome to</p>
-            <h3 id="rank-up-name" class="text-4xl font-black mb-8 text-yellow-500">New Rank</h3>
-            <button id="btn-rank-up-close" class="w-full py-4 bg-yellow-500 hover:bg-yellow-600 text-white rounded-2xl font-black text-xl transition-all shadow-lg">Awesome!</button>
-        </div>
-    </div>
-
     <div id="modal-tutorial" class="hidden fixed inset-0 bg-gray-900/80 backdrop-blur-sm flex items-center justify-center z-[200] p-4">
         <div class="bg-white dark:bg-slate-800 rounded-[3rem] p-8 md:p-10 max-w-2xl w-full shadow-2xl border border-white dark:border-slate-700 relative overflow-hidden">
             <!-- Header -->
@@ -472,8 +444,7 @@
                     <h4 class="text-xl font-bold text-gray-900 dark:text-white">🎮 Game Modes</h4>
                     <p>Use the <strong class="bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded">←</strong> and <strong class="bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded">→</strong> arrows in the menu to change modes!</p>
                     <ul class="space-y-3 font-medium">
-                        <li><strong class="text-blue-500">Classic (Ranked):</strong> Standard difficulty. Finding the fastest path is key.</li>
-                        <li><strong class="text-green-500">Practice:</strong> Enter custom words without affecting Rank MMR.</li>
+                        <li><strong class="text-blue-500">Classic:</strong> Standard difficulty. Finding the fastest path is key.</li>
                         <li><strong class="text-red-500">Hardcore:</strong> Obscure, difficult topics. High risk, high reward.</li>
                         <li><strong class="text-orange-500">Daily:</strong> A unique challenge every 24h. Build your streak (🔥)!</li>
                         <li><strong class="text-purple-500">10 Clicks:</strong> Reach the target in 10 clicks or less. Efficiency is everything!</li>
@@ -540,18 +511,17 @@
             <div class="space-y-6 text-left">
                 <!-- Patch Notes List -->
                 <div>
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.5 - Current</h4>
+                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.6 - Current</h4>
                     <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
-                        <li><strong>New:</strong> Practice Mode added. Search your own custom topics without affecting your Rank!</li>
-                        <li>Disabled Multiplayer temporarily for maintenance (red cross added).</li>
-                        <li>Added this Changelog/Patch Notes menu in the top left.</li>
+                        <li>API Rate Limit Error zeigt nun einen stündlichen Countdown an.</li>
+                        <li>Dynamischer Hintergrund basierend auf dem MMR-Rang wiederhergestellt.</li>
                     </ul>
                 </div>
                 <div>
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.4.9</h4>
+                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.5</h4>
                     <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
-                        <li>Fixed a minor bug causing the game to stutter on mobile devices during large article loads.</li>
-                        <li>Removed broken image links in specific languages.</li>
+                        <li>Disabled Multiplayer temporarily for maintenance (red cross added).</li>
+                        <li>Added this Changelog/Patch Notes menu in the top left.</li>
                     </ul>
                 </div>
                 <div>
@@ -562,24 +532,10 @@
                     </ul>
                 </div>
                 <div>
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.3.42b</h4>
-                    <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
-                        <li>Adjusted coin drop rates for Hardcore mode.</li>
-                        <li>Security updates for the API token management.</li>
-                    </ul>
-                </div>
-                <div>
                     <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.3</h4>
                     <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
                         <li>Added Daily Challenges with Streak tracking.</li>
                         <li>Introduced Coin economy and "Randomize" re-roll feature.</li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.2.99.1</h4>
-                    <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
-                        <li>UI adjustments and bugfixes for tablet users.</li>
-                        <li>Reduced MMR punishment for "10 Clicks" limits.</li>
                     </ul>
                 </div>
                 <div>
@@ -590,13 +546,6 @@
                     </ul>
                 </div>
                 <div>
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.1.223.3</h4>
-                    <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
-                        <li>Server stability improvements and cache optimization.</li>
-                        <li>Reduced MMR loss in Platinum rank and above.</li>
-                    </ul>
-                </div>
-                <div>
                     <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.1</h4>
                     <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
                         <li>Introduced Rank Map and MMR progression system.</li>
@@ -604,16 +553,10 @@
                     </ul>
                 </div>
                 <div>
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v0.9.1.beta</h4>
-                    <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
-                        <li>Fixed typo in tutorial. Fixed CSS bugs in dark mode.</li>
-                    </ul>
-                </div>
-                <div>
                     <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.0</h4>
                     <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
                         <li>Initial Release: Classic, Hardcore, and 10 Clicks modes.</li>
-                        <li>Wikipedia API integration for parsing articles dynamically.</li>
+                        <li>Wikipedia API integration.</li>
                     </ul>
                 </div>
             </div>
@@ -771,10 +714,6 @@
             // Start Countdown logic
             updateDailyCountdown();
             setInterval(updateDailyCountdown, 1000);
-            
-            // Start Ticket Countdown logic
-            updateTicketTimer();
-            setInterval(updateTicketTimer, 1000);
         }
 
         function updateDailyCountdown() {
@@ -796,17 +735,6 @@
             
             const el = document.getElementById('daily-countdown-val');
             if (el) el.innerText = timeStr;
-        }
-
-        function updateTicketTimer() {
-            const now = new Date();
-            const nextHour = new Date(now);
-            nextHour.setHours(now.getHours() + 1, 0, 0, 0);
-            const diff = nextHour - now;
-            const m = Math.floor((diff / 1000 / 60) % 60).toString().padStart(2, '0');
-            const s = Math.floor((diff / 1000) % 60).toString().padStart(2, '0');
-            const el = document.getElementById('ticket-timer-val');
-            if (el) el.innerText = `${m}:${s}`;
         }
 
         let peer = null;
@@ -848,12 +776,11 @@
                 btnStay: "Resume", btnQuit: "Abort", loading: "Loading...", waitHostStart: "Launch Mission", waitHostWait: "Awaiting Partner...", waitJoiner: "Awaiting Launch...",
                 youWon: "You Won!", success: "Success!", wonSub: "Winner!", youLost: "You Lost!", lostSub: "Try again.",
                 notFinished: "Not finished", clickStr: " clicks", multiErr: "Comm Failure.", oppProgress: "Opponent",
-                modeClassic: "Classic (Ranked)", modePractice: "Practice", modeHard: "Hardcore", modeDaily: "Daily", modeLimited: "10 Clicks", outOfClicks: "Fuel Empty!",
+                modeClassic: "Classic", modeHard: "Hardcore", modeDaily: "Daily", modeLimited: "10 Clicks", outOfClicks: "Fuel Empty!",
                 shortcut: "Intel", shortcutDesc: "Approx steps.", jumpTo: "Possible jump", dailyStreak: "🔥 Streak:",
                 recoveryText: "⚠️ Streak at risk! Win Hardcore to restore.",
                 nextDaily: "Next Daily in:",
                 descClassic: "Start at the given article and reach the target with the fewest clicks possible.",
-                descPractice: "Choose your own start and target articles to practice without affecting MMR.",
                 descHardcore: "Like Classic, but with extremely difficult and obscure terms. High stakes!",
                 descDaily: "A unique challenge refreshed every 24 hours. Build your streak and earn coins equal to your streak level!",
                 descLimited: "Reach the target destination in 10 clicks or less. Efficiency is everything!"
@@ -869,12 +796,11 @@
                 btnStay: "Weiter", btnQuit: "Abbruch", loading: "Lädt...", waitHostStart: "Starten", waitHostWait: "Warte auf P2...", waitJoiner: "Warte auf Start...",
                 youWon: "Gewonnen!", success: "Erfolg!", wonSub: "Sieg!", youLost: "Verloren!", lostSub: "Pech gehabt.",
                 notFinished: "Nicht fertig", clickStr: " Klicks", multiErr: "Funkstörung.", oppProgress: "Gegner",
-                modeClassic: "Klassisch (Ranked)", modePractice: "Übung", modeHard: "Hardcore", modeDaily: "Daily", modeLimited: "10 Clicks", outOfClicks: "Keine Klicks mehr!",
+                modeClassic: "Klassisch", modeHard: "Hardcore", modeDaily: "Daily", modeLimited: "10 Clicks", outOfClicks: "Keine Klicks mehr!",
                 shortcut: "Intel", shortcutDesc: "Ca. Schritte.", jumpTo: "Sprung zu", dailyStreak: "🔥 Streak:",
                 recoveryText: "⚠️ Streak in Gefahr! Gewinne Hardcore zur Rettung.",
                 nextDaily: "Nächste Challenge in:",
                 descClassic: "Starte beim ersten Artikel und erreiche das Ziel mit so wenigen Klicks wie möglich.",
-                descPractice: "Wähle deine eigenen Start- und Zielartikel zum Üben (keine Ranglistenpunkte).",
                 descHardcore: "Wie Klassisch, aber mit extrem schweren und obskuren Begriffen. Hoher Einsatz!",
                 descDaily: "Eine tägliche Herausforderung. Baue eine Streak auf und erhalte Münzen in Höhe deines Streak-Levels!",
                 descLimited: "Erreiche das Ziel in maximal 10 Klicks. Effizienz ist alles!"
@@ -890,12 +816,11 @@
                 btnStay: "Seguir", btnQuit: "Abortar", loading: "Cargando...", waitHostStart: "Lanzar", waitHostWait: "Espera...", waitJoiner: "Espera...",
                 youWon: "Ganaste!", success: "Éxito!", wonSub: "Victoria!", youLost: "Perdiste!", lostSub: "Inténtalo de nuevo.",
                 notFinished: "No terminó", clickStr: " clicks", multiErr: "Error Comms.", oppProgress: "Oponente",
-                modeClassic: "Clásico (Ranked)", modePractice: "Práctica", modeHard: "Hardcore", modeDaily: "Diario", modeLimited: "10 Clicks", outOfClicks: "Sin clicks!",
+                modeClassic: "Clásico", modeHard: "Hardcore", modeDaily: "Diario", modeLimited: "10 Clicks", outOfClicks: "Sin clicks!",
                 shortcut: "Intel", shortcutDesc: "Pasos.", jumpTo: "Salto", dailyStreak: "🔥 Racha:",
                 recoveryText: "⚠️ Racha en riesgo! Gana Hardcore para restaurar.",
                 nextDaily: "Próximo reto en:",
                 descClassic: "Comienza en el artículo dado y llega al objetivo con la menor cantidad de clics.",
-                descPractice: "Elige tus propios artículos para practicar sin afectar tu puntuación MMR.",
                 descHardcore: "Como el clásico, aber con términos extremadamente difíciles. ¡Gran riesgo!",
                 descDaily: "Un desafío único cada 24 horas. ¡Aumenta tu racha y gana monedas según tu nivel de racha!",
                 descLimited: "Llega al destino en 10 clics o menos. ¡La eficiencia lo es todo!"
@@ -973,7 +898,6 @@
         const ORIGINAL_MODES = [
             { id: 'daily', i18n: 'modeDaily', color: 'text-orange-500', desc: 'descDaily' },
             { id: 'classic', i18n: 'modeClassic', color: 'text-blue-600', desc: 'descClassic' },
-            { id: 'practice', i18n: 'modePractice', color: 'text-green-500', desc: 'descPractice' },
             { id: 'hard', i18n: 'modeHard', color: 'text-red-600', desc: 'descHardcore' },
             { id: 'limited', i18n: 'modeLimited', color: 'text-purple-600', desc: 'descLimited' }
         ];
@@ -1125,12 +1049,6 @@
             const todayStr = new Date().toISOString().split('T')[0];
             const hasPlayedDaily = state.lastDailyWin === todayStr;
             currentMODES = hasPlayedDaily ? ORIGINAL_MODES.filter(m => m.id !== 'daily') : [...ORIGINAL_MODES];
-            
-            // LIGA AUFSTIEG (PROMO) LOGIC
-            if (state.isPromo) {
-                currentMODES = currentMODES.filter(m => m.id === 'limited' || m.id === 'practice');
-            }
-
             if (currentModeIndex >= currentMODES.length) currentModeIndex = 0;
         }
 
@@ -1153,26 +1071,10 @@
             
             document.getElementById('reset-timer-container').classList.toggle('hidden', mode.id !== 'daily');
 
-            // Practice Mode Display Logic
-            const isPractice = mode.id === 'practice';
-            document.getElementById('solo-start').classList.toggle('hidden', isPractice);
-            document.getElementById('practice-start-input').classList.toggle('hidden', !isPractice);
-            document.getElementById('solo-target').classList.toggle('hidden', isPractice);
-            document.getElementById('practice-target-input').classList.toggle('hidden', !isPractice);
-            document.getElementById('btn-solo-roll').classList.toggle('hidden', isPractice);
-            
-            const btnContainer = document.getElementById('solo-btn-container');
-            if (isPractice) {
-                btnContainer.classList.remove('sm:grid-cols-2');
-                btnContainer.classList.add('sm:grid-cols-1');
-            } else {
-                btnContainer.classList.add('sm:grid-cols-2');
-                btnContainer.classList.remove('sm:grid-cols-1');
-            }
-
             const multiTab = document.getElementById('tab-multi');
             if (mode.id !== 'classic') { 
                 multiTab.classList.add('opacity-40', 'cursor-not-allowed', 'bg-gray-200'); 
+                // Fix for disabled structure inside relative container
                 multiTab.parentElement.classList.add('opacity-40', 'cursor-not-allowed');
                 if (state.isMultiplayer) document.getElementById('tab-solo').click(); 
             }
@@ -1180,7 +1082,7 @@
                 multiTab.classList.remove('opacity-40', 'cursor-not-allowed', 'bg-gray-200'); 
                 multiTab.parentElement.classList.remove('opacity-40', 'cursor-not-allowed');
             }
-            if (!isPractice) rollSoloWords();
+            rollSoloWords();
         }
 
         document.getElementById('mode-prev').addEventListener('click', () => { currentModeIndex = (currentModeIndex - 1 + currentMODES.length) % currentMODES.length; updateModeDisplay('prev'); });
@@ -1188,8 +1090,6 @@
 
         function rollSoloWords(force = false) {
             const mode = currentMODES[currentModeIndex].id;
-            if (mode === 'practice') return;
-
             const savedStart = localStorage.getItem('wiki_start_' + mode);
             const savedTarget = localStorage.getItem('wiki_target_' + mode);
 
@@ -1249,6 +1149,7 @@
             
             try {
                 const checkDirect = await fetch(`${getApiUrl()}query&titles=${encodeURIComponent(start)}&prop=links&pllimit=max&format=json`);
+                if (!checkDirect.ok) throw new Error("API_ERROR");
                 const dataDirect = await checkDirect.json();
                 const pageIdDirect = Object.keys(dataDirect.query.pages)[0];
                 const linksDirect = dataDirect.query.pages[pageIdDirect].links || [];
@@ -1270,6 +1171,7 @@
                     const titles = batch.map(p => p[p.length - 1]);
                     
                     const multiCheck = await fetch(`${getApiUrl()}query&titles=${encodeURIComponent(titles.join('|'))}&prop=links&pllimit=max&format=json`);
+                    if (!multiCheck.ok) throw new Error("API_ERROR");
                     const multiData = await multiCheck.json();
                     const pages = multiData.query.pages;
                     
@@ -1296,33 +1198,23 @@
                 display.innerHTML = "Path extremely complex (3+ steps).";
                 return [start, "...", target];
             } catch (e) {
-                display.innerText = "Fastest route calculation failed.";
+                display.innerHTML = `<span id="calc-rate-limit" class="text-red-500 font-bold"></span>`;
+                const tickCalc = () => {
+                    const now = new Date();
+                    const nextHour = new Date(now);
+                    nextHour.setHours(now.getHours() + 1, 0, 0, 0);
+                    const diff = Math.floor((nextHour - now) / 1000);
+                    const m = Math.floor(diff / 60).toString().padStart(2, '0');
+                    const s = (diff % 60).toString().padStart(2, '0');
+                    const el = document.getElementById('calc-rate-limit');
+                    if(el) el.innerText = `your out of tickets try again in : ${m}:${s}`;
+                };
+                tickCalc();
+                if(window.rlIntCalc) clearInterval(window.rlIntCalc);
+                window.rlIntCalc = setInterval(tickCalc, 1000);
                 return [start, "...", target];
             }
         }
-
-        function showRankUpScreen(info) {
-            document.getElementById('rank-up-name').innerText = info.title;
-            document.getElementById('rank-up-name').className = `text-4xl font-black mb-8 ${info.color}`;
-            
-            const bgG = info.title === "Bronze" ? "from-amber-600 to-amber-400" :
-                     info.title === "Silver" ? "from-slate-500 to-slate-300" :
-                     info.title === "Gold" ? "from-yellow-500 to-yellow-300" :
-                     info.title === "Platinum" ? "from-cyan-500 to-cyan-300" :
-                     info.title === "Diamond" ? "from-blue-500 to-blue-300" :
-                     info.title === "Master" ? "from-purple-600 to-purple-400" :
-                     info.title === "Champion" ? "from-rose-500 to-rose-400" :
-                     info.title === "Grand Champion" ? "from-fuchsia-600 to-fuchsia-400" : "from-yellow-400 to-yellow-200";
-            
-            document.getElementById('rank-up-icon').className = `w-32 h-32 mx-auto rounded-[2rem] bg-gradient-to-br ${bgG} flex items-center justify-center text-6xl shadow-2xl mb-6 text-white border-4 border-white/20`;
-            
-            document.getElementById('modal-rank-up').classList.remove('hidden');
-            confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 }, zIndex: 400 });
-        }
-
-        document.getElementById('btn-rank-up-close').addEventListener('click', () => {
-            document.getElementById('modal-rank-up').classList.add('hidden');
-        });
 
         async function finishGame(isWinner, oppClicks = "?", reason = "") {
             if (state.finished) return;
@@ -1344,14 +1236,10 @@
                 localStorage.removeItem('wiki_target_' + mode);
 
                 const todayStr = new Date().toISOString().split('T')[0];
-                
-                if (mode !== 'practice') {
-                    state.totalRounds++; localStorage.setItem('wiki_total_rounds', state.totalRounds); 
-                    state.history[todayStr] = (state.history[todayStr] || 0) + 1; localStorage.setItem('wiki_history', JSON.stringify(state.history));
-                }
+                state.totalRounds++; localStorage.setItem('wiki_total_rounds', state.totalRounds); 
+                state.history[todayStr] = (state.history[todayStr] || 0) + 1; localStorage.setItem('wiki_history', JSON.stringify(state.history));
                 
                 let reward = 1;
-                if (mode === 'practice') reward = 0;
                 if (mode === 'hard' || mode === 'limited') reward = 10;
                 
                 if (mode === 'daily' && state.lastDailyWin !== todayStr) {
@@ -1370,13 +1258,9 @@
                     document.getElementById('recovery-prompt').classList.add('hidden');
                 }
 
-                if (reward > 0) {
-                    state.coins += reward;
-                    localStorage.setItem('wiki_coins', state.coins);
-                    rewardEl.innerHTML = `<span class="animate-pop-in inline-block" style="animation-delay: 200ms;">+${reward} 🪙</span>`;
-                } else {
-                    rewardEl.innerHTML = "";
-                }
+                state.coins += reward;
+                localStorage.setItem('wiki_coins', state.coins);
+                rewardEl.innerHTML = `<span class="animate-pop-in inline-block" style="animation-delay: 200ms;">+${reward} 🪙</span>`;
 
                 xpRewardEl.innerHTML = `<div class="flex items-center gap-2 text-sm text-gray-400 font-bold animate-pulse"><div class="loading-spinner w-4 h-4 border-2"></div> Calculating MMR...</div>`;
                 
@@ -1394,72 +1278,63 @@
                 else if (diff <= 5) gain = 10;
                 else gain = 5;
 
-                if (mode === 'practice') gain = 0;
                 if (mode === 'hard') gain += 15;
                 if (mode === 'daily') gain += 10;
                 if (mode === 'limited') gain += 20;
 
                 let info = getRankInfo();
-                const oldTierIdx = info.tierIdx;
                 
                 if (info.tierIdx >= 3) {
-                    if (diff >= 10 && mode !== 'practice') gain = -15;
-                    if (diff >= 20 && mode !== 'practice') gain = -30;
+                    if (diff >= 10) gain = -15;
+                    if (diff >= 20) gain = -30;
                 }
 
-                if (mode !== 'practice') {
-                    if (state.totalRounds <= 5) { 
-                        gain = 75 + Math.max(0, (20 - diff * 2) * 5);
+                if (state.totalRounds < 5) { 
+                    gain = 75 + Math.max(0, (20 - diff * 2) * 5);
+                    // Caps new users to not jump over Silver instantly
+                    let nextXP = state.xp + gain;
+                    if (nextXP > 1000) nextXP = 1000; 
+                    gainedMMR = nextXP - state.xp;
+                    state.xp = nextXP;
+                } else { 
+                    const currentTierParams = getRankParams(info.tierIdx);
+                    if (state.isPromo && gain > 0) {
+                        if (mode === 'limited') {
+                            state.isPromo = false;
+                            state.xp += gain;
+                            gainedMMR = gain;
+                        } else {
+                            gainedMMR = 0; 
+                        }
+                    } else {
                         let nextXP = state.xp + gain;
-                        if (nextXP > 1000) nextXP = 1000; 
-                        gainedMMR = nextXP - state.xp;
-                        state.xp = nextXP;
-                    } else { 
-                        const currentTierParams = getRankParams(info.tierIdx);
-                        if (state.isPromo && gain > 0) {
+                        if (nextXP < 0) nextXP = 0;
+                        
+                        let currentCap = currentTierParams.cap;
+                        
+                        if (gain > 0 && nextXP >= currentCap && currentCap !== Infinity) {
                             if (mode === 'limited') {
+                                state.xp = nextXP;
                                 state.isPromo = false;
-                                state.xp += gain;
                                 gainedMMR = gain;
                             } else {
-                                gainedMMR = 0; 
+                                state.xp = currentCap - 1;
+                                state.isPromo = true;
+                                gainedMMR = state.xp - (nextXP - gain);
                             }
                         } else {
-                            let nextXP = state.xp + gain;
-                            if (nextXP < 0) nextXP = 0;
-                            
-                            let currentCap = currentTierParams.cap;
-                            
-                            if (gain > 0 && nextXP >= currentCap && currentCap !== Infinity) {
-                                if (mode === 'limited') {
-                                    state.xp = nextXP;
-                                    state.isPromo = false;
-                                    gainedMMR = gain;
-                                } else {
-                                    state.xp = currentCap - 1;
-                                    state.isPromo = true;
-                                    gainedMMR = state.xp - (nextXP - gain);
-                                }
-                            } else {
-                                gainedMMR = nextXP - state.xp;
-                                state.xp = nextXP;
-                                if (gain < 0 && state.isPromo) state.isPromo = false;
-                            }
+                            gainedMMR = nextXP - state.xp;
+                            state.xp = nextXP;
+                            if (gain < 0 && state.isPromo) state.isPromo = false;
                         }
                     }
-                    localStorage.setItem('wiki_xp', state.xp);
-                    localStorage.setItem('wiki_promo', state.isPromo);
+                }
+                localStorage.setItem('wiki_xp', state.xp);
+                localStorage.setItem('wiki_promo', state.isPromo);
 
-                    if (state.xp > state.highestXp) { state.highestXp = state.xp; localStorage.setItem('wiki_highest_xp', state.highestXp); }
-                    if (state.clicks > state.longestRun) { state.longestRun = state.clicks; localStorage.setItem('wiki_longest_run', state.longestRun); }
-                    if (state.fastestRun === 0 || state.clicks < state.fastestRun) { state.fastestRun = state.clicks; localStorage.setItem('wiki_fastest_run', state.fastestRun); }
-                }
-                
-                // CHECK RANK UP
-                const newInfo = getRankInfo();
-                if (newInfo.tierIdx > oldTierIdx && mode !== 'practice' && state.totalRounds >= 5) {
-                    setTimeout(() => showRankUpScreen(newInfo), 2000);
-                }
+                if (state.xp > state.highestXp) { state.highestXp = state.xp; localStorage.setItem('wiki_highest_xp', state.highestXp); }
+                if (state.clicks > state.longestRun) { state.longestRun = state.clicks; localStorage.setItem('wiki_longest_run', state.longestRun); }
+                if (state.fastestRun === 0 || state.clicks < state.fastestRun) { state.fastestRun = state.clicks; localStorage.setItem('wiki_fastest_run', state.fastestRun); }
 
                 xpRewardEl.innerHTML = '';
                 let newSpan = document.createElement('span');
@@ -1473,10 +1348,7 @@
                     newSpan.innerText = `${gainedMMR} MMR`;
                     newSpan.classList.add('text-red-500', 'dark:text-red-400');
                 } else {
-                    if (mode === 'practice') {
-                        newSpan.innerText = `Practice Mode`;
-                        newSpan.classList.add('text-green-500', 'dark:text-green-400');
-                    } else if (state.totalRounds < 5) {
+                    if (state.totalRounds < 5) {
                         newSpan.innerText = `Unranked (${state.totalRounds}/5)`;
                         newSpan.classList.add('text-gray-500', 'dark:text-gray-400');
                     } else if (state.isPromo && mode !== 'limited') {
@@ -1619,14 +1491,6 @@
         };
 
         function startGame() {
-            const mode = currentMODES[currentModeIndex].id;
-            if (mode === 'practice') {
-                const pStart = document.getElementById('practice-start-input').value.trim();
-                const pTarget = document.getElementById('practice-target-input').value.trim();
-                state.startTitle = pStart || "Wikipedia";
-                state.targetTitle = pTarget || "Internet";
-            }
-            
             state.isPlaying = true; state.clicks = 0; state.path = [state.startTitle]; state.currentTitle = state.startTitle; state.finished = false;
             document.getElementById('click-count').innerText = '0';
             document.getElementById('game-target-display').innerText = state.targetTitle;
@@ -1640,11 +1504,9 @@
             const topUI = document.getElementById('top-ui-bar');
             if (screenId === 'game') {
                 topUI.classList.add('opacity-0', 'pointer-events-none');
-                document.getElementById('ticket-ui').style.opacity = '0';
                 document.getElementById('menu-background').style.opacity = '0';
             } else {
                 topUI.classList.remove('opacity-0', 'pointer-events-none');
-                document.getElementById('ticket-ui').style.opacity = '1';
                 if (screenId === 'menu') document.getElementById('menu-background').style.opacity = '1';
             }
             window.scrollTo(0, 0); 
@@ -1659,7 +1521,9 @@
             container.innerHTML = state.path.map(s => `<span class='text-xs'>${s}</span>`).join(' › ');
             try {
                 const res = await fetch(`${getApiUrl()}parse&page=${encodeURIComponent(title)}&prop=text&format=json&disableeditsection=true&redirects=true`);
+                if (!res.ok) throw new Error("API_ERROR");
                 const data = await res.json();
+                if (data.error) throw new Error("API_ERROR");
                 const content = document.getElementById('wiki-content-area');
                 content.innerHTML = data.parse.text['*'];
                 content.querySelectorAll('a').forEach(link => {
@@ -1676,7 +1540,23 @@
                     let srcset = img.getAttribute('srcset');
                     if (srcset) img.setAttribute('srcset', srcset.replace(/\/\//g, 'https://'));
                 });
-            } catch(e) {} finally { document.getElementById('loader').classList.add('hidden'); }
+            } catch(e) {
+                const content = document.getElementById('wiki-content-area');
+                content.innerHTML = `<div id="rate-limit-error" class="text-red-500 font-black text-center mt-10 text-xl py-10"></div>`;
+                const tick = () => {
+                    const now = new Date();
+                    const nextHour = new Date(now);
+                    nextHour.setHours(now.getHours() + 1, 0, 0, 0);
+                    const diff = Math.floor((nextHour - now) / 1000);
+                    const m = Math.floor(diff / 60).toString().padStart(2, '0');
+                    const s = (diff % 60).toString().padStart(2, '0');
+                    const el = document.getElementById('rate-limit-error');
+                    if(el) el.innerText = `your out of tickets try again in : ${m}:${s}`;
+                };
+                tick();
+                if(window.rlInt) clearInterval(window.rlInt);
+                window.rlInt = setInterval(tick, 1000);
+            } finally { document.getElementById('loader').classList.add('hidden'); }
         }
 
         function handleNavigation(title) {
@@ -1806,23 +1686,6 @@
         };
 
         const screens = { menu: document.getElementById('screen-menu'), game: document.getElementById('screen-game'), results: document.getElementById('screen-results') };
-        
-        let suggestionTimeout;
-        function handleSuggestion(e, datalistId) {
-            clearTimeout(suggestionTimeout);
-            const query = e.target.value;
-            if (query.length < 2) return;
-            suggestionTimeout = setTimeout(async () => {
-                try {
-                    const res = await fetch(`https://${state.language}.wikipedia.org/w/api.php?origin=*&action=opensearch&search=${encodeURIComponent(query)}&limit=5&format=json`);
-                    const data = await res.json();
-                    document.getElementById(datalistId).innerHTML = data[1].map(s => `<option value="${s}">`).join('');
-                } catch (err) {}
-            }, 300);
-        }
-        document.getElementById('practice-start-input').addEventListener('input', (e) => handleSuggestion(e, 'start-suggestions'));
-        document.getElementById('practice-target-input').addEventListener('input', (e) => handleSuggestion(e, 'target-suggestions'));
-
         initBackground();
         checkStreak(); 
         updateUI(); 

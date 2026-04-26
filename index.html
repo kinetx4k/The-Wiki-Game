@@ -241,7 +241,7 @@
     <div id="top-ui-bar" class="fixed top-6 right-6 flex items-center gap-4 z-50 transition-opacity duration-300">
         <!-- Dark Mode Toggle -->
         <button id="btn-dark-mode" class="p-2.5 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl shadow-lg border border-white/50 dark:border-slate-700/50 text-xl">
-            <span id="dark-icon">🌙</span>
+            <span id="dark-icon">☀️</span>
         </button>
 
         <div id="streak-top-ui" class="flex items-center gap-4 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md px-4 py-2 rounded-2xl shadow-lg border border-white/50 dark:border-slate-700/50 font-black text-gray-800 dark:text-gray-200 select-none">
@@ -261,7 +261,7 @@
                 <span class="text-2xl">🏆</span>
                 <div class="flex flex-col min-w-[80px]">
                     <span id="rank-val-top" class="text-[11px] font-black uppercase tracking-widest leading-none text-gray-400">Unranked</span>
-                    <span id="rank-xp-top" class="text-[9px] text-gray-500 dark:text-gray-400 font-bold leading-none mt-1">0/10 Games</span>
+                    <span id="rank-xp-top" class="text-[9px] text-gray-500 dark:text-gray-400 font-bold leading-none mt-1">0/5 Games</span>
                     <div class="w-full h-1.5 bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden mt-1 relative">
                         <div id="rank-progress-bar" class="h-full bg-gray-400 w-0 transition-all"></div>
                     </div>
@@ -445,7 +445,7 @@
                 <!-- Step 3: Ranks -->
                 <div class="tutorial-step hidden space-y-4 text-gray-700 dark:text-gray-300">
                     <h4 class="text-xl font-bold text-gray-900 dark:text-white">🏆 Ranking System</h4>
-                    <p>You start as <strong>Unranked</strong> for your first 10 games. After that, you're placed into a tier!</p>
+                    <p>You start as <strong>Unranked</strong> for your first 5 games. After that, you're placed into a tier!</p>
                     <div class="flex flex-wrap gap-2 text-sm font-bold my-2">
                         <span class="text-amber-600">Bronze</span> › <span class="text-slate-400">Silver</span> › <span class="text-yellow-500">Gold</span> › <span class="text-cyan-500">Platinum</span> › <span class="text-blue-500">Diamond</span> › <span class="text-purple-600">Master</span> › <span class="text-rose-500">Champion</span> › <span class="text-fuchsia-500">Grand Champion</span> › <span class="text-yellow-400">Legend</span>
                     </div>
@@ -751,7 +751,7 @@
                 recoveryText: "⚠️ Racha en riesgo! Gana Hardcore para restaurar.",
                 nextDaily: "Próximo reto en:",
                 descClassic: "Comienza en el artículo dado y llega al objetivo con la menor cantidad de clics.",
-                descHardcore: "Como el clásico, pero con términos extremadamente difíciles. ¡Gran riesgo!",
+                descHardcore: "Como el clásico, aber con términos extremadamente difíciles. ¡Gran riesgo!",
                 descDaily: "Un desafío único cada 24 horas. ¡Aumenta tu racha y gana monedas según tu nivel de racha!",
                 descLimited: "Llega al destino en 10 clics o menos. ¡La eficiencia lo es todo!"
             }
@@ -791,6 +791,36 @@
             es: ["Entrelazamiento cuántico", "Imperio bizantino", "Tardigrada", "Geometría no euclidiana", "Alfabeto glagolítico", "Isótopos de oro", "Fotosíntesis", "Lingüística", "Modelo estándar", "Manuscrito Voynich"]
         };
 
+        const TIERS = [
+            { name: "Bronze", color: "text-amber-600" },
+            { name: "Silver", color: "text-slate-400" },
+            { name: "Gold", color: "text-yellow-500" },
+            { name: "Platinum", color: "text-cyan-500" },
+            { name: "Diamond", color: "text-blue-500" },
+            { name: "Master", color: "text-purple-600" },
+            { name: "Champion", color: "text-rose-500" },
+            { name: "Grand Champion", color: "text-fuchsia-500" },
+            { name: "Legend", color: "text-yellow-400" }
+        ];
+
+        // Helper for rank scaling: calculate total XP needed for a specific tier/div
+        const getRankParams = (tierIdx) => {
+            let startXp = 0;
+            // Add up XP of all previous tiers
+            for (let i = 0; i < tierIdx; i++) {
+                let tierBase = 100 + i * 250;
+                // Each tier has 5 divisions, each 50 XP larger than the last
+                startXp += (5 * tierBase + 500); // 0+50+100+150+200 = 500
+            }
+            let divCosts = [];
+            let tierBase = 100 + tierIdx * 250;
+            for (let d = 0; d < 5; d++) {
+                divCosts.push(tierBase + d * 50);
+            }
+            let tierSize = divCosts.reduce((a, b) => a + b, 0);
+            return { startXp, divCosts, tierSize, cap: startXp + tierSize };
+        };
+
         let currentModeIndex = 0;
         let currentMODES = [];
         const ORIGINAL_MODES = [
@@ -804,41 +834,45 @@
         function checkStreak() { const today = new Date(); today.setHours(0,0,0,0); if (!state.lastDailyWin) return; const lastWinDate = new Date(state.lastDailyWin); lastWinDate.setHours(0,0,0,0); const diffDays = Math.floor((today - lastWinDate) / (1000 * 60 * 60 * 24)); if (diffDays > 1 && state.dailyStreak > 0) { state.recoveryStreak = state.dailyStreak; state.dailyStreak = 0; localStorage.setItem('wiki_daily_streak', 0); localStorage.setItem('wiki_recovery_streak', state.recoveryStreak); document.getElementById('recovery-prompt').classList.remove('hidden'); } else if (diffDays <= 1) { state.recoveryStreak = 0; localStorage.setItem('wiki_recovery_streak', 0); document.getElementById('recovery-prompt').classList.add('hidden'); } }
 
         function getRankInfo() {
-            if (state.totalRounds < 10) {
-                return { title: "Unranked", div: "", text: `Unranked`, xpStr: `${state.xp} MMR`, color: "text-gray-400", p: (state.totalRounds/10)*100, tierIdx: -1 };
+            if (state.totalRounds < 5) {
+                return { title: "Unranked", div: "", text: `Unranked`, xpStr: `${state.xp} MMR`, color: "text-gray-400", p: (state.totalRounds/5)*100, tierIdx: -1 };
             }
             
-            const TIERS = [
-                { name: "Bronze", cap: 500, color: "text-amber-600" },
-                { name: "Silver", cap: 1000, color: "text-slate-400" },
-                { name: "Gold", cap: 1500, color: "text-yellow-500" },
-                { name: "Platinum", cap: 2000, color: "text-cyan-500" },
-                { name: "Diamond", cap: 2500, color: "text-blue-500" },
-                { name: "Master", cap: 3000, color: "text-purple-600" },
-                { name: "Champion", cap: 3500, color: "text-rose-500" },
-                { name: "Grand Champion", cap: 4000, color: "text-fuchsia-500" },
-                { name: "Legend", cap: Infinity, color: "text-yellow-400" }
-            ];
-            
             let currentTierIdx = 0;
-            for (let i=0; i<TIERS.length; i++) {
-                if (state.xp < TIERS[i].cap || i === TIERS.length - 1) {
+            let params = getRankParams(0);
+            for (let i = 0; i < TIERS.length; i++) {
+                params = getRankParams(i);
+                if (state.xp < params.cap || i === TIERS.length - 1) {
                     currentTierIdx = i;
                     break;
                 }
             }
             
             const tier = TIERS[currentTierIdx];
-            const prevCap = currentTierIdx > 0 ? TIERS[currentTierIdx-1].cap : 0;
-            const tierXP = state.xp - prevCap;
+            let tierXP = state.xp - params.startXp;
             
-            let div = 5 - Math.floor(tierXP / 100);
-            if (div < 1) div = 1;
-            if (tier.name === "Legend") div = "";
+            let div = 5;
+            let runningSum = 0;
+            let currentDivCost = params.divCosts[0];
+            let p = 0;
+
+            if (tier.name === "Legend") {
+                div = "";
+                p = 100;
+            } else {
+                for (let d = 0; d < 5; d++) {
+                    if (tierXP < runningSum + params.divCosts[d]) {
+                        div = 5 - d;
+                        currentDivCost = params.divCosts[d];
+                        p = ((tierXP - runningSum) / currentDivCost) * 100;
+                        break;
+                    }
+                    runningSum += params.divCosts[d];
+                }
+            }
             
             let text = `${tier.name} ${div}`;
-            let xpStr = `${state.xp} MMR (${tierXP % 100}/100)`;
-            let p = (tierXP % 100);
+            let xpStr = `${state.xp} MMR (${Math.floor(p)}%)`;
             
             if (state.isPromo) {
                 text = `PROMO (${tier.name} 1)`;
@@ -846,7 +880,6 @@
                 p = 100;
             } else if (tier.name === "Legend") {
                 xpStr = `${state.xp} MMR`;
-                p = 100;
             }
             
             return { title: tier.name, div: div, text: text.trim(), xpStr: xpStr, color: tier.color, p: p, tierIdx: currentTierIdx };
@@ -874,20 +907,20 @@
             const container = document.getElementById('rank-map-container');
             const rInfo = getRankInfo();
             
-            const tiers = [
-                { id: -1, name: "Unranked", color: "text-gray-500", bgG: "from-gray-400 to-gray-300" },
-                { id: 0, name: "Bronze", color: "text-amber-700", bgG: "from-amber-600 to-amber-400" },
-                { id: 1, name: "Silver", color: "text-slate-500", bgG: "from-slate-500 to-slate-300" },
-                { id: 2, name: "Gold", color: "text-yellow-600", bgG: "from-yellow-500 to-yellow-300" },
-                { id: 3, name: "Platinum", color: "text-cyan-600", bgG: "from-cyan-500 to-cyan-300" },
-                { id: 4, name: "Diamond", color: "text-blue-500", bgG: "from-blue-500 to-blue-300" },
-                { id: 5, name: "Master", color: "text-purple-600", bgG: "from-purple-600 to-purple-400" },
-                { id: 6, name: "Champion", color: "text-rose-500", bgG: "from-rose-500 to-rose-400" },
-                { id: 7, name: "Grand Champion", color: "text-fuchsia-500", bgG: "from-fuchsia-600 to-fuchsia-400" },
-                { id: 8, name: "Legend", color: "text-yellow-400", bgG: "from-yellow-400 to-yellow-200" }
-            ];
+            const tiersMap = TIERS.map((t, idx) => ({ ...t, id: idx }));
+            const tiers = [{ id: -1, name: "Unranked", color: "text-gray-500", bgG: "from-gray-400 to-gray-300" }, ...tiersMap.map(t => ({
+                ...t,
+                bgG: t.name === "Bronze" ? "from-amber-600 to-amber-400" :
+                     t.name === "Silver" ? "from-slate-500 to-slate-300" :
+                     t.name === "Gold" ? "from-yellow-500 to-yellow-300" :
+                     t.name === "Platinum" ? "from-cyan-500 to-cyan-300" :
+                     t.name === "Diamond" ? "from-blue-500 to-blue-300" :
+                     t.name === "Master" ? "from-purple-600 to-purple-400" :
+                     t.name === "Champion" ? "from-rose-500 to-rose-400" :
+                     t.name === "Grand Champion" ? "from-fuchsia-600 to-fuchsia-400" : "from-yellow-400 to-yellow-200"
+            }))];
             
-            const currentTierId = state.totalRounds < 10 ? -1 : rInfo.tierIdx;
+            const currentTierId = state.totalRounds < 5 ? -1 : rInfo.tierIdx;
             
             let html = '<div class="absolute left-[38px] top-6 bottom-6 w-2 bg-gray-100 dark:bg-slate-700/50 rounded-full z-0"></div><div class="space-y-4 relative z-10">';
             
@@ -937,7 +970,7 @@
             const rankEl = document.getElementById('rank-val-top');
             rankEl.innerText = rInfo.text;
             rankEl.className = `text-[11px] font-black uppercase tracking-widest leading-none ${rInfo.color}`;
-            document.getElementById('rank-xp-top').innerText = rInfo.xpStr;
+            document.getElementById('rank-xp-top').innerText = state.totalRounds < 5 ? `${state.totalRounds}/5 Games` : rInfo.xpStr;
             document.getElementById('rank-progress-bar').style.width = rInfo.p + '%';
             document.getElementById('rank-progress-bar').className = `h-full transition-all ${rInfo.color.replace('text-', 'bg-')}`;
 
@@ -1071,7 +1104,6 @@
                             return finalPath;
                         }
                         
-                        // Dynamisches Queueing für unbegrenzte Tiefe (Sicherheits-Cap gegen Absturz)
                         for(let l of pLinks) {
                             if(!visited.has(l.title.toLowerCase()) && queue.length < 15000) { 
                                 visited.add(l.title.toLowerCase());
@@ -1096,14 +1128,12 @@
             const rewardEl = document.getElementById('coin-reward-display');
             const xpRewardEl = document.getElementById('xp-reward-display');
             
-            // Sofortige UI-Anpassungen & Animationen
             document.getElementById('final-clicks').innerText = state.clicks;
             document.getElementById('path-list').innerHTML = state.path.map((step, idx) => `<div class='flex gap-2 text-xs animate-pop-in' style='animation-delay: ${idx * 40}ms'><span class='bg-gray-200 dark:bg-slate-700 px-1 rounded'>${idx}</span>${step}</div>`).join('');
             
             showScreen('results');
 
             if (isWinner) {
-                // Erstes kleines Konfetti
                 confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
                 
                 localStorage.removeItem('wiki_start_' + mode);
@@ -1113,7 +1143,6 @@
                 state.totalRounds++; localStorage.setItem('wiki_total_rounds', state.totalRounds); 
                 state.history[todayStr] = (state.history[todayStr] || 0) + 1; localStorage.setItem('wiki_history', JSON.stringify(state.history));
                 
-                // Münzen sofort
                 let reward = 1;
                 if (mode === 'hard' || mode === 'limited') reward = 10;
                 
@@ -1137,10 +1166,8 @@
                 localStorage.setItem('wiki_coins', state.coins);
                 rewardEl.innerHTML = `<span class="animate-pop-in inline-block" style="animation-delay: 200ms;">+${reward} 🪙</span>`;
 
-                // MMR Lade-Animation starten
                 xpRewardEl.innerHTML = `<div class="flex items-center gap-2 text-sm text-gray-400 font-bold animate-pulse"><div class="loading-spinner w-4 h-4 border-2"></div> Calculating MMR...</div>`;
                 
-                // Warten auf tatsächlichen kürzesten Weg
                 const shortestPath = await findShortestPath(state.startTitle, state.targetTitle);
                 let shortestLen = shortestPath ? shortestPath.length - 1 : 3;
                 if (shortestLen < 1) shortestLen = 1;
@@ -1148,14 +1175,12 @@
                 let diff = state.clicks - shortestLen;
                 let gainedMMR = 0;
 
-                // Rank System MMR Logic based on diff
                 let gain = 20;
-                
-                if (diff <= 0) gain = 50;       // Perfekter Weg!
-                else if (diff === 1) gain = 35; // Sehr gut
-                else if (diff === 2) gain = 20; // Gut
-                else if (diff <= 5) gain = 10;  // Okay
-                else gain = 5;                  // Ziemlich schlecht
+                if (diff <= 0) gain = 50;
+                else if (diff === 1) gain = 35;
+                else if (diff === 2) gain = 20;
+                else if (diff <= 5) gain = 10;
+                else gain = 5;
 
                 if (mode === 'hard') gain += 15;
                 if (mode === 'daily') gain += 10;
@@ -1163,19 +1188,20 @@
 
                 let info = getRankInfo();
                 
-                // Minus MMR for Platinum+ if you needed WAY more clicks than optimal
                 if (info.tierIdx >= 3) {
                     if (diff >= 10) gain = -15;
                     if (diff >= 20) gain = -30;
                 }
 
-                if (state.totalRounds < 10) { 
+                if (state.totalRounds < 5) { 
                     gain = 75 + Math.max(0, (20 - diff * 2) * 5);
+                    // Caps new users to not jump over Silver instantly
                     let nextXP = state.xp + gain;
-                    if (nextXP > 1499) nextXP = 1499; 
+                    if (nextXP > 1000) nextXP = 1000; 
                     gainedMMR = nextXP - state.xp;
                     state.xp = nextXP;
                 } else { 
+                    const currentTierParams = getRankParams(info.tierIdx);
                     if (state.isPromo && gain > 0) {
                         if (mode === 'limited') {
                             state.isPromo = false;
@@ -1188,8 +1214,7 @@
                         let nextXP = state.xp + gain;
                         if (nextXP < 0) nextXP = 0;
                         
-                        const TIERS = [500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, Infinity];
-                        let currentCap = info.tierIdx >= 0 ? TIERS[info.tierIdx] : 500;
+                        let currentCap = currentTierParams.cap;
                         
                         if (gain > 0 && nextXP >= currentCap && currentCap !== Infinity) {
                             if (mode === 'limited') {
@@ -1211,12 +1236,10 @@
                 localStorage.setItem('wiki_xp', state.xp);
                 localStorage.setItem('wiki_promo', state.isPromo);
 
-                // Update Stats (Fastest, Longest, Highest MMR)
                 if (state.xp > state.highestXp) { state.highestXp = state.xp; localStorage.setItem('wiki_highest_xp', state.highestXp); }
                 if (state.clicks > state.longestRun) { state.longestRun = state.clicks; localStorage.setItem('wiki_longest_run', state.longestRun); }
                 if (state.fastestRun === 0 || state.clicks < state.fastestRun) { state.fastestRun = state.clicks; localStorage.setItem('wiki_fastest_run', state.fastestRun); }
 
-                // MMR fertig -> Zweites Konfetti & Anzeige!
                 xpRewardEl.innerHTML = '';
                 let newSpan = document.createElement('span');
                 newSpan.className = "animate-pop-in inline-block font-black text-2xl drop-shadow-md";
@@ -1224,14 +1247,13 @@
                 if (gainedMMR > 0) {
                     newSpan.innerText = `+${gainedMMR} MMR`;
                     newSpan.classList.add('text-purple-500', 'dark:text-purple-400');
-                    // Extra fettes MMR Konfetti
                     setTimeout(() => confetti({ particleCount: 80, spread: 100, origin: { y: 0.65 }, colors: ['#a855f7', '#d946ef', '#fbcfe8'] }), 100);
                 } else if (gainedMMR < 0) {
                     newSpan.innerText = `${gainedMMR} MMR`;
                     newSpan.classList.add('text-red-500', 'dark:text-red-400');
                 } else {
-                    if (state.totalRounds < 10) {
-                        newSpan.innerText = `Unranked (${state.totalRounds}/10)`;
+                    if (state.totalRounds < 5) {
+                        newSpan.innerText = `Unranked (${state.totalRounds}/5)`;
                         newSpan.classList.add('text-gray-500', 'dark:text-gray-400');
                     } else if (state.isPromo && mode !== 'limited') {
                         newSpan.innerText = `Win "10 Clicks" to advance!`;
@@ -1289,26 +1311,36 @@
 
         // Profile Logic
         function getRankNameFromXp(xp) {
-            const TIERS = [
-                { name: "Bronze", cap: 500 }, { name: "Silver", cap: 1000 }, { name: "Gold", cap: 1500 }, 
-                { name: "Platinum", cap: 2000 }, { name: "Diamond", cap: 2500 }, { name: "Master", cap: 3000 }, 
-                { name: "Champion", cap: 3500 }, { name: "Grand Champion", cap: 4000 }, { name: "Legend", cap: Infinity }
-            ];
             let currentTierIdx = 0;
-            for (let i=0; i<TIERS.length; i++) { if (xp < TIERS[i].cap || i === TIERS.length - 1) { currentTierIdx = i; break; } }
+            for (let i = 0; i < TIERS.length; i++) {
+                let params = getRankParams(i);
+                if (xp < params.cap || i === TIERS.length - 1) {
+                    currentTierIdx = i;
+                    break;
+                }
+            }
             const tier = TIERS[currentTierIdx];
-            const prevCap = currentTierIdx > 0 ? TIERS[currentTierIdx-1].cap : 0;
-            const tierXP = xp - prevCap;
-            let div = 5 - Math.floor(tierXP / 100);
-            if (div < 1) div = 1;
-            if (tier.name === "Legend") div = "";
+            const params = getRankParams(currentTierIdx);
+            let tierXP = xp - params.startXp;
+            
+            let div = 5;
+            let runningSum = 0;
+            if (tier.name === "Legend") return "Legend";
+            
+            for (let d = 0; d < 5; d++) {
+                if (tierXP < runningSum + params.divCosts[d]) {
+                    div = 5 - d;
+                    break;
+                }
+                runningSum += params.divCosts[d];
+            }
             return `${tier.name} ${div}`.trim();
         }
 
         document.getElementById('btn-profile').addEventListener('click', () => {
             document.getElementById('stat-mmr').innerText = state.xp;
             document.getElementById('stat-high-mmr').innerText = state.highestXp;
-            document.getElementById('stat-high-rank').innerText = state.totalRounds < 10 ? "Unranked" : getRankNameFromXp(state.highestXp);
+            document.getElementById('stat-high-rank').innerText = state.totalRounds < 5 ? "Unranked" : getRankNameFromXp(state.highestXp);
             document.getElementById('stat-fastest').innerText = state.fastestRun > 0 ? `${state.fastestRun} clicks` : "-";
             document.getElementById('stat-longest').innerText = state.longestRun > 0 ? `${state.longestRun} clicks` : "-";
             document.getElementById('modal-profile').classList.remove('hidden');

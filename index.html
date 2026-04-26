@@ -676,8 +676,14 @@
         };
 
         function resetPeer() {
-            if (peerConn) { peerConn.close(); peerConn = null; }
-            if (peer) { peer.destroy(); peer = null; }
+            if (peerConn) { 
+                try { peerConn.close(); } catch(e) {}
+                peerConn = null; 
+            }
+            if (peer) { 
+                try { peer.destroy(); } catch(e) {}
+                peer = null; 
+            }
         }
 
         function sendPeerData(data) { if (peerConn && peerConn.open) peerConn.send(data); }
@@ -790,7 +796,7 @@
         const EASY_TOPICS = {
             en: ["Apple Inc.", "Cat", "Dog", "Earth", "Water", "Facebook", "Google", "Football", "Pizza", "Music", "Sun", "Moon", "Car", "Fish", "Bird", "Color", "Book", "Movie", "Internet", "Television", "Coca-Cola", "Nike, Inc.", "Coffee", "Tea", "YouTube", "Twitter", "Amazon (company)", "Microsoft", "Netflix", "Disney", "McDonald's", "Chocolate", "Ice cream", "Basketball", "Tennis", "Gold", "Diamond", "Forest", "Ocean", "Volcano", "London", "Paris", "New York City", "Tokyo", "Berlin", "Sky", "Fire", "Time", "Money", "Happiness", "Guitar", "Piano", "Ship", "Airplane", "Bicycle", "School", "University", "Library", "Museum", "Doctor", "Chef", "Farmer", "Police", "Soldier", "King", "Queen", "United States", "China", "India", "Brazil", "Australia", "Canada", "France", "Germany", "Italy", "Spain", "Japan", "Russia", "Africa", "Europe", "Asia", "Antarctica", "Mars", "Jupiter", "Saturn", "Venus"],
             de: ["Apple", "Hauskatze", "Haushund", "Erde", "Wasser", "Facebook", "Google", "Fußball", "Pizza", "Musik", "Sonne", "Mond", "Auto", "Fische", "Vögel", "Farbe", "Buch", "Film", "Internet", "Fernsehen", "Coca-Cola", "Nike", "Kaffee", "Tee", "YouTube", "Twitter", "Amazon", "Microsoft", "Netflix", "Disney", "McDonald’s", "Schokolade", "Eiscreme", "Basketball", "Tennis", "Gold", "Diamant", "Wald", "Ozean", "Vulkan", "London", "Paris", "New York City", "Tokio", "Berlin", "Himmel", "Feuer", "Zeit", "Geld", "Glück", "Gitarre", "Klavier", "Schiff", "Flugzeug", "Fahrrad", "Schule", "Universität", "Bibliothek", "Museum", "Arzt", "Koch", "Bauer", "Polizei", "Soldat", "König", "Königin", "Vereinigte Staaten", "China", "Indien", "Brasilien", "Australien", "Kanada", "Frankreich", "Deutschland", "Italien", "Spanien", "Japan", "Russland", "Afrika", "Europa", "Asien", "Antarktis", "Mars", "Jupiter", "Saturn", "Venus"],
-            es: ["Apple", "Gato", "Perro", "Tierra", "Agua", "Facebook", "Google", "Fútbol", "Pizza", "Música", "Sol", "Luna", "Automóvil", "Pez", "Aves", "Color", "Libro", "Película", "Internet", "Televisión", "Coca-Cola", "Nike", "Café", "Té", "YouTube", "Twitter", "Amazon", "Microsoft", "Netflix", "Disney", "McDonald's", "Chocolate", "Helado", "Baloncesto", "Tenis", "Oro", "Diamante", "Bosque", "Océano", "Volcán", "Londres", "París", "Nueva York", "Tokio", "Berlín", "Cielo", "Fuego", "Tiempo", "Dinero", "Felicidad", "Guitarra", "Piano", "Barco", "Avión", "Bicicleta", "Escuela", "Universidad", "Biblioteca", "Museo", "Doctor", "Chef", "Granjero", "Policía", "Soldado", "Rey", "Reina", "Estados Unidos", "China", "Indien", "Brasil", "Australia", "Canadá", "Francia", "Alemania", "Italia", "España", "Japón", "Rusia", "África", "Europa", "Asia", "Antártida", "Marte", "Júpiter", "Saturno", "Venus"]
+            es: ["Apple", "Gato", "Perro", "Tierra", "Agua", "Facebook", "Google", "Fútbol", "Pizza", "Música", "Sol", "Luna", "Automóvil", "Pez", "Aves", "Color", "Libro", "Película", "Internet", "Televisión", "Coca-Cola", "Nike", "Café", "Té", "YouTube", "Twitter", "Amazon", "Microsoft", "Netflix", "Disney", "McDonald's", "Chocolate", "Helado", "Baloncesto", "Tenis", "Oro", "Diamante", "Bosque", "Océano", "Volcán", "Londres", "París", "Nueva York", "Tokio", "Berlín", "Cielo", "Fuego", "Tiempo", "Dinero", "Felicidad", "Guitarra", "Piano", "Barco", "Avión", "Bicicleta", "Escuela", "Universidad", "Biblioteca", "Museo", "Doctor", "Chef", "Granjero", "Policía", "Soldado", "Rey", "Reina", "Estados Unidos", "China", "Indien", "Brasil", "Australia", "Canadá", "Francia", "Alemania", "Italia", "España", "Japón", "Rusia", "África", "Europa", "Asia", "Antártida", "Marte", "Jüpiter", "Saturno", "Venus"]
         };
         const MEDIUM_TOPICS = {
             en: ["Albert Einstein", "Ancient Egypt", "Bitcoin", "Chess", "Harry Potter", "World War II", "Dinosaur", "Physics", "Artificial Intelligence", "Black hole", "Leonardo da Vinci", "Pyramid", "DNA", "Bluetooth", "Renaissance", "Isaac Newton", "Charles Darwin", "Marie Curie", "Nikola Tesla", "Stephen Hawking", "Alexander the Great", "Julius Caesar", "Napoleon", "Abraham Lincoln", "Nelson Mandela", "Mahatma Gandhi", "Martin Luther King Jr.", "George Washington", "Barack Obama", "Elizabeth II", "William Shakespeare", "Ludwig van Beethoven", "Wolfgang Amadeus Mozart", "Vincent van Gogh", "Pablo Picasso", "Steve Jobs", "Bill Gates", "Elon Musk", "Mark Zuckerberg", "Jeff Bezos", "Industrial Revolution", "French Revolution", "American Civil War", "The Great Depression", "Cold War", "Space Race", "Apollo 11", "International Space Station", "Hubble Space Telescope", "Big Bang", "Evolution", "Photosynthesis", "Periodic table", "Atom", "Gravity", "Relativity", "Quantum mechanics", "Psychology", "Sociology", "Economics", "Philosophy", "Buddhism", "Christianity", "Islam", "Hinduism", "Judaism", "Olympics", "FIFA World Cup", "The Beatles", "Michael Jackson", "Elvis Presley", "Star Wars", "The Lord of the Rings", "Marvel Cinematic Universe", "Game of Thrones", "Minecraft", "Super Mario", "The Legend of Zelda", "Grand Theft Auto", "Pokémon"],
@@ -1395,23 +1401,67 @@
                     const startBtn = document.getElementById('btn-lobby-start'); startBtn.disabled = false; startBtn.innerText = uiDict[state.language].waitHostStart;
                     sendPeerData({ type: 'lobbyUpdate', startTitle: state.startTitle, targetTitle: state.targetTitle, language: state.language });
                 });
-                peer.on('error', () => { resetPeer(); document.getElementById('join-error').classList.remove('hidden'); });
+                peer.on('error', (err) => { 
+                    console.error("Host Peer Error:", err);
+                    resetPeer(); 
+                    document.getElementById('join-error').innerText = "Host connection error. Try again.";
+                    document.getElementById('join-error').classList.remove('hidden'); 
+                });
             } catch(e) { console.error("Peer init failed", e); }
         });
 
         document.getElementById('btn-show-join').addEventListener('click', () => { document.getElementById('role-selection').classList.add('hidden'); document.getElementById('join-section').classList.remove('hidden'); });
+        
         document.getElementById('btn-join-submit').addEventListener('click', () => {
+            const codeInput = document.getElementById('join-code').value.toUpperCase(); 
+            if (codeInput.length !== 6) return;
+            
             resetPeer();
-            const codeInput = document.getElementById('join-code').value.toUpperCase(); if (codeInput.length !== 6) return;
             document.getElementById('join-error').classList.add('hidden');
+            document.getElementById('btn-join-submit').innerText = "...";
+            document.getElementById('btn-join-submit').disabled = true;
+
+            // Joiner Peer initialization
             peer = new Peer(null, PEER_CONFIG); 
-            peer.on('open', () => { 
+            
+            peer.on('open', (id) => { 
+                console.log('Joiner Peer ID:', id);
                 peerConn = peer.connect('wikigame-v1-' + codeInput, { reliable: true }); 
-                peerConn.on('open', () => { state.isHost = false; state.sessionCode = codeInput; setupLobbyUI(); peerConn.on('data', handlePeerData); });
-                peerConn.on('error', () => { document.getElementById('join-error').classList.remove('hidden'); });
-                setTimeout(() => { if (!peerConn || !peerConn.open) document.getElementById('join-error').classList.remove('hidden'); }, 5000);
+                
+                const connectionTimeout = setTimeout(() => {
+                    if (!peerConn || !peerConn.open) {
+                        document.getElementById('join-error').classList.remove('hidden');
+                        document.getElementById('btn-join-submit').innerText = uiDict[state.language].btnJoin;
+                        document.getElementById('btn-join-submit').disabled = false;
+                        resetPeer();
+                    }
+                }, 7000);
+
+                peerConn.on('open', () => { 
+                    clearTimeout(connectionTimeout);
+                    state.isHost = false; 
+                    state.sessionCode = codeInput; 
+                    setupLobbyUI(); 
+                    peerConn.on('data', handlePeerData); 
+                    document.getElementById('btn-join-submit').innerText = uiDict[state.language].btnJoin;
+                    document.getElementById('btn-join-submit').disabled = false;
+                });
+
+                peerConn.on('error', (err) => { 
+                    console.error("Conn error:", err);
+                    document.getElementById('join-error').classList.remove('hidden'); 
+                    document.getElementById('btn-join-submit').innerText = uiDict[state.language].btnJoin;
+                    document.getElementById('btn-join-submit').disabled = false;
+                });
             });
-            peer.on('error', () => { document.getElementById('join-error').classList.remove('hidden'); });
+
+            peer.on('error', (err) => { 
+                console.error("Joiner Peer error:", err);
+                document.getElementById('join-error').classList.remove('hidden'); 
+                document.getElementById('btn-join-submit').innerText = uiDict[state.language].btnJoin;
+                document.getElementById('btn-join-submit').disabled = false;
+                resetPeer();
+            });
         });
 
         document.getElementById('btn-lobby-refresh').onclick = () => { if (state.isHost) rollSoloWords(true); };

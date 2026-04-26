@@ -232,13 +232,24 @@
     <!-- Background Layer for Menu -->
     <div id="menu-background" class="fixed inset-0 pointer-events-none overflow-hidden z-0"></div>
 
-    <div id="top-left-ui" class="fixed top-6 left-6 z-50 transition-opacity duration-300 flex items-center gap-3">
+    <div id="top-left-ui" class="fixed top-6 left-6 z-50 transition-opacity duration-300 flex items-center gap-3 flex-wrap">
         <button id="btn-profile" class="flex items-center gap-2 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md px-4 py-2 rounded-2xl shadow-lg border border-white/50 dark:border-slate-700/50 font-black text-gray-800 dark:text-gray-200">
             <span class="text-xl">👤</span> <span class="hidden sm:inline">Profile</span>
         </button>
         <button id="btn-changelog" class="flex items-center gap-2 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md px-3 py-2 rounded-2xl shadow-lg border border-white/50 dark:border-slate-700/50 font-black text-gray-800 dark:text-gray-200" title="Patch Notes">
             <span class="text-xl">⚙️</span>
         </button>
+
+        <!-- New Ticket Banner & Info Box -->
+        <div class="group relative flex items-center gap-2 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md px-3 py-2 rounded-2xl shadow-lg border border-white/50 dark:border-slate-700/50 font-black text-gray-800 dark:text-gray-200 cursor-help">
+            <span class="text-xl">🎟️</span>
+            <span class="text-[10px] uppercase tracking-widest hidden md:inline text-blue-600 dark:text-blue-400">Your tickets will renew in :</span>
+            <span id="top-rate-timer" class="text-sm">00:00</span>
+
+            <div class="absolute top-full left-0 mt-2 w-64 p-4 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 text-xs font-medium text-gray-500 dark:text-gray-400 leading-relaxed text-left pointer-events-none">
+                Wikipedia allows a limited number of requests per IP. If they are gone, wait until the next hour starts. In the meantime, you can go touch some grass! 🌿
+            </div>
+        </div>
     </div>
 
     <div id="top-ui-bar" class="fixed top-6 right-6 flex items-center gap-4 z-50 transition-opacity duration-300">
@@ -452,16 +463,40 @@
                 </div>
                 <!-- Step 3: Ranks -->
                 <div class="tutorial-step hidden space-y-4 text-gray-700 dark:text-gray-300">
-                    <h4 class="text-xl font-bold text-gray-900 dark:text-white">🏆 Ranking System</h4>
-                    <p>You start as <strong>Unranked</strong> for your first 5 games. After that, you're placed into a tier!</p>
-                    <div class="flex flex-wrap gap-2 text-sm font-bold my-2">
-                        <span class="text-amber-600">Bronze</span> › <span class="text-slate-400">Silver</span> › <span class="text-yellow-500">Gold</span> › <span class="text-cyan-500">Platinum</span> › <span class="text-blue-500">Diamond</span> › <span class="text-purple-600">Master</span> › <span class="text-rose-500">Champion</span> › <span class="text-fuchsia-500">Grand Champion</span> › <span class="text-yellow-400">Legend</span>
+                    <h4 class="text-xl font-bold text-gray-900 dark:text-white">🏆 MMR & Ranking</h4>
+                    <p>MMR is gained based on your efficiency compared to the shortest possible path:</p>
+                    <div class="grid grid-cols-2 gap-2 text-xs font-bold my-4 bg-gray-50 dark:bg-slate-900/50 p-4 rounded-2xl border dark:border-slate-700">
+                        <div class="flex justify-between border-b dark:border-slate-700 pb-1"><span>Exact Match:</span> <span class="text-green-500">+400</span></div>
+                        <div class="flex justify-between border-b dark:border-slate-700 pb-1"><span>+1 Click:</span> <span class="text-blue-500">+250</span></div>
+                        <div class="flex justify-between border-b dark:border-slate-700 pb-1"><span>+2 Clicks:</span> <span class="text-indigo-500">+150</span></div>
+                        <div class="flex justify-between border-b dark:border-slate-700 pb-1"><span>+3 Clicks:</span> <span class="text-purple-500">+95</span></div>
+                        <div class="flex justify-between border-b dark:border-slate-700 pb-1"><span>+4 Clicks:</span> <span class="text-pink-500">+60</span></div>
+                        <div class="flex justify-between border-b dark:border-slate-700 pb-1"><span>+5 Clicks:</span> <span class="text-orange-500">+40</span></div>
                     </div>
-                    <ul class="list-disc pl-5 space-y-2 font-medium text-sm">
-                        <li>The fewer clicks you use compared to the perfect theoretical path, the more <strong>MMR</strong> you earn.</li>
-                        <li>Reaching the top of your tier triggers a <strong>PROMO</strong>: Win a <em>10 Clicks</em> game to advance!</li>
-                        <li>Beware: In Platinum and above, using way too many clicks will lose you MMR!</li>
+                    <p class="text-sm italic font-bold text-blue-600 dark:text-blue-400">✨ Complexity Bonus: Win harder topics (Hardcore/Master+) to earn up to <strong class="text-purple-500">+150%</strong> extra MMR per win!</p>
+                    <ul class="list-disc pl-5 space-y-2 font-medium text-xs mt-4">
+                        <li>Reach the top of your tier to trigger a <strong>PROMO</strong> (Win 10-Clicks).</li>
                     </ul>
+                </div>
+                <!-- Step 4: Penalties -->
+                <div class="tutorial-step hidden space-y-4 text-gray-700 dark:text-gray-300">
+                    <h4 class="text-xl font-bold text-gray-900 dark:text-white">⚠️ MMR Penalties</h4>
+                    <p>Be careful! Starting from <strong class="text-cyan-500">Platinum</strong>, your decisions have weight:</p>
+                    <ul class="space-y-3 font-medium">
+                        <li class="flex items-center gap-3">
+                            <span class="w-8 h-8 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-600 flex items-center justify-center font-bold">Q</span>
+                            <span><strong>Giving Up:</strong> Aborting a mission costs <strong class="text-red-500">-10 MMR</strong>.</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <span class="w-8 h-8 rounded-lg bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 flex items-center justify-center font-bold">R</span>
+                            <span><strong>Randomizing:</strong> Re-rolling words costs <strong class="text-orange-500">-5 MMR</strong> (plus coins).</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <span class="w-8 h-8 rounded-lg bg-gray-100 dark:bg-slate-700 text-gray-600 flex items-center justify-center font-bold">P</span>
+                            <span><strong>Low Performance:</strong> Taking too many clicks in high ranks (Platinum+) will result in MMR loss!</span>
+                        </li>
+                    </ul>
+                    <p class="text-xs italic text-gray-400 pt-2">Tip: It is always better to finish the game with many clicks than to give up!</p>
                 </div>
             </div>
 
@@ -469,6 +504,7 @@
             <div class="flex justify-between items-center mt-8 pt-6 border-t dark:border-slate-700">
                 <div class="flex gap-2" id="tutorial-dots">
                     <div class="w-3 h-3 rounded-full bg-blue-600 transition-all"></div>
+                    <div class="w-3 h-3 rounded-full bg-gray-300 dark:bg-slate-600 transition-all"></div>
                     <div class="w-3 h-3 rounded-full bg-gray-300 dark:bg-slate-600 transition-all"></div>
                     <div class="w-3 h-3 rounded-full bg-gray-300 dark:bg-slate-600 transition-all"></div>
                 </div>
@@ -511,7 +547,29 @@
             <div class="space-y-6 text-left">
                 <!-- Patch Notes List -->
                 <div>
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.6 - Current</h4>
+                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.9 - Current</h4>
+                    <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
+                        <li>MMR loss for Giving Up (-10) and Refreshing (-5) added.</li>
+                        <li>MMR loss now active from Platinum rank upwards.</li>
+                        <li>Tutorial expanded with a new Penalty page.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.8</h4>
+                    <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
+                        <li>MMR Complexity Bonus auf maximal +150% erhöht.</li>
+                        <li>Tutorial-Info an den neuen Bonus angepasst.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.7</h4>
+                    <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
+                        <li>MMR complexity bonus (1% - 10%) added to Victory Screen.</li>
+                        <li>Tutorial updated with detailed MMR click-table.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.6</h4>
                     <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
                         <li>API Rate Limit Error zeigt nun einen stündlichen Countdown an.</li>
                         <li>Dynamischer Hintergrund basierend auf dem MMR-Rang wiederhergestellt.</li>
@@ -628,7 +686,7 @@
             <div id="result-icon" class="w-24 h-24 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl animate-pop-in" style="animation-delay: 100ms;">🏁</div>
             <h1 id="result-title" class="text-5xl font-black mb-2 text-gray-800 dark:text-white animate-pop-in" style="animation-delay: 200ms;" data-i18n="victoryTitle">Victory!</h1>
             <div id="coin-reward-display" class="mb-1 text-2xl font-black text-yellow-600 dark:text-yellow-400 flex items-center justify-center gap-2"></div>
-            <div id="xp-reward-display" class="mb-4 flex items-center justify-center min-h-[40px]"></div>
+            <div id="xp-reward-display" class="mb-4 flex flex-col items-center justify-center min-h-[60px]"></div>
             <p id="result-subtitle" class="text-gray-500 dark:text-gray-400 mb-10 text-lg font-medium animate-pop-in" style="animation-delay: 300ms;" data-i18n="victorySub">Success!</p>
             <div class="flex flex-wrap gap-6 mb-10 items-center justify-center animate-pop-in" style="animation-delay: 400ms;">
                 <div class="p-6 bg-blue-50 dark:bg-blue-900/20 rounded-2xl border border-blue-100 dark:border-blue-900/30 min-w-[150px]">
@@ -867,17 +925,17 @@
         const EASY_TOPICS = {
             en: ["Apple Inc.", "Cat", "Dog", "Earth", "Water", "Facebook", "Google", "Football", "Pizza", "Music", "Sun", "Moon", "Car", "Fish", "Bird", "Color", "Book", "Movie", "Internet", "Television", "Coca-Cola", "Nike, Inc.", "Coffee", "Tea", "YouTube", "Twitter", "Amazon (company)", "Microsoft", "Netflix", "Disney", "McDonald's", "Chocolate", "Ice cream", "Basketball", "Tennis", "Gold", "Diamond", "Forest", "Ocean", "Volcano", "London", "Paris", "New York City", "Tokyo", "Berlin", "Sky", "Fire", "Time", "Money", "Happiness", "Guitar", "Piano", "Ship", "Airplane", "Bicycle", "School", "University", "Library", "Museum", "Doctor", "Chef", "Farmer", "Police", "Soldier", "King", "Queen", "United States", "China", "India", "Brazil", "Australia", "Canada", "France", "Germany", "Italy", "Spain", "Japan", "Russia", "Africa", "Europe", "Asia", "Antarctica", "Mars", "Jupiter", "Saturn", "Venus"],
             de: ["Apple", "Hauskatze", "Haushund", "Erde", "Wasser", "Facebook", "Google", "Fußball", "Pizza", "Musik", "Sonne", "Mond", "Auto", "Fische", "Vögel", "Farbe", "Buch", "Film", "Internet", "Fernsehen", "Coca-Cola", "Nike", "Kaffee", "Tee", "YouTube", "Twitter", "Amazon", "Microsoft", "Netflix", "Disney", "McDonald’s", "Schokolade", "Eiscreme", "Basketball", "Tennis", "Gold", "Diamant", "Wald", "Ozean", "Vulkan", "London", "Paris", "New York City", "Tokio", "Berlin", "Himmel", "Feuer", "Zeit", "Geld", "Glück", "Gitarre", "Klavier", "Schiff", "Flugzeug", "Fahrrad", "Schule", "Universität", "Bibliothek", "Museum", "Arzt", "Koch", "Bauer", "Polizei", "Soldat", "König", "Königin", "Vereinigte Staaten", "China", "Indien", "Brasilien", "Australien", "Kanada", "Frankreich", "Deutschland", "Italien", "Spanien", "Japan", "Russland", "Afrika", "Europa", "Asien", "Antarktis", "Mars", "Jupiter", "Saturn", "Venus"],
-            es: ["Apple", "Gato", "Perro", "Tierra", "Agua", "Facebook", "Google", "Fútbol", "Pizza", "Música", "Sol", "Luna", "Automóvil", "Pez", "Aves", "Color", "Libro", "Película", "Internet", "Televisión", "Coca-Cola", "Nike", "Café", "Té", "YouTube", "Twitter", "Amazon", "Microsoft", "Netflix", "Disney", "McDonald's", "Chocolate", "Helado", "Baloncesto", "Tenis", "Oro", "Diamante", "Bosque", "Océano", "Volcán", "Londres", "París", "Nueva York", "Tokio", "Berlín", "Cielo", "Fuego", "Tiempo", "Dinero", "Felicidad", "Guitarra", "Piano", "Barco", "Avión", "Bicicleta", "Escuela", "Universidad", "Biblioteca", "Museo", "Doctor", "Chef", "Granjero", "Policía", "Soldado", "Rey", "Reina", "Estados Unidos", "China", "India", "Brasil", "Australia", "Canadá", "Francia", "Alemania", "Italia", "España", "Japón", "Rusia", "África", "Europa", "Asia", "Antártida", "Marte", "Júpiter", "Saturno", "Venus"]
+            es: ["Apple", "Gato", "Perro", "Tierra", "Agua", "Facebook", "Google", "Fútbol", "Pizza", "Música", "Sol", "Luna", "Automóvil", "Pez", "Aves", "Color", "Libro", "Película", "Internet", "Televisión", "Coca-Cola", "Nike", "Café", "Té", "YouTube", "Twitter", "Amazon", "Microsoft", "Netflix", "Disney", "McDonald's", "Chocolate", "Helado", "Baloncesto", "Tenis", "Oro", "Diamante", "Bosque", "Océano", "Volcán", "Londres", "París", "Nueva York", "Tokio", "Berlín", "Cielo", "Fuego", "Tiempo", "Dinero", "Felicidad", "Guitarra", "Piano", "Barco", "Avión", "Bicicleta", "Escuela", "Universidad", "Biblioteca", "Museum", "Doctor", "Chef", "Granjero", "Policía", "Soldado", "Rey", "Reina", "Estados Unidos", "China", "India", "Brasil", "Australia", "Canadá", "Francia", "Alemania", "Italia", "España", "Japón", "Rusia", "África", "Europa", "Asia", "Antártida", "Marte", "Júpiter", "Saturno", "Venus"]
         };
         const MEDIUM_TOPICS = {
             en: ["Albert Einstein", "Ancient Egypt", "Bitcoin", "Chess", "Harry Potter", "World War II", "Dinosaur", "Physics", "Artificial Intelligence", "Black hole", "Leonardo da Vinci", "Pyramid", "DNA", "Bluetooth", "Renaissance", "Isaac Newton", "Charles Darwin", "Marie Curie", "Nikola Tesla", "Stephen Hawking", "Alexander the Great", "Julius Caesar", "Napoleon", "Abraham Lincoln", "Nelson Mandela", "Mahatma Gandhi", "Martin Luther King Jr.", "George Washington", "Barack Obama", "Elizabeth II", "William Shakespeare", "Ludwig van Beethoven", "Wolfgang Amadeus Mozart", "Vincent van Gogh", "Pablo Picasso", "Steve Jobs", "Bill Gates", "Elon Musk", "Mark Zuckerberg", "Jeff Bezos", "Industrial Revolution", "French Revolution", "American Civil War", "The Great Depression", "Cold War", "Space Race", "Apollo 11", "International Space Station", "Hubble Space Telescope", "Big Bang", "Evolution", "Photosynthesis", "Periodic table", "Atom", "Gravity", "Relativity", "Quantum mechanics", "Psychology", "Sociology", "Economics", "Philosophy", "Buddhism", "Christianity", "Islam", "Hinduism", "Judaism", "Olympics", "FIFA World Cup", "The Beatles", "Michael Jackson", "Elvis Presley", "Star Wars", "The Lord of the Rings", "Marvel Cinematic Universe", "Game of Thrones", "Minecraft", "Super Mario", "The Legend of Zelda", "Grand Theft Auto", "Pokémon"],
             de: ["Albert Einstein", "Altes Ägypten", "Bitcoin", "Schach", "Harry Potter", "Zweiter Weltkrieg", "Dinosaurier", "Physik", "Künstliche Intelligenz", "Schwarzes Loch", "Leonardo da Vinci", "Pyramide", "DNA", "Bluetooth", "Renaissance", "Isaac Newton", "Charles Darwin", "Marie Curie", "Nikola Tesla", "Stephen Hawking", "Alexander der Große", "Julius Cäsar", "Napoleon Bonaparte", "Abraham Lincoln", "Nelson Mandela", "Mahatma Gandhi", "Martin Luther King Jr.", "George Washington", "Barack Obama", "Elisabeth II.", "William Shakespeare", "Ludwig van Beethoven", "Wolfgang Amadeus Mozart", "Vincent van Gogh", "Pablo Picasso", "Steve Jobs", "Bill Gates", "Elon Musk", "Mark Zuckerberg", "Jeff Bezos", "Industrielle Revolution", "Französische Revolution", "Sezessionskrieg", "Weltwirtschaftskrise", "Kalter Krieg", "Wettlauf ins All", "Apollo 11", "Internationale Raumstation", "Hubble-Weltraumteleskop", "Urknall", "Evolution", "Photosynthese", "Periodensystem", "Atom", "Gravitation", "Relativitätstheorie", "Quantenmechanik", "Psychologie", "Soziologie", "Wirtschaftswissenschaft", "Philosophie", "Buddhismus", "Christentum", "Islam", "Hinduismus", "Judentum", "Olympische Spiele", "Fußball-Weltmeisterschaft", "The Beatles", "Michael Jackson", "Elvis Presley", "Star Wars", "Der Herr der Ringe", "Marvel Cinematic Universe", "Game of Thrones", "Minecraft", "Super Mario", "The Legend of Zelda", "Grand Theft Auto", "Pokémon"],
-            es: ["Albert Einstein", "Antiguo Egipto", "Bitcoin", "Ajedrez", "Harry Potter", "Segunda Guerra Mundial", "Dinosaurio", "Física", "Inteligencia artificial", "Agujero negro", "Leonardo da Vinci", "Pirámide", "ADN", "Bluetooth", "Renacimiento", "Isaac Newton", "Charles Darwin", "Marie Curie", "Nikola Tesla", "Stephen Hawking", "Alejandro Magno", "Julio César", "Napoleón Bonaparte", "Abraham Lincoln", "Nelson Mandela", "Mahatma Gandhi", "Martin Luther King Jr.", "George Washington", "Barack Obama", "Isabel II", "William Shakespeare", "Ludwig van Beethoven", "Wolfgang Amadeus Mozart", "Vincent van Gogh", "Pablo Picasso", "Steve Jobs", "Bill Gates", "Elon Musk", "Mark Zuckerberg", "Jeff Bezos", "Revolución Industrial", "Revolución Francesa", "Guerra de Secesión", "Gran Depresión", "Guerra Fría", "Carrera espacial", "Apollo 11", "Estación Espacial Internacional", "Telescopio espacial Hubble", "Big Bang", "Evolución", "Fotosíntesis", "Tabla periódica", "Átomo", "Gravedad", "Relatividad", "Mecánica cuántica", "Psicología", "Sociología", "Economía", "Filosofía", "Budismo", "Cristianismo", "Islam", "Hinduismo", "Judaísmo", "Juegos Olímpicos", "Copa Mundial de la FIFA", "The Beatles", "Michael Jackson", "Elvis Presley", "Star Wars", "El Señor de los Anillos", "Universo cinematográfico de Marvel", "Juego de tronos", "Minecraft", "Super Mario", "The Legend of Zelda", "Grand Theft Auto", "Pokémon"]
+            es: ["Albert Einstein", "Antiguo Egipto", "Bitcoin", "Ajedrez", "Harry Potter", "Segunda Guerra Mundial", "Dinosaurio", "Física", "Inteligencia artificial", "Agujero negro", "Leonardo da Vinci", "Pirámide", "ADN", "Bluetooth", "Renacimiento", "Isaac Newton", "Charles Darwin", "Marie Curie", "Nikola Tesla", "Stephen Hawking", "Alejandro Magno", "Julio César", "Napoleón Bonaparte", "Abraham Lincoln", "Nelson Mandela", "Mahatma Gandhi", "Martin Luther King Jr.", "George Washington", "Barack Obama", "Isabel II", "William Shakespeare", "Ludwig van Beethoven", "Wolfgang Amadeus Mozart", "Vincent van Gogh", "Pablo Picasso", "Steve Jobs", "Bill Gates", "Elon Musk", "Mark Zuckerberg", "Jeff Bezos", "Revolución Industrial", "Revolución Francesa", "Guerra de Secesión", "Gran Depresión", "Guerra Fría", "Carrera espacial", "Apollo 11", "Estación Espacial Internacional", "Telescopio espacial Hubble", "Big Bang", "Evolución", "Fotosíntesis", "Tabla periódica", "Átomo", "Gravedad", "Relatividad", "Mecánica cuántica", "Psicología", "Sociología", "Economía", "Filosofía", "Budismo", "Christianity", "Islam", "Hinduism", "Judaism", "Olympics", "FIFA World Cup", "The Beatles", "Michael Jackson", "Elvis Presley", "Star Wars", "The Lord of the Rings", "Marvel Cinematic Universe", "Game of Thrones", "Minecraft", "Super Mario", "The Legend of Zelda", "Grand Theft Auto", "Pokémon"]
         };
         const HARD_TOPICS = {
             en: ["Quantum entanglement", "Byzantine Empire", "Tardigrade", "Non-Euclidean geometry", "Glagolitic script", "Isotopes of gold", "Photosynthesis", "Linguistics", "Cuneiform", "Oort cloud", "Standard Model", "Voynich manuscript", "Antikythera mechanism", "Schrödinger's cat", "Fermi paradox", "Hadron Collider", "String theory", "Plate tectonics", "Abstract expressionism", "Chaos theory", "Game theory", "Fibonacci sequence", "Turing machine", "Magna Carta", "Code of Hammurabi", "Rosetta Stone", "Golden ratio", "Nash equilibrium", "Boltzmann constant", "Event horizon", "Achaemenid Empire", "Mayan calendar", "Transhumanism", "Epistemology", "Existentialism", "Neuroplasticity", "Dark matter", "Higgs boson", "Black swan theory", "Occam's razor", "Cognitive dissonance", "Stockholm syndrome", "Prisoner's dilemma", "Drake equation", "Zeno's paradoxes", "Library of Alexandria", "Tower of Babel", "Hanging Gardens of Babylon", "Machu Picchu", "Petra", "Colossus of Rhodes", "Lighthouse of Alexandria", "Terraforming", "Multiverse", "Parallel universe", "Teleportation", "Nanotechnology", "Cryptography", "Holography", "Synthetic biology", "Gene editing", "CRISPR", "Nuclear fusion", "Superconductivity", "Semiconductor", "Quantum computing", "Laser", "Fiber optics", "Global Positioning System", "Artificial neural network", "Machine learning", "Deep learning", "Algorithm", "Heuristic", "Entropy", "Thermodynamics", "Metaphysics", "Ontology", "Phenomenology", "Stoicism", "Epicureanism", "Cynicism (philosophy)", "Nihilism", "Utilitarianism", "Deontology", "Virtue ethics"],
             de: ["Quantenverschränkung", "Byzantinisches Reich", "Bärtierchen", "Nichteuklidische Geometrie", "Glagolitische Schrift", "Goldisotope", "Photosynthese", "Linguistik", "Keilschrift", "Oortsche Wolke", "Standardmodell", "Voynich-Manuskript", "Mechanismus von Antikythera", "Schrödingers Katze", "Fermi-Paradoxon", "Teilchenbeschleuniger", "Stringtheorie", "Plattentektonik", "Abstrakter Expressionismus", "Chaostheorie", "Spieltheorie", "Fibonacci-Folge", "Turingmaschine", "Magna Carta", "Codex Hammurapi", "Stein von Rosette", "Goldener Schnitt", "Nash-Gleichgewicht", "Boltzmann-Konstante", "Ereignishorizont", "Achämenidenreich", "Maya-Kalender", "Transhumanismus", "Erkenntnistheorie", "Existentialismus", "Neuroplastizität", "Dunkle Materie", "Higgs-Boson", "Black-Swan-Theorie", "Occams Rasiermesser", "Kognitive Dissonanz", "Stockholm-Syndrom", "Gefangenendilemma", "Drake-Gleichung", "Zenons Paradoxien", "Bibliothek von Alexandria", "Turmbau zu Babel", "Hängende Gärten der Semiramis", "Machu Picchu", "Petra (Jordanien)", "Koloss von Rhodos", "Pharos von Alexandria", "Terraforming", "Multiversum", "Parallelwelt", "Teleportation", "Nanotechnologie", "Kryptographie", "Holografie", "Synthetische Biologie", "Genomeditierung", "CRISPR/Cas-System", "Kernfusion", "Supraleitung", "Halbleiter", "Quantencomputer", "Laser", "Glasfaser", "Global Positioning System", "Künstliches neuronales Netz", "Maschinelles Lernen", "Deep Learning", "Algorithmus", "Heuristik", "Entropie", "Thermodynamik", "Metaphysik", "Ontologie", "Phänomenologie", "Stoa", "Epikureismus", "Kynismus", "Nihilismus", "Utilitarismus", "Deontologie", "Tugendethik"],
-            es: ["Entrelazamiento cuántico", "Imperio bizantino", "Tardigrada", "Geometría no euclidiana", "Alfabeto glagolítico", "Isótopos de oro", "Fotosíntesis", "Lingüística", "Cuneiforme", "Nube de Oort", "Modelo estándar", "Manuscrito Voynich", "Mecanismo de Anticitera", "Gato de Schrödinger", "Paradoja de Fermi", "Acelerador de partículas", "Teoría de cuerdas", "Tectónica de placas", "Expresionismo abstracto", "Teoría del caos", "Teoría de juegos", "Sucesión de Fibonacci", "Máquina de Turing", "Magna Carta", "Código de Hammurabi", "Piedra de Rosetta", "Número áureo", "Equilibrio de Nash", "Constante de Boltzmann", "Horizonte de sucesos", "Imperio aqueménida", "Calendario maya", "Transhumanismo", "Epistemología", "Existencialismo", "Neuroplasticidad", "Materia oscura", "Bosón de Higgs", "Teoría del cisne negro", "Navaja de Ockham", "Disonancia cognitiva", "Síndrome de Estocolmo", "Dilema del prisionero", "Ecuación de Drake", "Paradojas de Zenón", "Biblioteca de Alejandría", "Torre de Babel", "Jardines Colgantes de Babilonia", "Machu Picchu", "Petra", "Coloso de Rodas", "Faro de Alejandría", "Terraformación", "Multiverso", "Universo paralelo", "Teletransportación", "Nanotecnología", "Criptografía", "Holografía", "Biología sintética", "Edición genética", "CRISPR", "Fusión nuclear", "Superconductividad", "Semiconductor", "Computación cuántica", "Láser", "Fibra óptica", "Sistema de posicionamiento global", "Red neuronal artificial", "Aprendizaje automático", "Aprendizaje profundo", "Algoritmo", "Heurística", "Entropía", "Termodinámica", "Metafísica", "Ontología", "Fenomenología", "Estoicismo", "Epicureísmo", "Cinismo", "Nihilismo", "Utilitarismo", "Deontología", "Ética de la virtud"]
+            es: ["Entrelazamiento cuántico", "Imperio bizantino", "Tardigrada", "Geometría no euclidiana", "Alfabeto glagolítico", "Isótopos de oro", "Fotosíntesis", "Lingüística", "Cuneiforme", "Nube de Oort", "Modelo estándar", "Manuscrito Voynich", "Mecanismo de Anticitera", "Gato de Schrödinger", "Paradoja de Fermi", "Acelerador de partículas", "Teoría de cuerdas", "Tectónica de placas", "Expresionismo abstracto", "Teoría del caos", "Teoría de juegos", "Sucesión de Fibonacci", "Máquina de Turing", "Magna Carta", "Código de Hammurabi", "Piedra de Rosetta", "Número áureo", "Equilibrio de Nash", "Constante de Boltzmann", "Horizonte de sucesos", "Imperio aqueménida", "Calendario maya", "Transhumanismus", "Epistemología", "Existentialism", "Neuroplasticity", "Materia oscura", "Bosón de Higgs", "Teoría del cisne negro", "Navaja de Ockham", "Disonancia cognitiva", "Síndrome de Estocolmo", "Dilema del prisionero", "Ecuación de Drake", "Paradojas de Zenón", "Biblioteca de Alejandría", "Torre de Babel", "Jardines Colgantes de Babilonia", "Machu Picchu", "Petra", "Coloso de Rodas", "Faro de Alejandría", "Terraformación", "Multiverso", "Universo paralelo", "Teletransportación", "Nanotechnology", "Criptografía", "Holografía", "Biología sintética", "Edición genética", "CRISPR", "Fusión nuclear", "Superconductividad", "Semiconductor", "Computación cuántica", "Láser", "Fibra óptica", "Sistema de posicionamiento global", "Red neuronal artificial", "Aprendizaje automático", "Aprendizaje profundo", "Algoritmo", "Heurística", "Entropía", "Termodinámica", "Metafísica", "Ontología", "Fenomenología", "Estoicismo", "Epicureísmo", "Cinismo", "Nihilismus", "Utilitarismus", "Deontology", "Ética de la virtud"]
         };
 
         const TIERS = [
@@ -1290,27 +1348,41 @@
                 let diff = state.clicks - shortestLen;
                 let gainedMMR = 0;
 
+                // --- BASE XP REWARDS ---
                 let gain = 20;
-                if (diff <= 0) gain = 50;
-                else if (diff === 1) gain = 35;
-                else if (diff === 2) gain = 20;
-                else if (diff <= 5) gain = 10;
-                else gain = 5;
+                if (diff <= 0) gain = 400; // Exact/Shortest path
+                else if (diff === 1) gain = 250;
+                else if (diff === 2) gain = 150;
+                else if (diff === 3) gain = 95;
+                else if (diff === 4) gain = 60;
+                else if (diff === 5) gain = 40;
+                else gain = 15;
 
+                // Bonus logic based on complexity
+                let info = getRankInfo();
+                let complexityBonus = 5; // Base 5%
+                if (mode === 'hard') complexityBonus += 75; // Significantly higher for Hardcore
+                if (info.tierIdx >= 5) complexityBonus += 40; // Master+ bonus
+                if (state.startTitle.length > 15 || state.targetTitle.length > 15) complexityBonus += 30; // Longer titles usually harder
+                
+                // Maximum +150% extra MMR
+                complexityBonus = Math.min(150, complexityBonus);
+
+                // Apply complexity bonus
+                gain = Math.floor(gain * (1 + (complexityBonus / 100)));
+
+                // Flat mode bonuses
                 if (mode === 'hard') gain += 15;
                 if (mode === 'daily') gain += 10;
                 if (mode === 'limited') gain += 20;
-
-                let info = getRankInfo();
                 
-                if (info.tierIdx >= 3) {
+                if (info.tierIdx >= 3) { // Platinum and above
                     if (diff >= 10) gain = -15;
                     if (diff >= 20) gain = -30;
                 }
 
                 if (state.totalRounds < 5) { 
                     gain = 75 + Math.max(0, (20 - diff * 2) * 5);
-                    // Caps new users to not jump over Silver instantly
                     let nextXP = state.xp + gain;
                     if (nextXP > 1000) nextXP = 1000; 
                     gainedMMR = nextXP - state.xp;
@@ -1362,10 +1434,18 @@
                 if (gainedMMR > 0) {
                     newSpan.innerText = `+${gainedMMR} MMR`;
                     newSpan.classList.add('text-purple-500', 'dark:text-purple-400');
+                    
+                    let bonusSpan = document.createElement('span');
+                    bonusSpan.className = "text-[10px] uppercase font-bold text-blue-500 dark:text-blue-400 block mt-1";
+                    bonusSpan.innerText = `✨ Complexity Bonus: +${complexityBonus}%`;
+                    xpRewardEl.appendChild(newSpan);
+                    xpRewardEl.appendChild(bonusSpan);
+
                     setTimeout(() => confetti({ particleCount: 80, spread: 100, origin: { y: 0.65 }, colors: ['#a855f7', '#d946ef', '#fbcfe8'] }), 100);
                 } else if (gainedMMR < 0) {
                     newSpan.innerText = `${gainedMMR} MMR`;
                     newSpan.classList.add('text-red-500', 'dark:text-red-400');
+                    xpRewardEl.appendChild(newSpan);
                 } else {
                     if (state.totalRounds < 5) {
                         newSpan.innerText = `Unranked (${state.totalRounds}/5)`;
@@ -1377,8 +1457,8 @@
                         newSpan.innerText = `+0 MMR`;
                         newSpan.classList.add('text-gray-500', 'dark:text-gray-400');
                     }
+                    xpRewardEl.appendChild(newSpan);
                 }
-                xpRewardEl.appendChild(newSpan);
 
             } else {
                 rewardEl.innerText = "";
@@ -1628,7 +1708,9 @@
         document.getElementById('btn-solo-roll').onclick = () => {
             if (state.coins >= 2) {
                 state.coins -= 2;
+                state.xp = Math.max(0, state.xp - 5); // Refresh costs 5 MMR
                 localStorage.setItem('wiki_coins', state.coins);
+                localStorage.setItem('wiki_xp', state.xp);
                 updateUI();
                 rollSoloWords(true);
             } else {
@@ -1643,7 +1725,13 @@
         document.getElementById('btn-back').onclick = () => { if (state.finished || state.path.length <= 1) return; state.path.pop(); const prev = state.path[state.path.length - 1]; state.clicks++; document.getElementById('click-count').innerText = state.clicks; loadArticle(prev); };
         document.getElementById('btn-quit-trigger').onclick = () => document.getElementById('modal-quit').classList.remove('hidden');
         document.getElementById('modal-cancel').onclick = () => document.getElementById('modal-quit').classList.add('hidden');
-        document.getElementById('modal-confirm').onclick = () => { document.getElementById('modal-quit').classList.add('hidden'); document.getElementById('btn-home').click(); };
+        document.getElementById('modal-confirm').onclick = () => { 
+            document.getElementById('modal-quit').classList.add('hidden'); 
+            state.xp = Math.max(0, state.xp - 10); // Give up costs 10 MMR
+            localStorage.setItem('wiki_xp', state.xp);
+            updateUI();
+            document.getElementById('btn-home').click(); 
+        };
 
         document.getElementById('lang-en').onclick = () => setLanguage('en');
         document.getElementById('lang-de').onclick = () => setLanguage('de');
@@ -1669,7 +1757,9 @@
         function showTutorialStep(step) {
             tutorialSteps.forEach((el, i) => {
                 el.classList.toggle('hidden', i !== step);
-                tutorialDots[i].className = i === step ? "w-3 h-3 rounded-full bg-blue-600 transition-all" : "w-3 h-3 rounded-full bg-gray-300 dark:bg-slate-600 transition-all";
+                if (tutorialDots[i]) {
+                    tutorialDots[i].className = i === step ? "w-3 h-3 rounded-full bg-blue-600 transition-all" : "w-3 h-3 rounded-full bg-gray-300 dark:bg-slate-600 transition-all";
+                }
             });
             const btnNext = document.getElementById('btn-tutorial-next');
             if (step === tutorialSteps.length - 1) {
@@ -1705,6 +1795,21 @@
         };
 
         const screens = { menu: document.getElementById('screen-menu'), game: document.getElementById('screen-game'), results: document.getElementById('screen-results') };
+        
+        // Timer Logic for Tickets 
+        function updateTopRateTimer() {
+            const now = new Date();
+            const nextHour = new Date(now);
+            nextHour.setHours(now.getHours() + 1, 0, 0, 0);
+            const diff = Math.floor((nextHour - now) / 1000);
+            const m = Math.floor(diff / 60).toString().padStart(2, '0');
+            const s = (diff % 60).toString().padStart(2, '0');
+            const el1 = document.getElementById('top-rate-timer');
+            if(el1) el1.innerText = `${m}:${s}`;
+        }
+        setInterval(updateTopRateTimer, 1000);
+        updateTopRateTimer();
+
         initBackground();
         checkStreak(); 
         updateUI(); 

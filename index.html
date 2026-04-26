@@ -225,6 +225,37 @@
             from { transform: translate(var(--start-x), var(--start-y)) rotate(var(--rot)); }
             to { transform: translate(var(--end-x), var(--end-y)) rotate(calc(var(--rot) + 20deg)); }
         }
+
+        /* Autocomplete results */
+        .autocomplete-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            z-index: 100;
+            max-height: 150px;
+            overflow-y: auto;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .dark .autocomplete-results {
+            background: #1e293b;
+            border-color: #334155;
+        }
+        .autocomplete-item {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        .autocomplete-item:hover {
+            background: #f1f5f9;
+        }
+        .dark .autocomplete-item:hover {
+            background: #334155;
+        }
     </style>
 </head>
 <body class="min-h-screen relative text-[#1a1a1a] dark:text-[#f8fafc]">
@@ -346,19 +377,33 @@
                     <!-- Solo Setup View -->
                     <div id="solo-setup" class="space-y-8">
                         <div class="mission-path space-y-6">
+                            <!-- START WORD SECTION -->
                             <div class="flex items-start gap-6">
                                 <div class="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-xl font-black text-blue-600 dark:text-blue-400 z-10 shadow-sm border-4 border-white dark:border-slate-800">S</div>
-                                <div class="flex-1 pt-1 text-left">
+                                <div class="flex-1 pt-1 text-left relative">
                                     <span class="text-[10px] font-black uppercase tracking-widest text-blue-400" data-i18n="startArticle">Start Discovery</span>
-                                    <div id="solo-start" class="text-2xl font-black text-gray-800 dark:text-gray-100 leading-tight mt-1">Loading...</div>
+                                    
+                                    <div id="solo-start-display" class="text-2xl font-black text-gray-800 dark:text-gray-100 leading-tight mt-1">Loading...</div>
+                                    
+                                    <div id="solo-start-input-container" class="hidden mt-1 relative">
+                                        <input type="text" id="solo-start-input" placeholder="Enter start article..." class="w-full bg-gray-50 dark:bg-slate-900/50 border-2 border-blue-500/20 dark:border-blue-500/10 rounded-xl px-4 py-2 font-bold focus:border-blue-500 outline-none transition-all dark:text-white">
+                                        <div id="start-autocomplete" class="autocomplete-results hidden"></div>
+                                    </div>
                                 </div>
                             </div>
 
+                            <!-- TARGET WORD SECTION -->
                             <div class="flex items-start gap-6">
                                 <div class="w-12 h-12 rounded-2xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-xl font-black text-red-600 dark:text-red-400 z-10 shadow-sm border-4 border-white dark:border-slate-800">T</div>
-                                <div class="flex-1 pt-1 text-left">
+                                <div class="flex-1 pt-1 text-left relative">
                                     <span class="text-[10px] font-black uppercase tracking-widest text-red-400" data-i18n="targetArticle">Target Destination</span>
-                                    <div id="solo-target" class="text-2xl font-black text-gray-800 dark:text-gray-100 leading-tight mt-1">Loading...</div>
+                                    
+                                    <div id="solo-target-display" class="text-2xl font-black text-gray-800 dark:text-gray-100 leading-tight mt-1">Loading...</div>
+
+                                    <div id="solo-target-input-container" class="hidden mt-1 relative">
+                                        <input type="text" id="solo-target-input" placeholder="Enter target article..." class="w-full bg-gray-50 dark:bg-slate-900/50 border-2 border-red-500/20 dark:border-red-500/10 rounded-xl px-4 py-2 font-bold focus:border-red-500 outline-none transition-all dark:text-white">
+                                        <div id="target-autocomplete" class="autocomplete-results hidden"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -366,7 +411,7 @@
                         <div class="pt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <button id="btn-solo-roll" class="py-4 bg-gray-50 dark:bg-slate-700 hover:bg-gray-100 dark:hover:bg-slate-600 text-gray-800 dark:text-gray-100 rounded-[1.8rem] font-black flex items-center justify-center gap-3 border border-gray-100 dark:border-slate-600 group">
                                 <span class="group-hover:rotate-12 transition-transform" data-i18n="btnRandom">🎲 Randomize</span>
-                                <span class="text-[10px] bg-yellow-400/20 text-yellow-700 dark:text-yellow-400 px-3 py-1 rounded-full border border-yellow-400/30">-2 🪙</span>
+                                <span id="roll-cost-badge" class="text-[10px] bg-yellow-400/20 text-yellow-700 dark:text-yellow-400 px-3 py-1 rounded-full border border-yellow-400/30">-2 🪙</span>
                             </button>
                             <button id="btn-solo-start" class="py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-[1.8rem] font-black text-lg shadow-xl shadow-blue-200 dark:shadow-none" data-i18n="btnStartSolo">Begin Mission</button>
                         </div>
@@ -459,6 +504,7 @@
                         <li><strong class="text-red-500">Hardcore:</strong> Obscure, difficult topics. High risk, high reward.</li>
                         <li><strong class="text-orange-500">Daily:</strong> A unique challenge every 24h. Build your streak (🔥)!</li>
                         <li><strong class="text-purple-500">10 Clicks:</strong> Reach the target in 10 clicks or less. Efficiency is everything!</li>
+                        <li><strong class="text-emerald-500">Practice:</strong> Free mode! Choose your own words with autocomplete. No MMR.</li>
                     </ul>
                 </div>
                 <!-- Step 3: Ranks -->
@@ -466,7 +512,6 @@
                     <h4 class="text-xl font-bold text-gray-900 dark:text-white">🏆 MMR & Ranking</h4>
                     <p>MMR is gained based on your efficiency compared to the shortest possible path:</p>
                     <div class="grid grid-cols-2 gap-2 text-xs font-bold my-4 bg-gray-50 dark:bg-slate-900/50 p-4 rounded-2xl border dark:border-slate-700">
-                        <div class="flex justify-between border-b dark:border-slate-700 pb-1"><span>Exact Match:</span> <span class="text-green-500">+400</span></div>
                         <div class="flex justify-between border-b dark:border-slate-700 pb-1"><span>+1 Click:</span> <span class="text-blue-500">+250</span></div>
                         <div class="flex justify-between border-b dark:border-slate-700 pb-1"><span>+2 Clicks:</span> <span class="text-indigo-500">+150</span></div>
                         <div class="flex justify-between border-b dark:border-slate-700 pb-1"><span>+3 Clicks:</span> <span class="text-purple-500">+95</span></div>
@@ -547,7 +592,15 @@
             <div class="space-y-6 text-left">
                 <!-- Patch Notes List -->
                 <div>
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.9 - Current</h4>
+                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v2.0 - Current</h4>
+                    <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
+                        <li>Practice Mode added: Choose your own words.</li>
+                        <li>Autocomplete suggestions added to Practice Mode.</li>
+                        <li>Expanded word pools for all Ranks (EASY, MEDIUM, HARD).</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.9</h4>
                     <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
                         <li>MMR loss for Giving Up (-10) and Refreshing (-5) added.</li>
                         <li>MMR loss now active from Platinum rank upwards.</li>
@@ -558,65 +611,9 @@
                     <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.8</h4>
                     <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
                         <li>MMR Complexity Bonus auf maximal +150% erhöht.</li>
-                        <li>Tutorial-Info an den neuen Bonus angepasst.</li>
                     </ul>
                 </div>
-                <div>
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.7</h4>
-                    <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
-                        <li>MMR complexity bonus (1% - 10%) added to Victory Screen.</li>
-                        <li>Tutorial updated with detailed MMR click-table.</li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.6</h4>
-                    <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
-                        <li>API Rate Limit Error zeigt nun einen stündlichen Countdown an.</li>
-                        <li>Dynamischer Hintergrund basierend auf dem MMR-Rang wiederhergestellt.</li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.5</h4>
-                    <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
-                        <li>Disabled Multiplayer temporarily for maintenance (red cross added).</li>
-                        <li>Added this Changelog/Patch Notes menu in the top left.</li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.4</h4>
-                    <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
-                        <li>Implemented Lobby system and P2P connection via PeerJS.</li>
-                        <li>Added live opponent progress tracking.</li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.3</h4>
-                    <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
-                        <li>Added Daily Challenges with Streak tracking.</li>
-                        <li>Introduced Coin economy and "Randomize" re-roll feature.</li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.2</h4>
-                    <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
-                        <li>Added Player Profile with local save data.</li>
-                        <li>Added Export/Import save codes.</li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.1</h4>
-                    <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
-                        <li>Introduced Rank Map and MMR progression system.</li>
-                        <li>Added theoretical shortest path calculation (Intel).</li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.0</h4>
-                    <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
-                        <li>Initial Release: Classic, Hardcore, and 10 Clicks modes.</li>
-                        <li>Wikipedia API integration.</li>
-                    </ul>
-                </div>
+                <!-- Previous patches... -->
             </div>
         </div>
     </div>
@@ -786,7 +783,6 @@
                 container.appendChild(span);
             }
             
-            // Start Countdown logic
             updateDailyCountdown();
             setInterval(updateDailyCountdown, 1000);
         }
@@ -851,14 +847,15 @@
                 btnStay: "Resume", btnQuit: "Abort", loading: "Loading...", waitHostStart: "Launch Mission", waitHostWait: "Awaiting Partner...", waitJoiner: "Awaiting Launch...",
                 youWon: "You Won!", success: "Success!", wonSub: "Winner!", youLost: "You Lost!", lostSub: "Try again.",
                 notFinished: "Not finished", clickStr: " clicks", multiErr: "Comm Failure.", oppProgress: "Opponent",
-                modeClassic: "Classic", modeHard: "Hardcore", modeDaily: "Daily", modeLimited: "10 Clicks", outOfClicks: "Fuel Empty!",
+                modeClassic: "Classic", modeHard: "Hardcore", modeDaily: "Daily", modeLimited: "10 Clicks", modePractice: "Practice", outOfClicks: "Fuel Empty!",
                 shortcut: "Intel", shortcutDesc: "Approx steps.", jumpTo: "Possible jump", dailyStreak: "🔥 Streak:",
                 recoveryText: "⚠️ Streak at risk! Win Hardcore to restore.",
                 nextDaily: "Next Daily in:",
                 descClassic: "Start at the given article and reach the target with the fewest clicks possible.",
                 descHardcore: "Like Classic, but with extremely difficult and obscure terms. High stakes!",
                 descDaily: "A unique challenge refreshed every 24 hours. Build your streak and earn coins equal to your streak level!",
-                descLimited: "Reach the target destination in 10 clicks or less. Efficiency is everything!"
+                descLimited: "Reach the target destination in 10 clicks or less. Efficiency is everything!",
+                descPractice: "Free play! Enter any start and target article you want. No MMR or coins affected."
             },
             de: {
                 title: "The Wiki Game", subtitle: "Rase durch Wikipedia zum Zielartikel.", tabSolo: "Solo Mission", tabMulti: "Multiplayer",
@@ -871,14 +868,15 @@
                 btnStay: "Weiter", btnQuit: "Abbruch", loading: "Lädt...", waitHostStart: "Starten", waitHostWait: "Warte auf P2...", waitJoiner: "Warte auf Start...",
                 youWon: "Gewonnen!", success: "Erfolg!", wonSub: "Sieg!", youLost: "Verloren!", lostSub: "Pech gehabt.",
                 notFinished: "Nicht fertig", clickStr: " Klicks", multiErr: "Funkstörung.", oppProgress: "Gegner",
-                modeClassic: "Klassisch", modeHard: "Hardcore", modeDaily: "Daily", modeLimited: "10 Clicks", outOfClicks: "Keine Klicks mehr!",
+                modeClassic: "Klassisch", modeHard: "Hardcore", modeDaily: "Daily", modeLimited: "10 Clicks", modePractice: "Practice", outOfClicks: "Keine Klicks mehr!",
                 shortcut: "Intel", shortcutDesc: "Ca. Schritte.", jumpTo: "Sprung zu", dailyStreak: "🔥 Streak:",
                 recoveryText: "⚠️ Streak in Gefahr! Gewinne Hardcore zur Rettung.",
                 nextDaily: "Nächste Challenge in:",
                 descClassic: "Starte beim ersten Artikel und erreiche das Ziel mit so wenigen Klicks wie möglich.",
                 descHardcore: "Wie Klassisch, aber mit extrem schweren und obskuren Begriffen. Hoher Einsatz!",
                 descDaily: "Eine tägliche Herausforderung. Baue eine Streak auf und erhalte Münzen in Höhe deines Streak-Levels!",
-                descLimited: "Erreiche das Ziel in maximal 10 Klicks. Effizienz ist alles!"
+                descLimited: "Erreiche das Ziel in maximal 10 Klicks. Effizienz ist alles!",
+                descPractice: "Freies Spiel! Wähle eigene Begriffe mit Hilfe der Vorschlagsliste. Kein MMR-Einfluss."
             },
             es: {
                 title: "The Wiki Game", subtitle: "Corre por Wikipedia hasta el destino.", tabSolo: "Misión Solo", tabMulti: "Multiplayer",
@@ -891,14 +889,15 @@
                 btnStay: "Seguir", btnQuit: "Abortar", loading: "Cargando...", waitHostStart: "Lanzar", waitHostWait: "Espera...", waitJoiner: "Espera...",
                 youWon: "Ganaste!", success: "Éxito!", wonSub: "Victoria!", youLost: "Perdiste!", lostSub: "Inténtalo de nuevo.",
                 notFinished: "No terminó", clickStr: " clicks", multiErr: "Error Comms.", oppProgress: "Oponente",
-                modeClassic: "Clásico", modeHard: "Hardcore", modeDaily: "Diario", modeLimited: "10 Clicks", outOfClicks: "Sin clicks!",
+                modeClassic: "Clásico", modeHard: "Hardcore", modeDaily: "Diario", modeLimited: "10 Clicks", modePractice: "Practice", outOfClicks: "Sin clicks!",
                 shortcut: "Intel", shortcutDesc: "Pasos.", jumpTo: "Salto", dailyStreak: "🔥 Racha:",
                 recoveryText: "⚠️ Racha en riesgo! Gana Hardcore para restaurar.",
                 nextDaily: "Próximo reto en:",
                 descClassic: "Comienza en el artículo dado y llega al objetivo con la menor cantidad de clics.",
                 descHardcore: "Como el clásico, aber con términos extremadamente difíciles. ¡Gran riesgo!",
                 descDaily: "Un desafío único cada 24 horas. ¡Aumenta tu racha y gana monedas según tu nivel de racha!",
-                descLimited: "Llega al destino en 10 clics o menos. ¡La eficiencia lo es todo!"
+                descLimited: "Llega al destino en 10 clics o menos. ¡La eficiencia lo es todo!",
+                descPractice: "¡Juego libre! Elige tus propios artículos. Sin impacto en MMR o monedas."
             }
         };
 
@@ -921,21 +920,21 @@
 
         const getApiUrl = () => `https://${state.language}.wikipedia.org/w/api.php?origin=*&action=`;
         
-        // --- UPDATED AND EXPANDED TOPICS ---
+        // --- EXPANDED TOPICS ---
         const EASY_TOPICS = {
-            en: ["Apple Inc.", "Cat", "Dog", "Earth", "Water", "Facebook", "Google", "Football", "Pizza", "Music", "Sun", "Moon", "Car", "Fish", "Bird", "Color", "Book", "Movie", "Internet", "Television", "Coca-Cola", "Nike, Inc.", "Coffee", "Tea", "YouTube", "Twitter", "Amazon (company)", "Microsoft", "Netflix", "Disney", "McDonald's", "Chocolate", "Ice cream", "Basketball", "Tennis", "Gold", "Diamond", "Forest", "Ocean", "Volcano", "London", "Paris", "New York City", "Tokyo", "Berlin", "Sky", "Fire", "Time", "Money", "Happiness", "Guitar", "Piano", "Ship", "Airplane", "Bicycle", "School", "University", "Library", "Museum", "Doctor", "Chef", "Farmer", "Police", "Soldier", "King", "Queen", "United States", "China", "India", "Brazil", "Australia", "Canada", "France", "Germany", "Italy", "Spain", "Japan", "Russia", "Africa", "Europe", "Asia", "Antarctica", "Mars", "Jupiter", "Saturn", "Venus"],
-            de: ["Apple", "Hauskatze", "Haushund", "Erde", "Wasser", "Facebook", "Google", "Fußball", "Pizza", "Musik", "Sonne", "Mond", "Auto", "Fische", "Vögel", "Farbe", "Buch", "Film", "Internet", "Fernsehen", "Coca-Cola", "Nike", "Kaffee", "Tee", "YouTube", "Twitter", "Amazon", "Microsoft", "Netflix", "Disney", "McDonald’s", "Schokolade", "Eiscreme", "Basketball", "Tennis", "Gold", "Diamant", "Wald", "Ozean", "Vulkan", "London", "Paris", "New York City", "Tokio", "Berlin", "Himmel", "Feuer", "Zeit", "Geld", "Glück", "Gitarre", "Klavier", "Schiff", "Flugzeug", "Fahrrad", "Schule", "Universität", "Bibliothek", "Museum", "Arzt", "Koch", "Bauer", "Polizei", "Soldat", "König", "Königin", "Vereinigte Staaten", "China", "Indien", "Brasilien", "Australien", "Kanada", "Frankreich", "Deutschland", "Italien", "Spanien", "Japan", "Russland", "Afrika", "Europa", "Asien", "Antarktis", "Mars", "Jupiter", "Saturn", "Venus"],
-            es: ["Apple", "Gato", "Perro", "Tierra", "Agua", "Facebook", "Google", "Fútbol", "Pizza", "Música", "Sol", "Luna", "Automóvil", "Pez", "Aves", "Color", "Libro", "Película", "Internet", "Televisión", "Coca-Cola", "Nike", "Café", "Té", "YouTube", "Twitter", "Amazon", "Microsoft", "Netflix", "Disney", "McDonald's", "Chocolate", "Helado", "Baloncesto", "Tenis", "Oro", "Diamante", "Bosque", "Océano", "Volcán", "Londres", "París", "Nueva York", "Tokio", "Berlín", "Cielo", "Fuego", "Tiempo", "Dinero", "Felicidad", "Guitarra", "Piano", "Barco", "Avión", "Bicicleta", "Escuela", "Universidad", "Biblioteca", "Museum", "Doctor", "Chef", "Granjero", "Policía", "Soldado", "Rey", "Reina", "Estados Unidos", "China", "India", "Brasil", "Australia", "Canadá", "Francia", "Alemania", "Italia", "España", "Japón", "Rusia", "África", "Europa", "Asia", "Antártida", "Marte", "Júpiter", "Saturno", "Venus"]
+            en: ["Apple Inc.", "Cat", "Dog", "Earth", "Water", "Facebook", "Google", "Football", "Pizza", "Music", "Sun", "Moon", "Car", "Fish", "Bird", "Color", "Book", "Movie", "Internet", "Television", "Coca-Cola", "Nike, Inc.", "Coffee", "Tea", "YouTube", "Twitter", "Amazon (company)", "Microsoft", "Netflix", "Disney", "McDonald's", "Chocolate", "Ice cream", "Basketball", "Tennis", "Gold", "Diamond", "Forest", "Ocean", "Volcano", "London", "Paris", "New York City", "Tokyo", "Berlin", "Sky", "Fire", "Time", "Money", "Happiness", "Guitar", "Piano", "Ship", "Airplane", "Bicycle", "School", "University", "Library", "Museum", "Doctor", "Chef", "Farmer", "Police", "Soldier", "King", "Queen", "United States", "China", "India", "Brazil", "Australia", "Canada", "France", "Germany", "Italy", "Spain", "Japan", "Russia", "Africa", "Europe", "Asia", "Antarctica", "Mars", "Jupiter", "Saturn", "Venus", "Bread", "House", "Rain", "Snow", "River", "Sand", "Mountain", "Volcano", "City", "Village", "Country", "Flag", "Map", "Camera", "Mobile phone", "Laptop", "Clock", "Radio", "Pen", "Pencil", "Paper", "Chair", "Table", "Bed", "Spoon", "Fork", "Knife", "Plate", "Glass", "Window", "Door", "Key", "Wallet", "Bag", "Shoes", "Shirt", "Pants", "Hat", "Clock", "Watch", "Sun", "Star", "Cloud", "Flower", "Tree", "Grass", "Leaf", "Fruit", "Vegetable", "Meat", "Egg", "Milk", "Cheese"],
+            de: ["Apple", "Hauskatze", "Haushund", "Erde", "Wasser", "Facebook", "Google", "Fußball", "Pizza", "Musik", "Sonne", "Mond", "Auto", "Fische", "Vögel", "Farbe", "Buch", "Film", "Internet", "Fernsehen", "Coca-Cola", "Nike", "Kaffee", "Tee", "YouTube", "Twitter", "Amazon", "Microsoft", "Netflix", "Disney", "McDonald’s", "Schokolade", "Eiscreme", "Basketball", "Tennis", "Gold", "Diamant", "Wald", "Ozean", "Vulkan", "London", "Paris", "New York City", "Tokio", "Berlin", "Himmel", "Feuer", "Zeit", "Geld", "Glück", "Gitarre", "Klavier", "Schiff", "Flugzeug", "Fahrrad", "Schule", "Universität", "Bibliothek", "Museum", "Arzt", "Koch", "Bauer", "Polizei", "Soldat", "König", "Königin", "Vereinigte Staaten", "China", "Indien", "Brasilien", "Australien", "Kanada", "Frankreich", "Deutschland", "Italien", "Spanien", "Japan", "Russland", "Afrika", "Europa", "Asien", "Antarktis", "Mars", "Jupiter", "Saturn", "Venus", "Brot", "Haus", "Regen", "Schnee", "Fluss", "Sand", "Berg", "Vulkan", "Stadt", "Dorf", "Land", "Flagge", "Karte", "Kamera", "Smartphone", "Laptop", "Uhr", "Radio", "Stift", "Bleistift", "Papier", "Stuhl", "Tisch", "Bett", "Löffel", "Gabel", "Messer", "Teller", "Glas", "Fenster", "Tür", "Schlüssel", "Geldbeutel", "Tasche", "Schuhe", "Hemd", "Hose", "Hut", "Armbanduhr", "Stern", "Wolke", "Blume", "Baum", "Gras", "Blatt", "Frucht", "Gemüse", "Fleisch", "Ei", "Milch", "Käse"],
+            es: ["Apple", "Gato", "Perro", "Tierra", "Agua", "Facebook", "Google", "Fútbol", "Pizza", "Música", "Sol", "Luna", "Automóvil", "Pez", "Aves", "Color", "Libro", "Película", "Internet", "Televisión", "Coca-Cola", "Nike", "Café", "Té", "YouTube", "Twitter", "Amazon", "Microsoft", "Netflix", "Disney", "McDonald's", "Chocolate", "Helado", "Baloncesto", "Tenis", "Oro", "Diamante", "Bosque", "Océano", "Volcán", "Londres", "París", "Nueva York", "Tokio", "Berlín", "Cielo", "Fuego", "Tiempo", "Dinero", "Felicidad", "Guitarra", "Piano", "Barco", "Avión", "Bicicleta", "Escuela", "Universidad", "Biblioteca", "Museum", "Doctor", "Chef", "Granjero", "Policía", "Soldado", "Rey", "Reina", "Estados Unidos", "China", "India", "Brasil", "Australia", "Canadá", "Francia", "Alemania", "Italia", "España", "Japón", "Rusia", "África", "Europa", "Asia", "Antártida", "Marte", "Jüpiter", "Saturno", "Venus", "Pan", "Casa", "Lluvia", "Nieve", "Río", "Arena", "Montaña", "Volcán", "Ciudad", "Pueblo", "País", "Bandera", "Mapa", "Cámara", "Teléfono móvil", "Laptop", "Reloj", "Radio", "Bolígrafo", "Lápiz", "Papel", "Silla", "Mesa", "Cama", "Cuchara", "Tenedor", "Cuchillo", "Plato", "Vaso", "Ventana", "Puerta", "Llave", "Billetera", "Bolsa", "Zapatos", "Camisa", "Pantalones", "Sombrero", "Reloj", "Reloj de pulsera", "Sol", "Estrella", "Nube", "Flor", "Árbol", "Césped", "Hoja", "Fruta", "Verdura", "Carne", "Huevo", "Leche", "Queso"]
         };
         const MEDIUM_TOPICS = {
-            en: ["Albert Einstein", "Ancient Egypt", "Bitcoin", "Chess", "Harry Potter", "World War II", "Dinosaur", "Physics", "Artificial Intelligence", "Black hole", "Leonardo da Vinci", "Pyramid", "DNA", "Bluetooth", "Renaissance", "Isaac Newton", "Charles Darwin", "Marie Curie", "Nikola Tesla", "Stephen Hawking", "Alexander the Great", "Julius Caesar", "Napoleon", "Abraham Lincoln", "Nelson Mandela", "Mahatma Gandhi", "Martin Luther King Jr.", "George Washington", "Barack Obama", "Elizabeth II", "William Shakespeare", "Ludwig van Beethoven", "Wolfgang Amadeus Mozart", "Vincent van Gogh", "Pablo Picasso", "Steve Jobs", "Bill Gates", "Elon Musk", "Mark Zuckerberg", "Jeff Bezos", "Industrial Revolution", "French Revolution", "American Civil War", "The Great Depression", "Cold War", "Space Race", "Apollo 11", "International Space Station", "Hubble Space Telescope", "Big Bang", "Evolution", "Photosynthesis", "Periodic table", "Atom", "Gravity", "Relativity", "Quantum mechanics", "Psychology", "Sociology", "Economics", "Philosophy", "Buddhism", "Christianity", "Islam", "Hinduism", "Judaism", "Olympics", "FIFA World Cup", "The Beatles", "Michael Jackson", "Elvis Presley", "Star Wars", "The Lord of the Rings", "Marvel Cinematic Universe", "Game of Thrones", "Minecraft", "Super Mario", "The Legend of Zelda", "Grand Theft Auto", "Pokémon"],
-            de: ["Albert Einstein", "Altes Ägypten", "Bitcoin", "Schach", "Harry Potter", "Zweiter Weltkrieg", "Dinosaurier", "Physik", "Künstliche Intelligenz", "Schwarzes Loch", "Leonardo da Vinci", "Pyramide", "DNA", "Bluetooth", "Renaissance", "Isaac Newton", "Charles Darwin", "Marie Curie", "Nikola Tesla", "Stephen Hawking", "Alexander der Große", "Julius Cäsar", "Napoleon Bonaparte", "Abraham Lincoln", "Nelson Mandela", "Mahatma Gandhi", "Martin Luther King Jr.", "George Washington", "Barack Obama", "Elisabeth II.", "William Shakespeare", "Ludwig van Beethoven", "Wolfgang Amadeus Mozart", "Vincent van Gogh", "Pablo Picasso", "Steve Jobs", "Bill Gates", "Elon Musk", "Mark Zuckerberg", "Jeff Bezos", "Industrielle Revolution", "Französische Revolution", "Sezessionskrieg", "Weltwirtschaftskrise", "Kalter Krieg", "Wettlauf ins All", "Apollo 11", "Internationale Raumstation", "Hubble-Weltraumteleskop", "Urknall", "Evolution", "Photosynthese", "Periodensystem", "Atom", "Gravitation", "Relativitätstheorie", "Quantenmechanik", "Psychologie", "Soziologie", "Wirtschaftswissenschaft", "Philosophie", "Buddhismus", "Christentum", "Islam", "Hinduismus", "Judentum", "Olympische Spiele", "Fußball-Weltmeisterschaft", "The Beatles", "Michael Jackson", "Elvis Presley", "Star Wars", "Der Herr der Ringe", "Marvel Cinematic Universe", "Game of Thrones", "Minecraft", "Super Mario", "The Legend of Zelda", "Grand Theft Auto", "Pokémon"],
-            es: ["Albert Einstein", "Antiguo Egipto", "Bitcoin", "Ajedrez", "Harry Potter", "Segunda Guerra Mundial", "Dinosaurio", "Física", "Inteligencia artificial", "Agujero negro", "Leonardo da Vinci", "Pirámide", "ADN", "Bluetooth", "Renacimiento", "Isaac Newton", "Charles Darwin", "Marie Curie", "Nikola Tesla", "Stephen Hawking", "Alejandro Magno", "Julio César", "Napoleón Bonaparte", "Abraham Lincoln", "Nelson Mandela", "Mahatma Gandhi", "Martin Luther King Jr.", "George Washington", "Barack Obama", "Isabel II", "William Shakespeare", "Ludwig van Beethoven", "Wolfgang Amadeus Mozart", "Vincent van Gogh", "Pablo Picasso", "Steve Jobs", "Bill Gates", "Elon Musk", "Mark Zuckerberg", "Jeff Bezos", "Revolución Industrial", "Revolución Francesa", "Guerra de Secesión", "Gran Depresión", "Guerra Fría", "Carrera espacial", "Apollo 11", "Estación Espacial Internacional", "Telescopio espacial Hubble", "Big Bang", "Evolución", "Fotosíntesis", "Tabla periódica", "Átomo", "Gravedad", "Relatividad", "Mecánica cuántica", "Psicología", "Sociología", "Economía", "Filosofía", "Budismo", "Christianity", "Islam", "Hinduism", "Judaism", "Olympics", "FIFA World Cup", "The Beatles", "Michael Jackson", "Elvis Presley", "Star Wars", "The Lord of the Rings", "Marvel Cinematic Universe", "Game of Thrones", "Minecraft", "Super Mario", "The Legend of Zelda", "Grand Theft Auto", "Pokémon"]
+            en: ["Albert Einstein", "Ancient Egypt", "Bitcoin", "Chess", "Harry Potter", "World War II", "Dinosaur", "Physics", "Artificial Intelligence", "Black hole", "Leonardo da Vinci", "Pyramid", "DNA", "Bluetooth", "Renaissance", "Isaac Newton", "Charles Darwin", "Marie Curie", "Nikola Tesla", "Stephen Hawking", "Alexander the Great", "Julius Caesar", "Napoleon", "Abraham Lincoln", "Nelson Mandela", "Mahatma Gandhi", "Martin Luther King Jr.", "George Washington", "Barack Obama", "Elizabeth II", "William Shakespeare", "Ludwig van Beethoven", "Wolfgang Amadeus Mozart", "Vincent van Gogh", "Pablo Picasso", "Steve Jobs", "Bill Gates", "Elon Musk", "Mark Zuckerberg", "Jeff Bezos", "Industrial Revolution", "French Revolution", "American Civil War", "The Great Depression", "Cold War", "Space Race", "Apollo 11", "International Space Station", "Hubble Space Telescope", "Big Bang", "Evolution", "Photosynthesis", "Periodic table", "Atom", "Gravity", "Relativity", "Quantum mechanics", "Psychology", "Sociology", "Economics", "Philosophy", "Buddhism", "Christianity", "Islam", "Hinduism", "Judaism", "Olympics", "FIFA World Cup", "The Beatles", "Michael Jackson", "Elvis Presley", "Star Wars", "The Lord of the Rings", "Marvel Cinematic Universe", "Game of Thrones", "Minecraft", "Super Mario", "The Legend of Zelda", "Grand Theft Auto", "Pokémon", "Sherlock Holmes", "Titanic", "Apollo Program", "World War I", "Genghis Khan", "Atilla the Hun", "Cleopatra", "Joan of Arc", "Christopher Columbus", "Marco Polo", "Galileo Galilei", "Copernicus", "Tesla Coil", "Internet Protocol", "Linux", "Python (programming language)", "JavaScript", "HTML", "C++", "Algorithm", "Cryptography", "Blockchain", "NFT", "Global Warming", "Ozone Layer", "Human Rights", "United Nations", "NATO", "European Union"],
+            de: ["Albert Einstein", "Altes Ägypten", "Bitcoin", "Schach", "Harry Potter", "Zweiter Weltkrieg", "Dinosaurier", "Physik", "Künstliche Intelligenz", "Schwarzes Loch", "Leonardo da Vinci", "Pyramide", "DNA", "Bluetooth", "Renaissance", "Isaac Newton", "Charles Darwin", "Marie Curie", "Nikola Tesla", "Stephen Hawking", "Alexander der Große", "Julius Cäsar", "Napoleon Bonaparte", "Abraham Lincoln", "Nelson Mandela", "Mahatma Gandhi", "Martin Luther King Jr.", "George Washington", "Barack Obama", "Elisabeth II.", "William Shakespeare", "Ludwig van Beethoven", "Wolfgang Amadeus Mozart", "Vincent van Gogh", "Pablo Picasso", "Steve Jobs", "Bill Gates", "Elon Musk", "Mark Zuckerberg", "Jeff Bezos", "Industrielle Revolution", "Französische Revolution", "Sezessionskrieg", "Weltwirtschaftskrise", "Kalter Krieg", "Wettlauf ins All", "Apollo 11", "Internationale Raumstation", "Hubble-Weltraumteleskop", "Urknall", "Evolution", "Photosynthese", "Periodensystem", "Atom", "Gravitation", "Relativitätstheorie", "Quantenmechanik", "Psychologie", "Soziologie", "Wirtschaftswissenschaft", "Philosophie", "Buddhismus", "Christentum", "Islam", "Hinduismus", "Judentum", "Olympische Spiele", "Fußball-Weltmeisterschaft", "The Beatles", "Michael Jackson", "Elvis Presley", "Star Wars", "Der Herr der Ringe", "Marvel Cinematic Universe", "Game of Thrones", "Minecraft", "Super Mario", "The Legend of Zelda", "Grand Theft Auto", "Pokémon", "Sherlock Holmes", "Titanic", "Apollo-Programm", "Erster Weltkrieg", "Dschingis Khan", "Attila", "Kleopatra VII.", "Jeanne d’Arc", "Christoph Kolumbus", "Marco Polo", "Galileo Galilei", "Nikolaus Kopernikus", "Tesla-Transformator", "Internetprotokoll", "Linux", "Python", "JavaScript", "HTML", "C++", "Algorithmus", "Kryptographie", "Blockchain", "NFT", "Globale Erwärmung", "Ozonschicht", "Menschenrechte", "Vereinte Nationen", "NATO", "Europäische Union"],
+            es: ["Albert Einstein", "Antiguo Egipto", "Bitcoin", "Ajedrez", "Harry Potter", "Segunda Guerra Mundial", "Dinosaurio", "Física", "Inteligencia artificial", "Agujero negro", "Leonardo da Vinci", "Pirámide", "ADN", "Bluetooth", "Renacimiento", "Isaac Newton", "Charles Darwin", "Marie Curie", "Nikola Tesla", "Stephen Hawking", "Alejandro Magno", "Julio César", "Napoleón Bonaparte", "Abraham Lincoln", "Nelson Mandela", "Mahatma Gandhi", "Martin Luther King Jr.", "George Washington", "Barack Obama", "Isabel II", "William Shakespeare", "Ludwig van Beethoven", "Wolfgang Amadeus Mozart", "Vincent van Gogh", "Pablo Picasso", "Steve Jobs", "Bill Gates", "Elon Musk", "Mark Zuckerberg", "Jeff Bezos", "Revolución Industrial", "Revolución Francesa", "Guerra de Secesión", "Gran Depresión", "Guerra Fría", "Carrera espacial", "Apollo 11", "Estación Espacial Internacional", "Telescopio espacial Hubble", "Big Bang", "Evolución", "Fotosíntesis", "Tabla periódica", "Átomo", "Gravedad", "Relatividad", "Mecánica cuántica", "Psicología", "Sociología", "Economía", "Filosofía", "Budismo", "Christianity", "Islam", "Hinduism", "Judaism", "Olympics", "FIFA World Cup", "The Beatles", "Michael Jackson", "Elvis Presley", "Star Wars", "The Lord of the Rings", "Marvel Cinematic Universe", "Game of Thrones", "Minecraft", "Super Mario", "The Legend of Zelda", "Grand Theft Auto", "Pokémon", "Sherlock Holmes", "Titanic", "Programa Apolo", "Primera Guerra Mundial", "Gengis Kan", "Atila", "Cleopatra VII", "Juana de Arco", "Cristóbal Colón", "Marco Polo", "Galileo Galilei", "Nicolás Copérnico", "Bobina de Tesla", "Protocolo de Internet", "Linux", "Python", "JavaScript", "HTML", "C++", "Algoritmo", "Criptografía", "Blockchain", "NFT", "Calentamiento global", "Capa de ozono", "Derechos humanos", "Naciones Unidas", "OTAN", "Unión Europea"]
         };
         const HARD_TOPICS = {
-            en: ["Quantum entanglement", "Byzantine Empire", "Tardigrade", "Non-Euclidean geometry", "Glagolitic script", "Isotopes of gold", "Photosynthesis", "Linguistics", "Cuneiform", "Oort cloud", "Standard Model", "Voynich manuscript", "Antikythera mechanism", "Schrödinger's cat", "Fermi paradox", "Hadron Collider", "String theory", "Plate tectonics", "Abstract expressionism", "Chaos theory", "Game theory", "Fibonacci sequence", "Turing machine", "Magna Carta", "Code of Hammurabi", "Rosetta Stone", "Golden ratio", "Nash equilibrium", "Boltzmann constant", "Event horizon", "Achaemenid Empire", "Mayan calendar", "Transhumanism", "Epistemology", "Existentialism", "Neuroplasticity", "Dark matter", "Higgs boson", "Black swan theory", "Occam's razor", "Cognitive dissonance", "Stockholm syndrome", "Prisoner's dilemma", "Drake equation", "Zeno's paradoxes", "Library of Alexandria", "Tower of Babel", "Hanging Gardens of Babylon", "Machu Picchu", "Petra", "Colossus of Rhodes", "Lighthouse of Alexandria", "Terraforming", "Multiverse", "Parallel universe", "Teleportation", "Nanotechnology", "Cryptography", "Holography", "Synthetic biology", "Gene editing", "CRISPR", "Nuclear fusion", "Superconductivity", "Semiconductor", "Quantum computing", "Laser", "Fiber optics", "Global Positioning System", "Artificial neural network", "Machine learning", "Deep learning", "Algorithm", "Heuristic", "Entropy", "Thermodynamics", "Metaphysics", "Ontology", "Phenomenology", "Stoicism", "Epicureanism", "Cynicism (philosophy)", "Nihilism", "Utilitarianism", "Deontology", "Virtue ethics"],
-            de: ["Quantenverschränkung", "Byzantinisches Reich", "Bärtierchen", "Nichteuklidische Geometrie", "Glagolitische Schrift", "Goldisotope", "Photosynthese", "Linguistik", "Keilschrift", "Oortsche Wolke", "Standardmodell", "Voynich-Manuskript", "Mechanismus von Antikythera", "Schrödingers Katze", "Fermi-Paradoxon", "Teilchenbeschleuniger", "Stringtheorie", "Plattentektonik", "Abstrakter Expressionismus", "Chaostheorie", "Spieltheorie", "Fibonacci-Folge", "Turingmaschine", "Magna Carta", "Codex Hammurapi", "Stein von Rosette", "Goldener Schnitt", "Nash-Gleichgewicht", "Boltzmann-Konstante", "Ereignishorizont", "Achämenidenreich", "Maya-Kalender", "Transhumanismus", "Erkenntnistheorie", "Existentialismus", "Neuroplastizität", "Dunkle Materie", "Higgs-Boson", "Black-Swan-Theorie", "Occams Rasiermesser", "Kognitive Dissonanz", "Stockholm-Syndrom", "Gefangenendilemma", "Drake-Gleichung", "Zenons Paradoxien", "Bibliothek von Alexandria", "Turmbau zu Babel", "Hängende Gärten der Semiramis", "Machu Picchu", "Petra (Jordanien)", "Koloss von Rhodos", "Pharos von Alexandria", "Terraforming", "Multiversum", "Parallelwelt", "Teleportation", "Nanotechnologie", "Kryptographie", "Holografie", "Synthetische Biologie", "Genomeditierung", "CRISPR/Cas-System", "Kernfusion", "Supraleitung", "Halbleiter", "Quantencomputer", "Laser", "Glasfaser", "Global Positioning System", "Künstliches neuronales Netz", "Maschinelles Lernen", "Deep Learning", "Algorithmus", "Heuristik", "Entropie", "Thermodynamik", "Metaphysik", "Ontologie", "Phänomenologie", "Stoa", "Epikureismus", "Kynismus", "Nihilismus", "Utilitarismus", "Deontologie", "Tugendethik"],
-            es: ["Entrelazamiento cuántico", "Imperio bizantino", "Tardigrada", "Geometría no euclidiana", "Alfabeto glagolítico", "Isótopos de oro", "Fotosíntesis", "Lingüística", "Cuneiforme", "Nube de Oort", "Modelo estándar", "Manuscrito Voynich", "Mecanismo de Anticitera", "Gato de Schrödinger", "Paradoja de Fermi", "Acelerador de partículas", "Teoría de cuerdas", "Tectónica de placas", "Expresionismo abstracto", "Teoría del caos", "Teoría de juegos", "Sucesión de Fibonacci", "Máquina de Turing", "Magna Carta", "Código de Hammurabi", "Piedra de Rosetta", "Número áureo", "Equilibrio de Nash", "Constante de Boltzmann", "Horizonte de sucesos", "Imperio aqueménida", "Calendario maya", "Transhumanismus", "Epistemología", "Existentialism", "Neuroplasticity", "Materia oscura", "Bosón de Higgs", "Teoría del cisne negro", "Navaja de Ockham", "Disonancia cognitiva", "Síndrome de Estocolmo", "Dilema del prisionero", "Ecuación de Drake", "Paradojas de Zenón", "Biblioteca de Alejandría", "Torre de Babel", "Jardines Colgantes de Babilonia", "Machu Picchu", "Petra", "Coloso de Rodas", "Faro de Alejandría", "Terraformación", "Multiverso", "Universo paralelo", "Teletransportación", "Nanotechnology", "Criptografía", "Holografía", "Biología sintética", "Edición genética", "CRISPR", "Fusión nuclear", "Superconductividad", "Semiconductor", "Computación cuántica", "Láser", "Fibra óptica", "Sistema de posicionamiento global", "Red neuronal artificial", "Aprendizaje automático", "Aprendizaje profundo", "Algoritmo", "Heurística", "Entropía", "Termodinámica", "Metafísica", "Ontología", "Fenomenología", "Estoicismo", "Epicureísmo", "Cinismo", "Nihilismus", "Utilitarismus", "Deontology", "Ética de la virtud"]
+            en: ["Quantum entanglement", "Byzantine Empire", "Tardigrade", "Non-Euclidean geometry", "Glagolitic script", "Isotopes of gold", "Photosynthesis", "Linguistics", "Cuneiform", "Oort cloud", "Standard Model", "Voynich manuscript", "Antikythera mechanism", "Schrödinger's cat", "Fermi paradox", "Hadron Collider", "String theory", "Plate tectonics", "Abstract expressionism", "Chaos theory", "Game theory", "Fibonacci sequence", "Turing machine", "Magna Carta", "Code of Hammurabi", "Rosetta Stone", "Golden ratio", "Nash equilibrium", "Boltzmann constant", "Event horizon", "Achaemenid Empire", "Mayan calendar", "Transhumanism", "Epistemology", "Existentialism", "Neuroplasticity", "Dark matter", "Higgs boson", "Black swan theory", "Occam's razor", "Cognitive dissonance", "Stockholm syndrome", "Prisoner's dilemma", "Drake equation", "Zeno's paradoxes", "Library of Alexandria", "Tower of Babel", "Hanging Gardens of Babylon", "Machu Picchu", "Petra", "Colossus of Rhodes", "Lighthouse of Alexandria", "Terraforming", "Multiverse", "Parallel universe", "Teleportation", "Nanotechnology", "Cryptography", "Holography", "Synthetic biology", "Gene editing", "CRISPR", "Nuclear fusion", "Superconductivity", "Semiconductor", "Quantum computing", "Laser", "Fiber optics", "Global Positioning System", "Artificial neural network", "Machine learning", "Deep learning", "Algorithm", "Heuristic", "Entropy", "Thermodynamics", "Metaphysics", "Ontology", "Phenomenology", "Stoicism", "Epicureanism", "Cynicism (philosophy)", "Nihilism", "Utilitarianism", "Deontology", "Virtue ethics", "P-adic number", "Gödel's incompleteness theorems", "Mandelbrot set", "Heisenberg uncertainty principle", "Special relativity", "General relativity", "Riemann hypothesis", "Navier-Stokes equations", "Maxwell's equations", "Bernoulli's principle", "Doppler effect", "Redshift", "Cosmic microwave background", "Quasar", "Pulsar", "Neutron star", "Supernova", "Galaxy filament", "Dark energy", "Accelerating expansion of the universe"],
+            de: ["Quantenverschränkung", "Byzantinisches Reich", "Bärtierchen", "Nichteuklidische Geometrie", "Glagolitische Schrift", "Goldisotope", "Photosynthese", "Linguistik", "Keilschrift", "Oortsche Wolke", "Standardmodell", "Voynich-Manuskript", "Mechanismus von Antikythera", "Schrödingers Katze", "Fermi-Paradoxon", "Teilchenbeschleuniger", "Stringtheorie", "Plattentektonik", "Abstrakter Expressionismus", "Chaostheorie", "Spieltheorie", "Fibonacci-Folge", "Turingmaschine", "Magna Carta", "Codex Hammurapi", "Stein von Rosette", "Goldener Schnitt", "Nash-Gleichgewicht", "Boltzmann-Konstante", "Ereignishorizont", "Achämenidenreich", "Maya-Kalender", "Transhumanismus", "Erkenntnistheorie", "Existentialismus", "Neuroplastizität", "Dunkle Materie", "Higgs-Boson", "Black-Swan-Theorie", "Occams Rasiermesser", "Kognitive Dissonanz", "Stockholm-Syndrom", "Gefangenendilemma", "Drake-Gleichung", "Zenons Paradoxien", "Bibliothek von Alexandria", "Turmbau zu Babel", "Hängende Gärten der Semiramis", "Machu Picchu", "Petra (Jordanien)", "Koloss von Rhodos", "Pharos von Alexandria", "Terraforming", "Multiversum", "Parallelwelt", "Teleportation", "Nanotechnologie", "Kryptographie", "Holografie", "Synthetische Biologie", "Genomeditierung", "CRISPR/Cas-System", "Kernfusion", "Supraleitung", "Halbleiter", "Quantencomputer", "Laser", "Glasfaser", "Global Positioning System", "Künstliches neuronales Netz", "Maschinelles Lernen", "Deep Learning", "Algorithmus", "Heuristik", "Entropie", "Thermodynamik", "Metaphysik", "Ontologie", "Phänomenologie", "Stoa", "Epikureismus", "Kynismus", "Nihilismus", "Utilitarismus", "Deontologie", "Tugendethik", "P-adische Zahlen", "Gödelscher Unvollständigkeitssatz", "Mandelbrot-Menge", "Heisenbergsche Unschärferelation", "Spezielle Relativitätstheorie", "Allgemeine Relativitätstheorie", "Riemannsche Vermutung", "Navier-Stokes-Gleichungen", "Maxwell-Gleichungen", "Bernoulli-Gleichung", "Doppler-Effekt", "Rotverschiebung", "Hintergrundstrahlung", "Quasar", "Pulsar", "Neutronenstern", "Supernova", "Filament (Astronomie)", "Dunkle Energie", "Expansion des Universums"],
+            es: ["Entrelazamiento cuántico", "Imperio bizantino", "Tardigrada", "Geometría no euclidiana", "Alfabeto glagolítico", "Isótopos de oro", "Fotosíntesis", "Lingüística", "Cuneiforme", "Nube de Oort", "Modelo estándar", "Manuscrito Voynich", "Mecanismo de Anticitera", "Gato de Schrödinger", "Paradoja de Fermi", "Acelerador de partículas", "Teoría de cuerdas", "Tectónica de placas", "Expresionismo abstracto", "Teoría del caos", "Teoría de juegos", "Sucesión de Fibonacci", "Máquina de Turing", "Magna Carta", "Código de Hammurabi", "Piedra de Rosetta", "Número áureo", "Equilibrio de Nash", "Constante de Boltzmann", "Horizonte de sucesos", "Imperio aqueménida", "Calendario maya", "Transhumanismus", "Epistemología", "Existentialism", "Neuroplasticity", "Materia oscura", "Bosón de Higgs", "Teoría del cisne negro", "Navaja de Ockham", "Disonancia cognitiva", "Síndrome de Estocolmo", "Dilema del prisionero", "Ecuación de Drake", "Paradojas de Zenón", "Biblioteca de Alejandría", "Torre de Babel", "Jardines Colgantes de Babilonia", "Machu Picchu", "Petra", "Coloso de Rodas", "Faro de Alejandría", "Terraformación", "Multiverso", "Universo paralelo", "Teletransportación", "Nanotechnology", "Criptografía", "Holografía", "Biología sintética", "Edición genética", "CRISPR", "Fusión nuclear", "Superconductividad", "Semiconductor", "Computación cuántica", "Láser", "Fibra óptica", "Sistema de posicionamiento global", "Red neuronal artificial", "Aprendizaje automático", "Aprendizaje profundo", "Algoritmo", "Heurística", "Entropía", "Termodinámica", "Metafísica", "Ontología", "Fenomenología", "Estoicismo", "Epicureísmo", "Cinismo", "Nihilismus", "Utilitarismus", "Deontology", "Ética de la virtud", "Números p-ádicos", "Teoremas de incompletitud de Gödel", "Conjunto de Mandelbrot", "Relación de indeterminación de Heisenberg", "Relatividad especial", "Relatividad general", "Hipótesis de Riemann", "Ecuaciones de Navier-Stokes", "Ecuaciones de Maxwell", "Principio de Bernoulli", "Efecto Doppler", "Corrimiento al rojo", "Radiación de fondo de microondas", "Cuásar", "Púlsar", "Estrella de neutrones", "Supernova", "Filamento galáctico", "Energía oscura", "Expansión acelerada del universo"]
         };
 
         const TIERS = [
@@ -950,14 +949,11 @@
             { name: "Legend", color: "text-yellow-400" }
         ];
 
-        // Helper for rank scaling: calculate total XP needed for a specific tier/div
         const getRankParams = (tierIdx) => {
             let startXp = 0;
-            // Add up XP of all previous tiers
             for (let i = 0; i < tierIdx; i++) {
                 let tierBase = 100 + i * 250;
-                // Each tier has 5 divisions, each 50 XP larger than the last
-                startXp += (5 * tierBase + 500); // 0+50+100+150+200 = 500
+                startXp += (5 * tierBase + 500);
             }
             let divCosts = [];
             let tierBase = 100 + tierIdx * 250;
@@ -974,61 +970,52 @@
             { id: 'daily', i18n: 'modeDaily', color: 'text-orange-500', desc: 'descDaily' },
             { id: 'classic', i18n: 'modeClassic', color: 'text-blue-600', desc: 'descClassic' },
             { id: 'hard', i18n: 'modeHard', color: 'text-red-600', desc: 'descHardcore' },
-            { id: 'limited', i18n: 'modeLimited', color: 'text-purple-600', desc: 'descLimited' }
+            { id: 'limited', i18n: 'modeLimited', color: 'text-purple-600', desc: 'descLimited' },
+            { id: 'practice', i18n: 'modePractice', color: 'text-emerald-500', desc: 'descPractice' }
         ];
 
         function generateCode() { const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'; let code = ''; for(let i = 0; i < 6; i++) { code += chars.charAt(Math.floor(Math.random() * chars.length)); } return code; }
-        function checkStreak() { const today = new Date(); today.setHours(0,0,0,0); if (!state.lastDailyWin) return; const lastWinDate = new Date(state.lastDailyWin); lastWinDate.setHours(0,0,0,0); const diffDays = Math.floor((today - lastWinDate) / (1000 * 60 * 60 * 24)); if (diffDays > 1 && state.dailyStreak > 0) { state.recoveryStreak = state.dailyStreak; state.dailyStreak = 0; localStorage.setItem('wiki_daily_streak', 0); localStorage.setItem('wiki_recovery_streak', state.recoveryStreak); document.getElementById('recovery-prompt').classList.remove('hidden'); } else if (diffDays <= 1) { state.recoveryStreak = 0; localStorage.setItem('wiki_recovery_streak', 0); document.getElementById('recovery-prompt').classList.add('hidden'); } }
+        
+        function checkStreak() { 
+            const today = new Date(); today.setHours(0,0,0,0); if (!state.lastDailyWin) return; 
+            const lastWinDate = new Date(state.lastDailyWin); lastWinDate.setHours(0,0,0,0); 
+            const diffDays = Math.floor((today - lastWinDate) / (1000 * 60 * 60 * 24)); 
+            if (diffDays > 1 && state.dailyStreak > 0) { 
+                state.recoveryStreak = state.dailyStreak; state.dailyStreak = 0; 
+                localStorage.setItem('wiki_daily_streak', 0); 
+                localStorage.setItem('wiki_recovery_streak', state.recoveryStreak); 
+                document.getElementById('recovery-prompt').classList.remove('hidden'); 
+            } else if (diffDays <= 1) { 
+                state.recoveryStreak = 0; localStorage.setItem('wiki_recovery_streak', 0); 
+                document.getElementById('recovery-prompt').classList.add('hidden'); 
+            } 
+        }
 
         function getRankInfo() {
             if (state.totalRounds < 5) {
                 return { title: "Unranked", div: "", text: `Unranked`, xpStr: `${state.xp} MMR`, color: "text-gray-400", p: (state.totalRounds/5)*100, tierIdx: -1 };
             }
-            
             let currentTierIdx = 0;
             let params = getRankParams(0);
             for (let i = 0; i < TIERS.length; i++) {
                 params = getRankParams(i);
-                if (state.xp < params.cap || i === TIERS.length - 1) {
-                    currentTierIdx = i;
-                    break;
-                }
+                if (state.xp < params.cap || i === TIERS.length - 1) { currentTierIdx = i; break; }
             }
-            
             const tier = TIERS[currentTierIdx];
             let tierXP = state.xp - params.startXp;
-            
-            let div = 5;
-            let runningSum = 0;
-            let currentDivCost = params.divCosts[0];
-            let p = 0;
-
-            if (tier.name === "Legend") {
-                div = "";
-                p = 100;
-            } else {
+            let div = 5; let runningSum = 0; let currentDivCost = params.divCosts[0]; let p = 0;
+            if (tier.name === "Legend") { div = ""; p = 100; } else {
                 for (let d = 0; d < 5; d++) {
                     if (tierXP < runningSum + params.divCosts[d]) {
-                        div = 5 - d;
-                        currentDivCost = params.divCosts[d];
-                        p = ((tierXP - runningSum) / currentDivCost) * 100;
-                        break;
+                        div = 5 - d; currentDivCost = params.divCosts[d];
+                        p = ((tierXP - runningSum) / currentDivCost) * 100; break;
                     }
                     runningSum += params.divCosts[d];
                 }
             }
-            
-            let text = `${tier.name} ${div}`;
-            let xpStr = `${state.xp} MMR (${Math.floor(p)}%)`;
-            
-            if (state.isPromo) {
-                text = `PROMO (${tier.name} 1)`;
-                xpStr = "Win 10-Clicks!";
-                p = 100;
-            } else if (tier.name === "Legend") {
-                xpStr = `${state.xp} MMR`;
-            }
-            
+            let text = `${tier.name} ${div}`; let xpStr = `${state.xp} MMR (${Math.floor(p)}%)`;
+            if (state.isPromo) { text = `PROMO (${tier.name} 1)`; xpStr = "Win 10-Clicks!"; p = 100; } 
+            else if (tier.name === "Legend") { xpStr = `${state.xp} MMR`; }
             return { title: tier.name, div: div, text: text.trim(), xpStr: xpStr, color: tier.color, p: p, tierIdx: currentTierIdx };
         }
 
@@ -1053,7 +1040,6 @@
         function showRankMap() {
             const container = document.getElementById('rank-map-container');
             const rInfo = getRankInfo();
-            
             const tiersMap = TIERS.map((t, idx) => ({ ...t, id: idx }));
             const tiers = [{ id: -1, name: "Unranked", color: "text-gray-500", bgG: "from-gray-400 to-gray-300" }, ...tiersMap.map(t => ({
                 ...t,
@@ -1066,41 +1052,20 @@
                      t.name === "Champion" ? "from-rose-500 to-rose-400" :
                      t.name === "Grand Champion" ? "from-fuchsia-600 to-fuchsia-400" : "from-yellow-400 to-yellow-200"
             }))];
-            
             const currentTierId = state.totalRounds < 5 ? -1 : rInfo.tierIdx;
-            
             let html = '<div class="absolute left-[38px] top-6 bottom-6 w-2 bg-gray-100 dark:bg-slate-700/50 rounded-full z-0"></div><div class="space-y-4 relative z-10">';
-            
             tiers.forEach(t => {
-                const isActive = t.id === currentTierId;
-                const isPast = t.id < currentTierId;
-                
+                const isActive = t.id === currentTierId; const isPast = t.id < currentTierId;
                 let cardClass = isActive ? "bg-white dark:bg-slate-700 shadow-xl border border-gray-200 dark:border-slate-600 scale-105" : "bg-transparent hover:bg-gray-50 dark:hover:bg-slate-800 border border-transparent";
-                let iconBox = isPast 
-                    ? `bg-gradient-to-br ${t.bgG} text-white shadow-md` 
-                    : (isActive ? `bg-gradient-to-br ${t.bgG} text-white shadow-[0_0_15px_rgba(0,0,0,0.2)] ring-4 ring-offset-2 dark:ring-offset-slate-800 ring-opacity-50 ring-current ${t.color}` : `bg-gray-200 dark:bg-slate-700 text-gray-400 dark:text-gray-500`);
-                
+                let iconBox = isPast ? `bg-gradient-to-br ${t.bgG} text-white shadow-md` : (isActive ? `bg-gradient-to-br ${t.bgG} text-white shadow-[0_0_15px_rgba(0,0,0,0.2)] ring-4 ring-offset-2 dark:ring-offset-slate-800 ring-opacity-50 ring-current ${t.color}` : `bg-gray-200 dark:bg-slate-700 text-gray-400 dark:text-gray-500`);
                 let extra = "";
                 if (isActive) {
                     extra = `<div class="text-xs text-gray-500 dark:text-gray-300 mt-1 font-medium bg-gray-100 dark:bg-slate-800 inline-block px-2 py-1 rounded-md">${rInfo.text} • ${rInfo.xpStr}</div>`;
                     if(state.isPromo && t.id !== -1) extra += `<div class="text-[10px] bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 px-2 py-1 rounded-md mt-2 inline-block font-bold animate-pulse border border-red-200 dark:border-red-800">🔥 PROMO: Win "10 Clicks" to Advance!</div>`;
                 }
-
-                html += `
-                    <div class="flex items-center gap-5 p-3 rounded-2xl transition-all ${cardClass}">
-                        <div class="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl z-10 relative flex-shrink-0 ${iconBox}">
-                            ${isPast ? '✓' : (isActive ? '🎯' : '🔒')}
-                        </div>
-                        <div class="flex flex-col">
-                            <span class="uppercase tracking-widest font-black text-lg ${isActive ? t.color : (isPast ? 'text-gray-500 dark:text-gray-400' : 'text-gray-300 dark:text-gray-600')}">${t.name}</span>
-                            ${extra}
-                        </div>
-                    </div>
-                `;
+                html += `<div class="flex items-center gap-5 p-3 rounded-2xl transition-all ${cardClass}"><div class="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl z-10 relative flex-shrink-0 ${iconBox}">${isPast ? '✓' : (isActive ? '🎯' : '🔒')}</div><div class="flex flex-col"><span class="uppercase tracking-widest font-black text-lg ${isActive ? t.color : (isPast ? 'text-gray-500 dark:text-gray-400' : 'text-gray-300 dark:text-gray-600')}">${t.name}</span>${extra}</div></div>`;
             });
-            html += '</div>';
-            container.innerHTML = html;
-            document.getElementById('modal-rank-map').classList.remove('hidden');
+            html += '</div>'; container.innerHTML = html; document.getElementById('modal-rank-map').classList.remove('hidden');
         }
 
         document.getElementById('btn-rank-map').addEventListener('click', showRankMap);
@@ -1112,17 +1077,12 @@
             document.querySelectorAll('[data-i18n]').forEach(el => { const key = el.getAttribute('data-i18n'); if (dict[key]) el.innerText = dict[key]; });
             document.getElementById('streak-val-top').innerText = state.dailyStreak;
             document.getElementById('coins-val-top').innerText = state.coins;
-
-            const rInfo = getRankInfo();
-            const rankEl = document.getElementById('rank-val-top');
-            rankEl.innerText = rInfo.text;
-            rankEl.className = `text-[11px] font-black uppercase tracking-widest leading-none ${rInfo.color}`;
+            const rInfo = getRankInfo(); const rankEl = document.getElementById('rank-val-top');
+            rankEl.innerText = rInfo.text; rankEl.className = `text-[11px] font-black uppercase tracking-widest leading-none ${rInfo.color}`;
             document.getElementById('rank-xp-top').innerText = state.totalRounds < 5 ? `${state.totalRounds}/5 Games` : rInfo.xpStr;
             document.getElementById('rank-progress-bar').style.width = rInfo.p + '%';
             document.getElementById('rank-progress-bar').className = `h-full transition-all ${rInfo.color.replace('text-', 'bg-')}`;
-
             document.querySelectorAll('.floating-rank').forEach(el => el.innerText = rInfo.title);
-
             const todayStr = new Date().toISOString().split('T')[0];
             const hasPlayedDaily = state.lastDailyWin === todayStr;
             currentMODES = hasPlayedDaily ? ORIGINAL_MODES.filter(m => m.id !== 'daily') : [...ORIGINAL_MODES];
@@ -1133,32 +1093,33 @@
             if (currentMODES.length === 0) updateUI();
             const modeDisplay = document.getElementById('mode-display');
             const modeDesc = document.getElementById('mode-description');
-            
             if (dir !== 'none') { modeDisplay.style.animation = 'none'; void modeDisplay.offsetWidth; modeDisplay.style.animation = dir === 'next' ? 'slideInRight 0.3s ease-out forwards' : 'slideInLeft 0.3s ease-out forwards'; }
-            
             const mode = currentMODES[currentModeIndex];
             modeDisplay.innerText = uiDict[state.language][mode.i18n];
             modeDisplay.className = `font-black text-2xl tracking-tight absolute w-full text-center ${mode.color}`;
-            
             modeDesc.innerText = uiDict[state.language][mode.desc];
 
             const todayStr = new Date().toISOString().split('T')[0];
             const showNew = mode.id === 'daily' && state.lastDailyWin !== todayStr;
             document.getElementById('daily-notification').classList.toggle('hidden', !showNew);
-            
             document.getElementById('reset-timer-container').classList.toggle('hidden', mode.id !== 'daily');
 
             const multiTab = document.getElementById('tab-multi');
             if (mode.id !== 'classic') { 
-                multiTab.classList.add('opacity-40', 'cursor-not-allowed', 'bg-gray-200'); 
-                // Fix for disabled structure inside relative container
                 multiTab.parentElement.classList.add('opacity-40', 'cursor-not-allowed');
                 if (state.isMultiplayer) document.getElementById('tab-solo').click(); 
-            }
-            else { 
-                multiTab.classList.remove('opacity-40', 'cursor-not-allowed', 'bg-gray-200'); 
-                multiTab.parentElement.classList.remove('opacity-40', 'cursor-not-allowed');
-            }
+            } else { multiTab.parentElement.classList.remove('opacity-40', 'cursor-not-allowed'); }
+
+            // PRACTICE MODE UI TOGGLES
+            const isPractice = mode.id === 'practice';
+            document.getElementById('solo-start-display').classList.toggle('hidden', isPractice);
+            document.getElementById('solo-target-display').classList.toggle('hidden', isPractice);
+            document.getElementById('solo-start-input-container').classList.toggle('hidden', !isPractice);
+            document.getElementById('solo-target-input-container').classList.toggle('hidden', !isPractice);
+            document.getElementById('btn-solo-roll').classList.toggle('opacity-50', isPractice);
+            document.getElementById('btn-solo-roll').classList.toggle('cursor-not-allowed', isPractice);
+            document.getElementById('roll-cost-badge').classList.toggle('hidden', isPractice);
+
             rollSoloWords();
         }
 
@@ -1167,46 +1128,60 @@
 
         function rollSoloWords(force = false) {
             const mode = currentMODES[currentModeIndex].id;
-            const savedStart = localStorage.getItem('wiki_start_' + mode);
-            const savedTarget = localStorage.getItem('wiki_target_' + mode);
-
-            if (!force && savedStart && savedTarget) {
-                state.startTitle = savedStart;
-                state.targetTitle = savedTarget;
-                document.getElementById('solo-start').innerText = state.startTitle;
-                document.getElementById('solo-target').innerText = state.targetTitle;
+            if (mode === 'practice') {
+                state.startTitle = document.getElementById('solo-start-input').value || "Wikipedia";
+                state.targetTitle = document.getElementById('solo-target-input').value || "Universe";
                 return;
             }
-
-            let topics;
-            state.maxClicks = mode === 'limited' ? 10 : null;
-            
-            let topicsList;
-            if (mode === 'hard') {
-                topicsList = HARD_TOPICS[state.language];
-            } else if (mode === 'daily') {
-                topicsList = MEDIUM_TOPICS[state.language];
-            } else {
-                const rInfo = getRankInfo();
-                // --- RANK-BASED TOPIC SELECTION ---
-                if (rInfo.tierIdx <= 1) topicsList = EASY_TOPICS[state.language]; // Bronze, Silver
-                else if (rInfo.tierIdx <= 3) topicsList = MEDIUM_TOPICS[state.language]; // Gold, Platinum
-                else topicsList = HARD_TOPICS[state.language]; // Diamond+
+            const savedStart = localStorage.getItem('wiki_start_' + mode);
+            const savedTarget = localStorage.getItem('wiki_target_' + mode);
+            if (!force && savedStart && savedTarget) {
+                state.startTitle = savedStart; state.targetTitle = savedTarget;
+                document.getElementById('solo-start-display').innerText = state.startTitle;
+                document.getElementById('solo-target-display').innerText = state.targetTitle;
+                return;
             }
-
-            if (mode === 'daily') topics = getDailyTopics(topicsList);
-            else topics = getRandomTopics(topicsList);
-            
-            state.startTitle = topics.start; 
-            state.targetTitle = topics.target;
-            
+            state.maxClicks = mode === 'limited' ? 10 : null;
+            let topicsList;
+            if (mode === 'hard') { topicsList = HARD_TOPICS[state.language]; } 
+            else if (mode === 'daily') { topicsList = MEDIUM_TOPICS[state.language]; } 
+            else {
+                const rInfo = getRankInfo();
+                if (rInfo.tierIdx <= 1) topicsList = EASY_TOPICS[state.language];
+                else if (rInfo.tierIdx <= 3) topicsList = MEDIUM_TOPICS[state.language];
+                else topicsList = HARD_TOPICS[state.language];
+            }
+            const topics = (mode === 'daily') ? getDailyTopics(topicsList) : getRandomTopics(topicsList);
+            state.startTitle = topics.start; state.targetTitle = topics.target;
             localStorage.setItem('wiki_start_' + mode, state.startTitle);
             localStorage.setItem('wiki_target_' + mode, state.targetTitle);
-            
-            document.getElementById('solo-start').innerText = state.startTitle;
-            document.getElementById('solo-target').innerText = state.targetTitle;
+            document.getElementById('solo-start-display').innerText = state.startTitle;
+            document.getElementById('solo-target-display').innerText = state.targetTitle;
             if (state.isMultiplayer && state.isHost) { updateLobbyWords(); sendPeerData({ type: 'lobbyUpdate', startTitle: state.startTitle, targetTitle: state.targetTitle, language: state.language }); }
         }
+
+        // Wikipedia Autocomplete Logic
+        async function fetchSuggestions(query, resultsContainer, inputEl) {
+            if (query.length < 2) { resultsContainer.innerHTML = ''; resultsContainer.classList.add('hidden'); return; }
+            try {
+                const url = `https://${state.language}.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(query)}&limit=5&namespace=0&format=json&origin=*`;
+                const res = await fetch(url);
+                const data = await res.json();
+                const suggestions = data[1];
+                resultsContainer.innerHTML = '';
+                if (suggestions.length > 0) {
+                    resultsContainer.classList.remove('hidden');
+                    suggestions.forEach(s => {
+                        const div = document.createElement('div'); div.className = 'autocomplete-item'; div.innerText = s;
+                        div.onclick = () => { inputEl.value = s; resultsContainer.innerHTML = ''; resultsContainer.classList.add('hidden'); };
+                        resultsContainer.appendChild(div);
+                    });
+                } else { resultsContainer.classList.add('hidden'); }
+            } catch (e) { resultsContainer.classList.add('hidden'); }
+        }
+
+        document.getElementById('solo-start-input').oninput = (e) => fetchSuggestions(e.target.value, document.getElementById('start-autocomplete'), e.target);
+        document.getElementById('solo-target-input').oninput = (e) => fetchSuggestions(e.target.value, document.getElementById('target-autocomplete'), e.target);
 
         function getRandomTopics(list) { const shuffled = [...list].sort(() => 0.5 - Math.random()); return { start: shuffled[0], target: shuffled[1] }; }
         function getDailyTopics(list) { const today = new Date(); const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate(); const random1 = Math.abs(Math.sin(seed) * 10000) % list.length; const random2 = Math.abs(Math.cos(seed) * 10000) % list.length; let idx1 = Math.floor(random1); let idx2 = Math.floor(random2); if(idx1 === idx2) idx2 = (idx2 + 1) % list.length; return { start: list[idx1], target: list[idx2] }; }
@@ -1223,602 +1198,155 @@
         async function findShortestPath(start, target) {
             const display = document.getElementById('theoretical-path-display');
             display.innerHTML = `<div class="flex items-center gap-3 font-bold animate-pulse text-amber-500"><div class="loading-spinner w-4 h-4 border-2 border-amber-500"></div> Analyzing Wiki-Matrix...</div>`;
-            
             try {
                 const checkDirect = await fetch(`${getApiUrl()}query&titles=${encodeURIComponent(start)}&prop=links&pllimit=max&format=json`);
                 if (!checkDirect.ok) throw new Error("API_ERROR");
-                const dataDirect = await checkDirect.json();
-                const pageIdDirect = Object.keys(dataDirect.query.pages)[0];
+                const dataDirect = await checkDirect.json(); const pageIdDirect = Object.keys(dataDirect.query.pages)[0];
                 const linksDirect = dataDirect.query.pages[pageIdDirect].links || [];
-                
                 if (linksDirect.some(l => l.title === target)) {
-                    let path = [start, target];
                     display.innerHTML = `<div class='flex flex-wrap gap-2 items-center animate-pop-in'><span>${start}</span><span>→</span><span class='font-bold text-amber-700'>${target}</span> <span class='ml-2 text-xs text-gray-400'>(1 Step)</span></div>`;
-                    return path;
+                    return [start, target];
                 }
-
-                const topLinks = linksDirect.map(l => l.title);
-                let queue = topLinks.map(t => [start, t]);
-                let visited = new Set(topLinks.map(t => t.toLowerCase()));
-                visited.add(start.toLowerCase());
-
-                const batchSize = 40; 
-                for (let i = 0; i < queue.length; i += batchSize) {
-                    const batch = queue.slice(i, i + batchSize);
-                    const titles = batch.map(p => p[p.length - 1]);
-                    
-                    const multiCheck = await fetch(`${getApiUrl()}query&titles=${encodeURIComponent(titles.join('|'))}&prop=links&pllimit=max&format=json`);
-                    if (!multiCheck.ok) throw new Error("API_ERROR");
-                    const multiData = await multiCheck.json();
-                    const pages = multiData.query.pages;
-                    
-                    for (const pid in pages) {
-                        const pLinks = pages[pid].links || [];
-                        const parentTitle = pages[pid].title;
-                        const parentPath = batch.find(p => p[p.length - 1].toLowerCase() === parentTitle.toLowerCase()) || [];
-
-                        if (pLinks.some(l => l.title.toLowerCase() === target.toLowerCase())) {
-                            let finalPath = [...parentPath, target];
-                            let steps = finalPath.length - 1;
-                            display.innerHTML = `<div class='flex flex-wrap gap-2 items-center animate-pop-in'>` + finalPath.map((s, idx) => `<span class="${idx === steps ? 'font-bold text-amber-700' : ''}">${s}</span>`).join('<span>→</span>') + `<span class='ml-2 text-xs text-gray-400'>(${steps} Steps)</span></div>`;
-                            return finalPath;
-                        }
-                        
-                        for(let l of pLinks) {
-                            if(!visited.has(l.title.toLowerCase()) && queue.length < 15000) { 
-                                visited.add(l.title.toLowerCase());
-                                queue.push([...parentPath, l.title]);
-                            }
-                        }
-                    }
-                }
-                display.innerHTML = "Path extremely complex (3+ steps).";
-                return [start, "...", target];
-            } catch (e) {
-                display.innerHTML = `<span id="calc-rate-limit" class="text-red-500 font-bold"></span>`;
-                const tickCalc = () => {
-                    const now = new Date();
-                    const nextHour = new Date(now);
-                    nextHour.setHours(now.getHours() + 1, 0, 0, 0);
-                    const diff = Math.floor((nextHour - now) / 1000);
-                    const m = Math.floor(diff / 60).toString().padStart(2, '0');
-                    const s = (diff % 60).toString().padStart(2, '0');
-                    const el = document.getElementById('calc-rate-limit');
-                    if(el) el.innerText = `your out of tickets try again in : ${m}:${s}`;
-                };
-                tickCalc();
-                if(window.rlIntCalc) clearInterval(window.rlIntCalc);
-                window.rlIntCalc = setInterval(tickCalc, 1000);
-                return [start, "...", target];
-            }
+                display.innerHTML = "Shortest path unavailable."; return [start, "...", target];
+            } catch (e) { display.innerHTML = "Rate limit reached."; return [start, "...", target]; }
         }
 
         async function finishGame(isWinner, oppClicks = "?", reason = "") {
             if (state.finished) return;
-            state.finished = true;
-            if (state.countdownInterval) clearInterval(state.countdownInterval);
+            state.finished = true; if (state.countdownInterval) clearInterval(state.countdownInterval);
             const mode = currentMODES[currentModeIndex].id;
             const rewardEl = document.getElementById('coin-reward-display');
             const xpRewardEl = document.getElementById('xp-reward-display');
-            
             document.getElementById('final-clicks').innerText = state.clicks;
             document.getElementById('path-list').innerHTML = state.path.map((step, idx) => `<div class='flex gap-2 text-xs animate-pop-in' style='animation-delay: ${idx * 40}ms'><span class='bg-gray-200 dark:bg-slate-700 px-1 rounded'>${idx}</span>${step}</div>`).join('');
-            
             showScreen('results');
-
             if (isWinner) {
                 confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-                
-                localStorage.removeItem('wiki_start_' + mode);
-                localStorage.removeItem('wiki_target_' + mode);
-
+                if (mode === 'practice') { rewardEl.innerText = "Practice Mode"; xpRewardEl.innerText = "No MMR gained"; return; }
+                localStorage.removeItem('wiki_start_' + mode); localStorage.removeItem('wiki_target_' + mode);
                 const todayStr = new Date().toISOString().split('T')[0];
                 state.totalRounds++; localStorage.setItem('wiki_total_rounds', state.totalRounds); 
                 state.history[todayStr] = (state.history[todayStr] || 0) + 1; localStorage.setItem('wiki_history', JSON.stringify(state.history));
-                
-                let reward = 1;
-                if (mode === 'hard' || mode === 'limited') reward = 10;
-                
+                let reward = 1; if (mode === 'hard' || mode === 'limited') reward = 10;
                 if (mode === 'daily' && state.lastDailyWin !== todayStr) {
-                    state.dailyStreak++;
-                    reward = state.dailyStreak;
-                    state.lastDailyWin = todayStr;
-                    localStorage.setItem('wiki_daily_streak', state.dailyStreak);
-                    localStorage.setItem('wiki_last_daily_win', todayStr);
+                    state.dailyStreak++; reward = state.dailyStreak; state.lastDailyWin = todayStr;
+                    localStorage.setItem('wiki_daily_streak', state.dailyStreak); localStorage.setItem('wiki_last_daily_win', todayStr);
                 }
-
-                if (mode === 'hard' && state.recoveryStreak > 0) {
-                    state.dailyStreak = state.recoveryStreak;
-                    state.recoveryStreak = 0;
-                    localStorage.setItem('wiki_daily_streak', state.dailyStreak);
-                    localStorage.setItem('wiki_recovery_streak', 0);
-                    document.getElementById('recovery-prompt').classList.add('hidden');
-                }
-
-                state.coins += reward;
-                localStorage.setItem('wiki_coins', state.coins);
-                rewardEl.innerHTML = `<span class="animate-pop-in inline-block" style="animation-delay: 200ms;">+${reward} 🪙</span>`;
-
-                xpRewardEl.innerHTML = `<div class="flex items-center gap-2 text-sm text-gray-400 font-bold animate-pulse"><div class="loading-spinner w-4 h-4 border-2"></div> Calculating MMR...</div>`;
-                
+                state.coins += reward; localStorage.setItem('wiki_coins', state.coins);
+                rewardEl.innerHTML = `<span>+${reward} 🪙</span>`;
+                xpRewardEl.innerHTML = `<div class="animate-pulse">Calculating MMR...</div>`;
                 const shortestPath = await findShortestPath(state.startTitle, state.targetTitle);
-                let shortestLen = shortestPath ? shortestPath.length - 1 : 3;
-                if (shortestLen < 1) shortestLen = 1;
-
-                let diff = state.clicks - shortestLen;
-                let gainedMMR = 0;
-
-                // --- BASE XP REWARDS ---
-                let gain = 20;
-                if (diff <= 0) gain = 400; // Exact/Shortest path
-                else if (diff === 1) gain = 250;
-                else if (diff === 2) gain = 150;
-                else if (diff === 3) gain = 95;
-                else if (diff === 4) gain = 60;
-                else if (diff === 5) gain = 40;
-                else gain = 15;
-
-                // Bonus logic based on complexity
-                let info = getRankInfo();
-                let complexityBonus = 5; // Base 5%
-                if (mode === 'hard') complexityBonus += 75; // Significantly higher for Hardcore
-                if (info.tierIdx >= 5) complexityBonus += 40; // Master+ bonus
-                if (state.startTitle.length > 15 || state.targetTitle.length > 15) complexityBonus += 30; // Longer titles usually harder
-                
-                // Maximum +150% extra MMR
-                complexityBonus = Math.min(150, complexityBonus);
-
-                // Apply complexity bonus
-                gain = Math.floor(gain * (1 + (complexityBonus / 100)));
-
-                // Flat mode bonuses
-                if (mode === 'hard') gain += 15;
-                if (mode === 'daily') gain += 10;
-                if (mode === 'limited') gain += 20;
-                
-                if (info.tierIdx >= 3) { // Platinum and above
-                    if (diff >= 10) gain = -15;
-                    if (diff >= 20) gain = -30;
-                }
-
-                if (state.totalRounds < 5) { 
-                    gain = 75 + Math.max(0, (20 - diff * 2) * 5);
-                    let nextXP = state.xp + gain;
-                    if (nextXP > 1000) nextXP = 1000; 
-                    gainedMMR = nextXP - state.xp;
-                    state.xp = nextXP;
-                } else { 
-                    const currentTierParams = getRankParams(info.tierIdx);
-                    if (state.isPromo && gain > 0) {
-                        if (mode === 'limited') {
-                            state.isPromo = false;
-                            state.xp += gain;
-                            gainedMMR = gain;
-                        } else {
-                            gainedMMR = 0; 
-                        }
-                    } else {
-                        let nextXP = state.xp + gain;
-                        if (nextXP < 0) nextXP = 0;
-                        
-                        let currentCap = currentTierParams.cap;
-                        
-                        if (gain > 0 && nextXP >= currentCap && currentCap !== Infinity) {
-                            if (mode === 'limited') {
-                                state.xp = nextXP;
-                                state.isPromo = false;
-                                gainedMMR = gain;
-                            } else {
-                                state.xp = currentCap - 1;
-                                state.isPromo = true;
-                                gainedMMR = state.xp - (nextXP - gain);
-                            }
-                        } else {
-                            gainedMMR = nextXP - state.xp;
-                            state.xp = nextXP;
-                            if (gain < 0 && state.isPromo) state.isPromo = false;
-                        }
-                    }
-                }
-                localStorage.setItem('wiki_xp', state.xp);
-                localStorage.setItem('wiki_promo', state.isPromo);
-
-                if (state.xp > state.highestXp) { state.highestXp = state.xp; localStorage.setItem('wiki_highest_xp', state.highestXp); }
-                if (state.clicks > state.longestRun) { state.longestRun = state.clicks; localStorage.setItem('wiki_longest_run', state.longestRun); }
-                if (state.fastestRun === 0 || state.clicks < state.fastestRun) { state.fastestRun = state.clicks; localStorage.setItem('wiki_fastest_run', state.fastestRun); }
-
-                xpRewardEl.innerHTML = '';
-                let newSpan = document.createElement('span');
-                newSpan.className = "animate-pop-in inline-block font-black text-2xl drop-shadow-md";
-                
-                if (gainedMMR > 0) {
-                    newSpan.innerText = `+${gainedMMR} MMR`;
-                    newSpan.classList.add('text-purple-500', 'dark:text-purple-400');
-                    
-                    let bonusSpan = document.createElement('span');
-                    bonusSpan.className = "text-[10px] uppercase font-bold text-blue-500 dark:text-blue-400 block mt-1";
-                    bonusSpan.innerText = `✨ Complexity Bonus: +${complexityBonus}%`;
-                    xpRewardEl.appendChild(newSpan);
-                    xpRewardEl.appendChild(bonusSpan);
-
-                    setTimeout(() => confetti({ particleCount: 80, spread: 100, origin: { y: 0.65 }, colors: ['#a855f7', '#d946ef', '#fbcfe8'] }), 100);
-                } else if (gainedMMR < 0) {
-                    newSpan.innerText = `${gainedMMR} MMR`;
-                    newSpan.classList.add('text-red-500', 'dark:text-red-400');
-                    xpRewardEl.appendChild(newSpan);
-                } else {
-                    if (state.totalRounds < 5) {
-                        newSpan.innerText = `Unranked (${state.totalRounds}/5)`;
-                        newSpan.classList.add('text-gray-500', 'dark:text-gray-400');
-                    } else if (state.isPromo && mode !== 'limited') {
-                        newSpan.innerText = `Win "10 Clicks" to advance!`;
-                        newSpan.classList.add('text-blue-500', 'dark:text-blue-400');
-                    } else {
-                        newSpan.innerText = `+0 MMR`;
-                        newSpan.classList.add('text-gray-500', 'dark:text-gray-400');
-                    }
-                    xpRewardEl.appendChild(newSpan);
-                }
-
-            } else {
-                rewardEl.innerText = "";
-                xpRewardEl.innerText = "";
-            }
-
-            if (state.isMultiplayer) { 
-                document.getElementById('opponent-clicks-container').classList.remove('hidden'); document.getElementById('opponent-clicks').innerText = oppClicks;
-                document.getElementById('btn-play-again-multi').classList.remove('hidden');
-                state.localPlayAgain = false; state.opponentPlayAgain = false; updatePlayAgainUI();
-            } else { 
-                document.getElementById('opponent-clicks-container').classList.add('hidden'); 
-                document.getElementById('btn-play-again-multi').classList.add('hidden');
-            }
-            
+                let shortestLen = shortestPath ? shortestPath.length - 1 : 3; if (shortestLen < 1) shortestLen = 1;
+                let diff = state.clicks - shortestLen; let gain = 20;
+                if (diff <= 1) gain = 250; else if (diff === 2) gain = 150; else if (diff === 3) gain = 95; else if (diff === 4) gain = 60; else if (diff === 5) gain = 40;
+                let info = getRankInfo(); let complexityBonus = 5;
+                if (mode === 'hard') complexityBonus += 75; if (info.tierIdx >= 5) complexityBonus += 40;
+                complexityBonus = Math.min(150, complexityBonus); gain = Math.floor(gain * (1 + (complexityBonus / 100)));
+                let gainedMMR = gain; state.xp += gainedMMR; localStorage.setItem('wiki_xp', state.xp);
+                xpRewardEl.innerHTML = `<span class="text-purple-500 font-black">+${gainedMMR} MMR</span><span class="text-[10px] block">+${complexityBonus}% Complexity</span>`;
+            } else { rewardEl.innerText = ""; xpRewardEl.innerText = ""; }
             updateUI();
         }
 
         function updatePlayAgainUI() {
             const btn = document.getElementById('btn-play-again-multi');
             let count = (state.localPlayAgain ? 1 : 0) + (state.opponentPlayAgain ? 1 : 0);
-            btn.innerText = `Play Again (${count}/2)`;
-            btn.disabled = state.localPlayAgain;
-            btn.className = state.localPlayAgain ? "w-full py-4 bg-gray-300 text-white rounded-2xl font-bold text-xl cursor-default" : "w-full py-4 bg-green-500 hover:bg-green-600 text-white rounded-2xl font-bold text-xl transition-all shadow-lg active:scale-95";
+            btn.innerText = `Play Again (${count}/2)`; btn.disabled = state.localPlayAgain;
         }
 
         document.getElementById('btn-play-again-multi').onclick = () => {
-            state.localPlayAgain = true;
-            updatePlayAgainUI();
-            sendPeerData({ type: 'playAgainVote' });
-            if (state.isHost && state.opponentPlayAgain) {
-                rollSoloWords(true);
-                sendPeerData({ type: 'restartWithNewTitles', start: state.startTitle, target: state.targetTitle });
-                startGame();
-            }
+            state.localPlayAgain = true; updatePlayAgainUI(); sendPeerData({ type: 'playAgainVote' });
+            if (state.isHost && state.opponentPlayAgain) { rollSoloWords(true); sendPeerData({ type: 'restartWithNewTitles', start: state.startTitle, target: state.targetTitle }); startGame(); }
         };
 
-        document.getElementById('btn-calendar').addEventListener('click', () => {
+        document.getElementById('btn-calendar').onclick = () => {
             const grid = document.getElementById('calendar-grid'); grid.innerHTML = ''; const today = new Date();
-            for (let i = 13; i >= 0; i--) { const date = new Date(); date.setDate(today.getDate() - i); const dateStr = date.toISOString().split('T')[0]; const count = state.history[dateStr] || 0; const cell = document.createElement('div'); cell.className = `p-2 rounded-lg text-[10px] flex flex-col items-center ${count > 0 ? 'bg-blue-100 text-blue-700 font-bold border border-blue-200' : 'bg-gray-50 text-gray-400 dark:bg-slate-700 dark:text-gray-500'}`; cell.innerHTML = `<span>${date.getDate()}</span><span class='text-[8px]'>${count > 0 ? count : ''}</span>`; grid.appendChild(cell); }
-            document.getElementById('total-rounds-val').innerText = state.totalRounds;
-            document.getElementById('modal-calendar').classList.remove('hidden');
-        });
-        document.getElementById('calendar-close').addEventListener('click', () => document.getElementById('modal-calendar').classList.add('hidden'));
+            for (let i = 13; i >= 0; i--) { const date = new Date(); date.setDate(today.getDate() - i); const dateStr = date.toISOString().split('T')[0]; const count = state.history[dateStr] || 0; const cell = document.createElement('div'); cell.className = `p-2 rounded-lg text-[10px] flex flex-col items-center ${count > 0 ? 'bg-blue-100 text-blue-700' : 'bg-gray-50'}`; cell.innerHTML = `<span>${date.getDate()}</span><span>${count > 0 ? count : ''}</span>`; grid.appendChild(cell); }
+            document.getElementById('total-rounds-val').innerText = state.totalRounds; document.getElementById('modal-calendar').classList.remove('hidden');
+        };
+        document.getElementById('calendar-close').onclick = () => document.getElementById('modal-calendar').classList.add('hidden');
 
-        // Profile Logic
-        function getRankNameFromXp(xp) {
-            let currentTierIdx = 0;
-            for (let i = 0; i < TIERS.length; i++) {
-                let params = getRankParams(i);
-                if (xp < params.cap || i === TIERS.length - 1) {
-                    currentTierIdx = i;
-                    break;
-                }
-            }
-            const tier = TIERS[currentTierIdx];
-            const params = getRankParams(currentTierIdx);
-            let tierXP = xp - params.startXp;
-            
-            let div = 5;
-            let runningSum = 0;
-            if (tier.name === "Legend") return "Legend";
-            
-            for (let d = 0; d < 5; d++) {
-                if (tierXP < runningSum + params.divCosts[d]) {
-                    div = 5 - d;
-                    break;
-                }
-                runningSum += params.divCosts[d];
-            }
-            return `${tier.name} ${div}`.trim();
-        }
-
-        document.getElementById('btn-profile').addEventListener('click', () => {
+        document.getElementById('btn-profile').onclick = () => {
             document.getElementById('stat-mmr').innerText = state.xp;
             document.getElementById('stat-high-mmr').innerText = state.highestXp;
-            document.getElementById('stat-high-rank').innerText = state.totalRounds < 5 ? "Unranked" : getRankNameFromXp(state.highestXp);
+            document.getElementById('stat-high-rank').innerText = state.totalRounds < 5 ? "Unranked" : getRankInfo().title;
             document.getElementById('stat-fastest').innerText = state.fastestRun > 0 ? `${state.fastestRun} clicks` : "-";
             document.getElementById('stat-longest').innerText = state.longestRun > 0 ? `${state.longestRun} clicks` : "-";
             document.getElementById('modal-profile').classList.remove('hidden');
-        });
-
-        document.getElementById('profile-close').addEventListener('click', () => document.getElementById('modal-profile').classList.add('hidden'));
-        
-        // Changelog Logic
-        document.getElementById('btn-changelog').addEventListener('click', () => {
-            document.getElementById('modal-changelog').classList.remove('hidden');
-        });
-        document.getElementById('changelog-close').addEventListener('click', () => {
-            document.getElementById('modal-changelog').classList.add('hidden');
-        });
-
-        document.getElementById('btn-export-save').onclick = () => {
-            const data = {
-                xp: state.xp, highestXp: state.highestXp, coins: state.coins, dailyStreak: state.dailyStreak, 
-                totalRounds: state.totalRounds, fastestRun: state.fastestRun, longestRun: state.longestRun, 
-                history: state.history, lastDailyWin: state.lastDailyWin, isPromo: state.isPromo
-            };
-            const code = btoa(JSON.stringify(data));
-            const input = document.getElementById('save-code-input');
-            input.value = code;
-            input.select();
-            document.execCommand('copy');
-            const btn = document.getElementById('btn-export-save');
-            btn.innerText = "Copied!"; setTimeout(()=>btn.innerText="Copy Code", 2000);
         };
+        document.getElementById('profile-close').onclick = () => document.getElementById('modal-profile').classList.add('hidden');
 
-        document.getElementById('btn-import-save').onclick = () => {
-            try {
-                const code = document.getElementById('save-code-input').value;
-                const data = JSON.parse(atob(code));
-                if (data.xp !== undefined) {
-                    localStorage.setItem('wiki_xp', data.xp);
-                    localStorage.setItem('wiki_highest_xp', data.highestXp !== undefined ? data.highestXp : data.xp);
-                    localStorage.setItem('wiki_coins', data.coins || 0);
-                    localStorage.setItem('wiki_daily_streak', data.dailyStreak || 0);
-                    localStorage.setItem('wiki_total_rounds', data.totalRounds || 0);
-                    localStorage.setItem('wiki_fastest_run', data.fastestRun || 0);
-                    localStorage.setItem('wiki_longest_run', data.longestRun || 0);
-                    localStorage.setItem('wiki_history', JSON.stringify(data.history || {}));
-                    if (data.lastDailyWin) localStorage.setItem('wiki_last_daily_win', data.lastDailyWin);
-                    localStorage.setItem('wiki_promo', data.isPromo || false);
-                    location.reload(); 
-                }
-            } catch(e) {
-                const btn = document.getElementById('btn-import-save');
-                btn.innerText = "Invalid Code!"; setTimeout(()=>btn.innerText="Load Code", 2000);
-            }
-        };
+        document.getElementById('btn-changelog').onclick = () => document.getElementById('modal-changelog').classList.remove('hidden');
+        document.getElementById('changelog-close').onclick = () => document.getElementById('modal-changelog').classList.add('hidden');
 
         function startGame() {
+            const mode = currentMODES[currentModeIndex].id;
+            if (mode === 'practice') {
+                state.startTitle = document.getElementById('solo-start-input').value || "Wikipedia";
+                state.targetTitle = document.getElementById('solo-target-input').value || "Universe";
+            }
             state.isPlaying = true; state.clicks = 0; state.path = [state.startTitle]; state.currentTitle = state.startTitle; state.finished = false;
             document.getElementById('click-count').innerText = '0';
             document.getElementById('game-target-display').innerText = state.targetTitle;
             showScreen('game'); loadArticle(state.startTitle);
             document.getElementById('menu-background').style.opacity = '0';
         }
+
         function showScreen(screenId) { 
-            Object.values(screens).forEach(s => s.classList.add('hidden')); 
-            screens[screenId].classList.remove('hidden'); 
-            
-            const topUI = document.getElementById('top-ui-bar');
-            if (screenId === 'game') {
-                topUI.classList.add('opacity-0', 'pointer-events-none');
-                document.getElementById('menu-background').style.opacity = '0';
-            } else {
-                topUI.classList.remove('opacity-0', 'pointer-events-none');
-                if (screenId === 'menu') document.getElementById('menu-background').style.opacity = '1';
-            }
+            Object.values(screens).forEach(s => s.classList.add('hidden')); screens[screenId].classList.remove('hidden'); 
+            const topUI = document.getElementById('top-ui-bar'); if (screenId === 'game') topUI.classList.add('opacity-0'); else topUI.classList.remove('opacity-0');
             window.scrollTo(0, 0); 
         }
-        function startCountdown() { if (!state.isMultiplayer || state.finished) return; document.getElementById('multiplayer-countdown').classList.remove('hidden'); let timeLeft = 120; document.getElementById('countdown-val').innerText = timeLeft; state.countdownInterval = setInterval(() => { timeLeft--; document.getElementById('countdown-val').innerText = timeLeft; if (timeLeft <= 0) { clearInterval(state.countdownInterval); finishGame(false, state.opponentFinishedClicks, "timeout"); } }, 1000); }
 
         async function loadArticle(title) {
-            window.scrollTo(0, 0);
-            document.getElementById('loader').classList.remove('hidden');
+            window.scrollTo(0, 0); document.getElementById('loader').classList.remove('hidden');
             document.getElementById('current-title').innerText = title;
-            const container = document.getElementById('game-breadcrumbs');
-            container.innerHTML = state.path.map(s => `<span class='text-xs'>${s}</span>`).join(' › ');
+            document.getElementById('game-breadcrumbs').innerHTML = state.path.join(' › ');
             try {
                 const res = await fetch(`${getApiUrl()}parse&page=${encodeURIComponent(title)}&prop=text&format=json&disableeditsection=true&redirects=true`);
-                if (!res.ok) throw new Error("API_ERROR");
                 const data = await res.json();
-                if (data.error) throw new Error("API_ERROR");
+                if (data.error) throw new Error();
                 const content = document.getElementById('wiki-content-area');
                 content.innerHTML = data.parse.text['*'];
                 content.querySelectorAll('a').forEach(link => {
                     const href = link.getAttribute('href');
                     if (href && href.startsWith('/wiki/') && !href.includes(':') && !href.includes('#')) {
                         link.onclick = (e) => { e.preventDefault(); handleNavigation(decodeURIComponent(href.replace('/wiki/', '')).replace(/_/g, ' ')); };
-                    } else {
-                        link.style.pointerEvents = 'none';
-                    }
+                    } else link.style.pointerEvents = 'none';
                 });
-                content.querySelectorAll('img').forEach(img => {
-                    let src = img.getAttribute('src');
-                    if (src && src.startsWith('//')) img.setAttribute('src', 'https:' + src);
-                    let srcset = img.getAttribute('srcset');
-                    if (srcset) img.setAttribute('srcset', srcset.replace(/\/\//g, 'https://'));
-                });
-            } catch(e) {
-                const content = document.getElementById('wiki-content-area');
-                content.innerHTML = `<div id="rate-limit-error" class="text-red-500 font-black text-center mt-10 text-xl py-10"></div>`;
-                const tick = () => {
-                    const now = new Date();
-                    const nextHour = new Date(now);
-                    nextHour.setHours(now.getHours() + 1, 0, 0, 0);
-                    const diff = Math.floor((nextHour - now) / 1000);
-                    const m = Math.floor(diff / 60).toString().padStart(2, '0');
-                    const s = (diff % 60).toString().padStart(2, '0');
-                    const el = document.getElementById('rate-limit-error');
-                    if(el) el.innerText = `your out of tickets try again in : ${m}:${s}`;
-                };
-                tick();
-                if(window.rlInt) clearInterval(window.rlInt);
-                window.rlInt = setInterval(tick, 1000);
-            } finally { document.getElementById('loader').classList.add('hidden'); }
+            } catch(e) { document.getElementById('wiki-content-area').innerHTML = "Wikipedia Error. Try again in an hour."; }
+            finally { document.getElementById('loader').classList.add('hidden'); }
         }
 
         function handleNavigation(title) {
             if (state.finished) return;
-            state.clicks++; state.path.push(title);
-            document.getElementById('click-count').innerText = state.clicks;
-            if (state.isMultiplayer) sendPeerData({ type: 'progress', clicks: state.clicks, path: state.path });
-            if (title.toLowerCase() === state.targetTitle.toLowerCase()) {
-                if (state.isMultiplayer && state.opponentFinishedClicks === null) { sendPeerData({ type: 'finish', clicks: state.clicks }); finishGame(true, "?"); }
-                else if (state.isMultiplayer) { clearInterval(state.countdownInterval); finishGame(state.clicks <= state.opponentFinishedClicks, state.opponentFinishedClicks); }
-                else { finishGame(true); }
-            }
-            else if (state.maxClicks && state.clicks >= state.maxClicks) finishGame(false, "?", "limit");
+            state.clicks++; state.path.push(title); document.getElementById('click-count').innerText = state.clicks;
+            if (title.toLowerCase() === state.targetTitle.toLowerCase()) finishGame(true);
+            else if (state.maxClicks && state.clicks >= state.maxClicks) finishGame(false);
             else loadArticle(title);
         }
 
-        function updateOpponentProgressUI() { if (!state.isMultiplayer) return; document.getElementById('opp-live-clicks').innerText = state.opponentClicks; const container = document.getElementById('opp-live-path'); container.innerHTML = state.opponentPath.map((step, index) => { const isLast = index === state.opponentPath.length - 1; return `<span class="flex items-center gap-1"><span class="${isLast ? 'text-gray-500 font-bold' : 'text-gray-400'}">${step}</span>${!isLast ? '<span class="text-gray-300">›</span>' : ''}</span>`; }).join(''); }
-
-        document.getElementById('btn-host').addEventListener('click', () => {
-            state.isHost = true; state.sessionCode = generateCode(); state.maxClicks = null; setupLobbyUI();
-            try {
-                peer = new Peer('wikigame-v1-' + state.sessionCode);
-                peer.on('open', () => { document.getElementById('joiner-status').innerText = uiDict[state.language].waitHostWait; });
-                peer.on('connection', (conn) => {
-                    peerConn = conn; peerConn.on('data', handlePeerData); document.getElementById('host-controls').classList.remove('hidden'); document.getElementById('joiner-status').classList.add('hidden');
-                    const startBtn = document.getElementById('btn-lobby-start'); startBtn.disabled = false; startBtn.innerText = uiDict[state.language].waitHostStart;
-                    sendPeerData({ type: 'lobbyUpdate', startTitle: state.startTitle, targetTitle: state.targetTitle, language: state.language });
-                });
-            } catch(e) {}
-        });
-
-        document.getElementById('btn-show-join').addEventListener('click', () => { document.getElementById('role-selection').classList.add('hidden'); document.getElementById('join-section').classList.remove('hidden'); });
-        document.getElementById('btn-join-submit').addEventListener('click', () => {
-            const codeInput = document.getElementById('join-code').value.toUpperCase(); if (codeInput.length !== 6) return;
-            peer = new Peer(); peer.on('open', () => { peerConn = peer.connect('wikigame-v1-' + codeInput); peerConn.on('open', () => { state.isHost = false; state.sessionCode = codeInput; setupLobbyUI(); peerConn.on('data', handlePeerData); }); });
-        });
-
-        document.getElementById('btn-lobby-refresh').onclick = () => { if (state.isHost) rollSoloWords(true); };
-        document.getElementById('btn-lobby-start').onclick = () => { if (!state.isHost) return; sendPeerData({ type: 'startGame' }); startGame(); };
-
-        document.getElementById('tab-solo').onclick = () => {
-            document.getElementById('tab-solo').classList.replace('text-gray-500', 'text-blue-600'); document.getElementById('tab-solo').classList.add('bg-white', 'shadow-lg'); document.getElementById('tab-multi').classList.replace('text-blue-600', 'text-gray-500'); document.getElementById('tab-multi').classList.remove('bg-white', 'shadow-lg');
-            document.getElementById('solo-setup').classList.remove('hidden'); document.getElementById('multiplayer-setup').classList.add('hidden'); document.getElementById('mode-prev').classList.remove('hidden'); document.getElementById('mode-next').classList.remove('hidden'); document.getElementById('mode-display').classList.remove('hidden'); document.getElementById('instruction-field').classList.remove('hidden'); state.isMultiplayer = false;
-        };
-        document.getElementById('tab-multi').onclick = () => {
-            // Disabled
-            return;
-        };
-
         document.getElementById('btn-solo-roll').onclick = () => {
-            if (state.coins >= 2) {
-                state.coins -= 2;
-                state.xp = Math.max(0, state.xp - 5); // Refresh costs 5 MMR
-                localStorage.setItem('wiki_coins', state.coins);
-                localStorage.setItem('wiki_xp', state.xp);
-                updateUI();
-                rollSoloWords(true);
-            } else {
-                const rollBtn = document.getElementById('btn-solo-roll');
-                const originalText = rollBtn.innerHTML;
-                rollBtn.innerText = "Insufficient Coins!";
-                setTimeout(() => rollBtn.innerHTML = originalText, 1500);
-            }
+            if (currentMODES[currentModeIndex].id === 'practice') return;
+            if (state.coins >= 2) { state.coins -= 2; state.xp = Math.max(0, state.xp - 5); updateUI(); rollSoloWords(true); }
         };
         document.getElementById('btn-solo-start').onclick = startGame;
         document.getElementById('btn-home').onclick = () => { updateUI(); updateModeDisplay(); showScreen('menu'); };
-        document.getElementById('btn-back').onclick = () => { if (state.finished || state.path.length <= 1) return; state.path.pop(); const prev = state.path[state.path.length - 1]; state.clicks++; document.getElementById('click-count').innerText = state.clicks; loadArticle(prev); };
+        document.getElementById('btn-back').onclick = () => { if (state.path.length <= 1) return; state.path.pop(); state.clicks++; loadArticle(state.path[state.path.length-1]); };
         document.getElementById('btn-quit-trigger').onclick = () => document.getElementById('modal-quit').classList.remove('hidden');
         document.getElementById('modal-cancel').onclick = () => document.getElementById('modal-quit').classList.add('hidden');
-        document.getElementById('modal-confirm').onclick = () => { 
-            document.getElementById('modal-quit').classList.add('hidden'); 
-            state.xp = Math.max(0, state.xp - 10); // Give up costs 10 MMR
-            localStorage.setItem('wiki_xp', state.xp);
-            updateUI();
-            document.getElementById('btn-home').click(); 
-        };
-
-        document.getElementById('lang-en').onclick = () => setLanguage('en');
-        document.getElementById('lang-de').onclick = () => setLanguage('de');
-        document.getElementById('lang-es').onclick = () => setLanguage('es');
-
-        function setLanguage(lang) {
-            state.language = lang; updateLanguageButtonsUI(lang); updateUI(); updateModeDisplay();
-            if (state.isMultiplayer && state.isHost) { sendPeerData({ type: 'lobbyUpdate', startTitle: state.startTitle, targetTitle: state.targetTitle, language: state.language }); }
-        }
-
-        function updateLanguageButtonsUI(lang) {
-            const btns = { en: document.getElementById('lang-en'), de: document.getElementById('lang-de'), es: document.getElementById('lang-es') };
-            const active = "px-4 py-1.5 bg-blue-600 text-white rounded-xl font-bold text-xs transition-all shadow-md";
-            const inactive = "px-4 py-1.5 text-gray-500 hover:text-gray-800 rounded-xl font-bold text-xs transition-all";
-            Object.keys(btns).forEach(k => btns[k].className = k === lang ? active : inactive);
-        }
-
-        // Tutorial Logic
-        let currentTutorialStep = 0;
-        const tutorialSteps = document.querySelectorAll('.tutorial-step');
-        const tutorialDots = document.getElementById('tutorial-dots').children;
-
-        function showTutorialStep(step) {
-            tutorialSteps.forEach((el, i) => {
-                el.classList.toggle('hidden', i !== step);
-                if (tutorialDots[i]) {
-                    tutorialDots[i].className = i === step ? "w-3 h-3 rounded-full bg-blue-600 transition-all" : "w-3 h-3 rounded-full bg-gray-300 dark:bg-slate-600 transition-all";
-                }
-            });
-            const btnNext = document.getElementById('btn-tutorial-next');
-            if (step === tutorialSteps.length - 1) {
-                btnNext.innerText = "Let's Play! 🚀";
-                btnNext.classList.replace('bg-blue-600', 'bg-green-500');
-                btnNext.classList.replace('hover:bg-blue-700', 'hover:bg-green-600');
-            } else {
-                btnNext.innerText = "Next ➔";
-                btnNext.classList.replace('bg-green-500', 'bg-blue-600');
-                btnNext.classList.replace('hover:bg-green-600', 'hover:bg-blue-700');
-            }
-        }
-
-        document.getElementById('btn-tutorial-next').onclick = () => {
-            if (currentTutorialStep < tutorialSteps.length - 1) {
-                currentTutorialStep++;
-                showTutorialStep(currentTutorialStep);
-            } else {
-                document.getElementById('modal-tutorial').classList.add('hidden');
-                localStorage.setItem('wiki_tutorial_seen', 'true');
-            }
-        };
-
-        document.getElementById('btn-close-tutorial').onclick = () => {
-            document.getElementById('modal-tutorial').classList.add('hidden');
-            localStorage.setItem('wiki_tutorial_seen', 'true');
-        };
-
-        document.getElementById('btn-info-tutorial').onclick = () => {
-            currentTutorialStep = 0;
-            showTutorialStep(0);
-            document.getElementById('modal-tutorial').classList.remove('hidden');
-        };
+        document.getElementById('modal-confirm').onclick = () => { document.getElementById('modal-quit').classList.add('hidden'); state.xp = Math.max(0, state.xp-10); updateUI(); document.getElementById('btn-home').click(); };
 
         const screens = { menu: document.getElementById('screen-menu'), game: document.getElementById('screen-game'), results: document.getElementById('screen-results') };
         
-        // Timer Logic for Tickets 
-        function updateTopRateTimer() {
-            const now = new Date();
-            const nextHour = new Date(now);
-            nextHour.setHours(now.getHours() + 1, 0, 0, 0);
-            const diff = Math.floor((nextHour - now) / 1000);
-            const m = Math.floor(diff / 60).toString().padStart(2, '0');
-            const s = (diff % 60).toString().padStart(2, '0');
-            const el1 = document.getElementById('top-rate-timer');
-            if(el1) el1.innerText = `${m}:${s}`;
-        }
-        setInterval(updateTopRateTimer, 1000);
-        updateTopRateTimer();
+        setInterval(() => {
+            const now = new Date(); const nextHour = new Date(now); nextHour.setHours(now.getHours() + 1, 0, 0, 0);
+            const diff = Math.floor((nextHour - now) / 1000); const m = Math.floor(diff / 60).toString().padStart(2, '0'); const s = (diff % 60).toString().padStart(2, '0');
+            document.getElementById('top-rate-timer').innerText = `${m}:${s}`;
+        }, 1000);
 
-        initBackground();
-        checkStreak(); 
-        updateUI(); 
-        updateModeDisplay('none');
-
-        // Auto-show Tutorial on very first visit
-        if (!localStorage.getItem('wiki_tutorial_seen')) {
-            setTimeout(() => document.getElementById('btn-info-tutorial').click(), 500);
-        }
+        initBackground(); checkStreak(); updateUI(); updateModeDisplay('none');
+        if (!localStorage.getItem('wiki_tutorial_seen')) document.getElementById('btn-info-tutorial').click();
     </script>
 </body>
 </html>

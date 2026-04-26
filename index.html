@@ -225,6 +225,10 @@
             from { transform: translate(var(--start-x), var(--start-y)) rotate(var(--rot)); }
             to { transform: translate(var(--end-x), var(--end-y)) rotate(calc(var(--rot) + 20deg)); }
         }
+
+        .suggestion-item:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+        }
     </style>
 </head>
 <body class="min-h-screen relative text-[#1a1a1a] dark:text-[#f8fafc]">
@@ -346,20 +350,37 @@
                     <!-- Solo Setup View -->
                     <div id="solo-setup" class="space-y-8">
                         <div class="mission-path space-y-6">
-                            <div class="flex items-start gap-6">
-                                <div class="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-xl font-black text-blue-600 dark:text-blue-400 z-10 shadow-sm border-4 border-white dark:border-slate-800">S</div>
-                                <div class="flex-1 pt-1 text-left">
-                                    <span class="text-[10px] font-black uppercase tracking-widest text-blue-400" data-i18n="startArticle">Start Discovery</span>
-                                    <div id="solo-start" class="text-2xl font-black text-gray-800 dark:text-gray-100 leading-tight mt-1">Loading...</div>
+                            <div class="flex flex-col items-start gap-1">
+                                <div class="flex items-start gap-6 w-full">
+                                    <div class="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-xl font-black text-blue-600 dark:text-blue-400 z-10 shadow-sm border-4 border-white dark:border-slate-800">S</div>
+                                    <div class="flex-1 pt-1 text-left relative">
+                                        <span class="text-[10px] font-black uppercase tracking-widest text-blue-400" data-i18n="startArticle">Start Discovery</span>
+                                        <div id="solo-start-container">
+                                            <div id="solo-start" class="text-2xl font-black text-gray-800 dark:text-gray-100 leading-tight mt-1">Loading...</div>
+                                        </div>
+                                        <!-- Practice Mode Input -->
+                                        <div id="practice-start-box" class="hidden mt-1 relative">
+                                            <input type="text" id="input-practice-start" class="w-full bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl p-2 font-bold text-lg outline-none focus:ring-2 focus:ring-blue-500" placeholder="Type start article...">
+                                            <div id="suggestions-start" class="absolute left-0 right-0 top-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-xl z-50 max-h-48 overflow-y-auto hidden"></div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="flex items-start gap-6">
-                                <div class="w-12 h-12 rounded-2xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-xl font-black text-red-600 dark:text-red-400 z-10 shadow-sm border-4 border-white dark:border-slate-800">T</div>
-                                <div class="flex-1 pt-1 text-left">
-                                    <span class="text-[10px] font-black uppercase tracking-widest text-red-400" data-i18n="targetArticle">Target Destination</span>
-                                    <!-- FIXED: Duplicate ID 'solo-start' changed to 'solo-target' -->
-                                    <div id="solo-target" class="text-2xl font-black text-gray-800 dark:text-gray-100 leading-tight mt-1">Loading...</div>
+                            <div class="flex flex-col items-start gap-1">
+                                <div class="flex items-start gap-6 w-full">
+                                    <div class="w-12 h-12 rounded-2xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-xl font-black text-red-600 dark:text-red-400 z-10 shadow-sm border-4 border-white dark:border-slate-800">T</div>
+                                    <div class="flex-1 pt-1 text-left relative">
+                                        <span class="text-[10px] font-black uppercase tracking-widest text-red-400" data-i18n="targetArticle">Target Destination</span>
+                                        <div id="solo-target-container">
+                                            <div id="solo-target" class="text-2xl font-black text-gray-800 dark:text-gray-100 leading-tight mt-1">Loading...</div>
+                                        </div>
+                                        <!-- Practice Mode Input -->
+                                        <div id="practice-target-box" class="hidden mt-1 relative">
+                                            <input type="text" id="input-practice-target" class="w-full bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl p-2 font-bold text-lg outline-none focus:ring-2 focus:ring-blue-500" placeholder="Type target article...">
+                                            <div id="suggestions-target" class="absolute left-0 right-0 top-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-xl z-50 max-h-48 overflow-y-auto hidden"></div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -367,7 +388,7 @@
                         <div class="pt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <button id="btn-solo-roll" class="py-4 bg-gray-50 dark:bg-slate-700 hover:bg-gray-100 dark:hover:bg-slate-600 text-gray-800 dark:text-gray-100 rounded-[1.8rem] font-black flex items-center justify-center gap-3 border border-gray-100 dark:border-slate-600 group">
                                 <span class="group-hover:rotate-12 transition-transform" data-i18n="btnRandom">🎲 Randomize</span>
-                                <span class="text-[10px] bg-yellow-400/20 text-yellow-700 dark:text-yellow-400 px-3 py-1 rounded-full border border-yellow-400/30">-2 🪙</span>
+                                <span id="roll-cost-badge" class="text-[10px] bg-yellow-400/20 text-yellow-700 dark:text-yellow-400 px-3 py-1 rounded-full border border-yellow-400/30">-2 🪙</span>
                             </button>
                             <button id="btn-solo-start" class="py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-[1.8rem] font-black text-lg shadow-xl shadow-blue-200 dark:shadow-none" data-i18n="btnStartSolo">Begin Mission</button>
                         </div>
@@ -457,7 +478,7 @@
                     <p>Use the <strong class="bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded">←</strong> and <strong class="bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded">→</strong> arrows in the menu to change modes!</p>
                     <ul class="space-y-3 font-medium">
                         <li><strong class="text-blue-500">Classic:</strong> Standard difficulty. Finding the fastest path is key.</li>
-                        <li><strong class="text-red-500">Hardcore:</strong> Obscure, difficult topics. High risk, high reward.</li>
+                        <li><strong class="text-red-500">Practice:</strong> Input your own words with live suggestions! No rank effects.</li>
                         <li><strong class="text-orange-500">Daily:</strong> A unique challenge every 24h. Build your streak (🔥)!</li>
                         <li><strong class="text-purple-500">10 Clicks:</strong> Reach the target in 10 clicks or less. Efficiency is everything!</li>
                     </ul>
@@ -539,82 +560,41 @@
 
     <!-- Changelog / Patch Notes Modal -->
     <div id="modal-changelog" class="hidden fixed inset-0 bg-gray-900/60 backdrop-blur-md flex items-center justify-center z-[200] p-6">
-        <div class="bg-white dark:bg-slate-800 rounded-[3rem] p-10 max-md w-full shadow-2xl border border-white dark:border-slate-700 max-h-[80vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-3xl font-black text-gray-900 dark:text-white tracking-tight">Patch Notes</h3>
-                <button id="changelog-close" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-slate-700 flex items-center justify-center text-gray-500 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600 transition-all font-bold">✕</button>
+        <div class="bg-white dark:bg-slate-800 rounded-[3rem] p-8 md:p-12 max-w-lg w-full shadow-2xl border border-white dark:border-slate-700 max-h-[85vh] overflow-y-auto flex flex-col">
+            <div class="flex justify-between items-center mb-8 sticky top-0 bg-white dark:bg-slate-800 z-10 py-2 border-b dark:border-slate-700">
+                <h3 class="text-4xl font-black text-gray-900 dark:text-white tracking-tighter">Patch Notes</h3>
+                <button id="changelog-close" class="w-12 h-12 rounded-full bg-gray-100 dark:bg-slate-700 flex items-center justify-center text-gray-500 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600 transition-all font-bold text-xl">✕</button>
             </div>
-            <div class="space-y-6 text-left">
-                <!-- Patch Notes List -->
-                <div>
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.9 - Current</h4>
-                    <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
-                        <li>MMR loss for Giving Up (-10) and Refreshing (-5) added.</li>
-                        <li>MMR loss now active from Platinum rank upwards.</li>
-                        <li>Tutorial expanded with a new Penalty page.</li>
+            
+            <div class="space-y-10 text-left pb-4">
+                <!-- Patch Notes List in Vertical Format -->
+                <div class="relative pl-8 before:content-[''] before:absolute before:left-0 before:top-2 before:bottom-0 before:w-1 before:bg-blue-600/20 before:rounded-full">
+                    <div class="absolute left-[-4px] top-1 w-3 h-3 rounded-full bg-blue-600 border-2 border-white dark:border-slate-800"></div>
+                    <h4 class="font-black text-xl text-blue-600 dark:text-blue-400 uppercase tracking-tighter">v2.0 - Practice Mode</h4>
+                    <p class="text-xs font-bold text-gray-400 dark:text-gray-500 mb-2">Current Version</p>
+                    <ul class="space-y-3 text-sm font-medium text-gray-600 dark:text-gray-300">
+                        <li class="flex items-start gap-2"><span>🚀</span> Added <strong>Practice Mode</strong> with live Wikipedia search suggestions.</li>
+                        <li class="flex items-start gap-2"><span>🔍</span> Manual input for Start and Target articles in Practice mode.</li>
+                        <li class="flex items-start gap-2"><span>📄</span> Redesigned Patch Notes with improved vertical layout.</li>
                     </ul>
                 </div>
-                <div>
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.8</h4>
-                    <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
-                        <li>MMR Complexity Bonus auf maximal +150% erhöht.</li>
-                        <li>Tutorial-Info an den neuen Bonus angepasst.</li>
+
+                <div class="relative pl-8 before:content-[''] before:absolute before:left-0 before:top-2 before:bottom-0 before:w-1 before:bg-gray-200 dark:before:bg-slate-700 before:rounded-full">
+                    <div class="absolute left-[-4px] top-1 w-3 h-3 rounded-full bg-gray-400 border-2 border-white dark:border-slate-800"></div>
+                    <h4 class="font-black text-xl text-gray-800 dark:text-gray-200 uppercase tracking-tighter">v1.9 - Scaling & Penalties</h4>
+                    <ul class="space-y-3 text-sm font-medium text-gray-600 dark:text-gray-300 mt-2">
+                        <li class="flex items-start gap-2"><span>📉</span> MMR penalties for Giving Up (-10) and Randomizing (-5).</li>
+                        <li class="flex items-start gap-2"><span>📊</span> Rank-based topic difficulty: Pros get harder words, beginners get easier ones.</li>
+                        <li class="flex items-start gap-2"><span>⚠️</span> MMR loss active from Platinum rank upwards.</li>
                     </ul>
                 </div>
-                <div>
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.7</h4>
-                    <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
-                        <li>MMR complexity bonus (1% - 10%) added to Victory Screen.</li>
-                        <li>Tutorial updated with detailed MMR click-table.</li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.6</h4>
-                    <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
-                        <li>API Rate Limit Error zeigt nun einen stündlichen Countdown an.</li>
-                        <li>Dynamischer Hintergrund basierend auf dem MMR-Rang wiederhergestellt.</li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.5</h4>
-                    <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
-                        <li>Disabled Multiplayer temporarily for maintenance (red cross added).</li>
-                        <li>Added this Changelog/Patch Notes menu in the top left.</li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.4</h4>
-                    <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
-                        <li>Implemented Lobby system and P2P connection via PeerJS.</li>
-                        <li>Added live opponent progress tracking.</li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.3</h4>
-                    <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
-                        <li>Added Daily Challenges with Streak tracking.</li>
-                        <li>Introduced Coin economy and "Randomize" re-roll feature.</li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.2</h4>
-                    <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
-                        <li>Added Player Profile with local save data.</li>
-                        <li>Added Export/Import save codes.</li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.1</h4>
-                    <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
-                        <li>Introduced Rank Map and MMR progression system.</li>
-                        <li>Added theoretical shortest path calculation (Intel).</li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.0</h4>
-                    <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
-                        <li>Initial Release: Classic, Hardcore, and 10 Clicks modes.</li>
-                        <li>Wikipedia API integration.</li>
+
+                <div class="relative pl-8 before:content-[''] before:absolute before:left-0 before:top-2 before:bottom-0 before:w-1 before:bg-gray-200 dark:before:bg-slate-700 before:rounded-full">
+                    <div class="absolute left-[-4px] top-1 w-3 h-3 rounded-full bg-gray-300 border-2 border-white dark:border-slate-800"></div>
+                    <h4 class="font-black text-lg text-gray-500 dark:text-gray-400 uppercase tracking-tighter">v1.8 - Complexity</h4>
+                    <ul class="space-y-2 text-xs font-medium text-gray-400 dark:text-gray-500 mt-2">
+                        <li>MMR Complexity Bonus increased to max +150%.</li>
+                        <li>Tutorial info updated for new bonus system.</li>
                     </ul>
                 </div>
             </div>
@@ -851,12 +831,12 @@
                 btnStay: "Resume", btnQuit: "Abort", loading: "Loading...", waitHostStart: "Launch Mission", waitHostWait: "Awaiting Partner...", waitJoiner: "Awaiting Launch...",
                 youWon: "You Won!", success: "Success!", wonSub: "Winner!", youLost: "You Lost!", lostSub: "Try again.",
                 notFinished: "Not finished", clickStr: " clicks", multiErr: "Comm Failure.", oppProgress: "Opponent",
-                modeClassic: "Classic", modeHard: "Hardcore", modeDaily: "Daily", modeLimited: "10 Clicks", outOfClicks: "Fuel Empty!",
+                modeClassic: "Classic", modePractice: "Practice", modeDaily: "Daily", modeLimited: "10 Clicks", outOfClicks: "Fuel Empty!",
                 shortcut: "Intel", shortcutDesc: "Approx steps.", jumpTo: "Possible jump", dailyStreak: "🔥 Streak:",
                 recoveryText: "⚠️ Streak at risk! Win Hardcore to restore.",
                 nextDaily: "Next Daily in:",
                 descClassic: "Start at the given article and reach the target with the fewest clicks possible.",
-                descHardcore: "Like Classic, but with extremely difficult and obscure terms. High stakes!",
+                descPractice: "The ultimate training ground. Choose your own route with live suggestions! No MMR effects.",
                 descDaily: "A unique challenge refreshed every 24 hours. Build your streak and earn coins equal to your streak level!",
                 descLimited: "Reach the target destination in 10 clicks or less. Efficiency is everything!"
             },
@@ -871,12 +851,12 @@
                 btnStay: "Weiter", btnQuit: "Abbruch", loading: "Lädt...", waitHostStart: "Starten", waitHostWait: "Warte auf P2...", waitJoiner: "Warte auf Start...",
                 youWon: "Gewonnen!", success: "Erfolg!", wonSub: "Sieg!", youLost: "Verloren!", lostSub: "Pech gehabt.",
                 notFinished: "Nicht fertig", clickStr: " Klicks", multiErr: "Funkstörung.", oppProgress: "Gegner",
-                modeClassic: "Klassisch", modeHard: "Hardcore", modeDaily: "Daily", modeLimited: "10 Clicks", outOfClicks: "Keine Klicks mehr!",
+                modeClassic: "Klassisch", modePractice: "Training", modeDaily: "Daily", modeLimited: "10 Clicks", outOfClicks: "Keine Klicks mehr!",
                 shortcut: "Intel", shortcutDesc: "Ca. Schritte.", jumpTo: "Sprung zu", dailyStreak: "🔥 Streak:",
                 recoveryText: "⚠️ Streak in Gefahr! Gewinne Hardcore zur Rettung.",
                 nextDaily: "Nächste Challenge in:",
                 descClassic: "Starte beim ersten Artikel und erreiche das Ziel mit so wenigen Klicks wie möglich.",
-                descHardcore: "Wie Klassisch, aber mit extrem schweren und obskuren Begriffen. Hoher Einsatz!",
+                descPractice: "Das ultimative Trainingsgelände. Wähle deine eigene Route mit Live-Vorschlägen! Kein MMR-Einfluss.",
                 descDaily: "Eine tägliche Herausforderung. Baue eine Streak auf und erhalte Münzen in Höhe deines Streak-Levels!",
                 descLimited: "Erreiche das Ziel in maximal 10 Klicks. Effizienz ist alles!"
             },
@@ -891,12 +871,12 @@
                 btnStay: "Seguir", btnQuit: "Abortar", loading: "Cargando...", waitHostStart: "Lanzar", waitHostWait: "Espera...", waitJoiner: "Espera...",
                 youWon: "Ganaste!", success: "Éxito!", wonSub: "Victoria!", youLost: "Perdiste!", lostSub: "Inténtalo de nuevo.",
                 notFinished: "No terminó", clickStr: " clicks", multiErr: "Error Comms.", oppProgress: "Oponente",
-                modeClassic: "Clásico", modeHard: "Hardcore", modeDaily: "Diario", modeLimited: "10 Clicks", outOfClicks: "Sin clicks!",
+                modeClassic: "Clásico", modePractice: "Práctica", modeDaily: "Diario", modeLimited: "10 Clicks", outOfClicks: "Sin clicks!",
                 shortcut: "Intel", shortcutDesc: "Pasos.", jumpTo: "Salto", dailyStreak: "🔥 Racha:",
                 recoveryText: "⚠️ Racha en riesgo! Gana Hardcore para restaurar.",
                 nextDaily: "Próximo reto en:",
                 descClassic: "Comienza en el artículo dado y llega al objetivo con la menor cantidad de clics.",
-                descHardcore: "Como el clásico, aber con términos extremadamente difíciles. ¡Gran riesgo!",
+                descPractice: "El campo de entrenamiento definitivo. ¡Elige tu propia ruta con sugerencias en vivo! Sin efectos en MMR.",
                 descDaily: "Un desafío único cada 24 horas. ¡Aumenta tu racha y gana monedas según tu nivel de racha!",
                 descLimited: "Llega al destino en 10 clics o menos. ¡La eficiencia lo es todo!"
             }
@@ -973,7 +953,7 @@
         const ORIGINAL_MODES = [
             { id: 'daily', i18n: 'modeDaily', color: 'text-orange-500', desc: 'descDaily' },
             { id: 'classic', i18n: 'modeClassic', color: 'text-blue-600', desc: 'descClassic' },
-            { id: 'hard', i18n: 'modeHard', color: 'text-red-600', desc: 'descHardcore' },
+            { id: 'practice', i18n: 'modePractice', color: 'text-green-600', desc: 'descPractice' },
             { id: 'limited', i18n: 'modeLimited', color: 'text-purple-600', desc: 'descLimited' }
         ];
 
@@ -1142,6 +1122,14 @@
             
             modeDesc.innerText = uiDict[state.language][mode.desc];
 
+            // Practice Mode UI Logic
+            const isPractice = mode.id === 'practice';
+            document.getElementById('practice-start-box').classList.toggle('hidden', !isPractice);
+            document.getElementById('practice-target-box').classList.toggle('hidden', !isPractice);
+            document.getElementById('solo-start').parentElement.classList.toggle('hidden', isPractice);
+            document.getElementById('solo-target').parentElement.classList.toggle('hidden', isPractice);
+            document.getElementById('roll-cost-badge').innerText = isPractice ? "FREE" : "-2 🪙";
+
             const todayStr = new Date().toISOString().split('T')[0];
             const showNew = mode.id === 'daily' && state.lastDailyWin !== todayStr;
             document.getElementById('daily-notification').classList.toggle('hidden', !showNew);
@@ -1151,7 +1139,6 @@
             const multiTab = document.getElementById('tab-multi');
             if (mode.id !== 'classic') { 
                 multiTab.classList.add('opacity-40', 'cursor-not-allowed', 'bg-gray-200'); 
-                // Fix for disabled structure inside relative container
                 multiTab.parentElement.classList.add('opacity-40', 'cursor-not-allowed');
                 if (state.isMultiplayer) document.getElementById('tab-solo').click(); 
             }
@@ -1165,8 +1152,43 @@
         document.getElementById('mode-prev').addEventListener('click', () => { currentModeIndex = (currentModeIndex - 1 + currentMODES.length) % currentMODES.length; updateModeDisplay('prev'); });
         document.getElementById('mode-next').addEventListener('click', () => { currentModeIndex = (currentModeIndex + 1) % currentMODES.length; updateModeDisplay('next'); });
 
+        // Wikipedia Suggestions Logic
+        async function fetchSuggestions(query, resultEl, inputEl) {
+            if (query.length < 2) { resultEl.innerHTML = ''; resultEl.classList.add('hidden'); return; }
+            try {
+                const res = await fetch(`${getApiUrl()}query&list=search&srsearch=${encodeURIComponent(query)}&format=json`);
+                const data = await res.json();
+                const suggestions = data.query.search.map(s => s.title);
+                if (suggestions.length === 0) { resultEl.classList.add('hidden'); return; }
+                
+                resultEl.innerHTML = suggestions.map(s => `<div class="suggestion-item p-3 cursor-pointer text-sm font-bold border-b dark:border-slate-700 last:border-none">${s}</div>`).join('');
+                resultEl.classList.remove('hidden');
+                
+                resultEl.querySelectorAll('.suggestion-item').forEach(item => {
+                    item.onclick = () => {
+                        inputEl.value = item.innerText;
+                        resultEl.innerHTML = '';
+                        resultEl.classList.add('hidden');
+                        if (inputEl.id === 'input-practice-start') state.startTitle = item.innerText;
+                        if (inputEl.id === 'input-practice-target') state.targetTitle = item.innerText;
+                    };
+                });
+            } catch(e) {}
+        }
+
+        document.getElementById('input-practice-start').oninput = (e) => fetchSuggestions(e.target.value, document.getElementById('suggestions-start'), e.target);
+        document.getElementById('input-practice-target').oninput = (e) => fetchSuggestions(e.target.value, document.getElementById('suggestions-target'), e.target);
+
         function rollSoloWords(force = false) {
             const mode = currentMODES[currentModeIndex].id;
+            
+            // In Practice mode, we let the user type unless they click randomize
+            if (mode === 'practice' && !force) {
+                state.startTitle = document.getElementById('input-practice-start').value || "Wikipedia";
+                state.targetTitle = document.getElementById('input-practice-target').value || "Knowledge";
+                return;
+            }
+
             const savedStart = localStorage.getItem('wiki_start_' + mode);
             const savedTarget = localStorage.getItem('wiki_target_' + mode);
 
@@ -1175,12 +1197,13 @@
                 state.targetTitle = savedTarget;
                 document.getElementById('solo-start').innerText = state.startTitle;
                 document.getElementById('solo-target').innerText = state.targetTitle;
+                if (mode === 'practice') {
+                    document.getElementById('input-practice-start').value = state.startTitle;
+                    document.getElementById('input-practice-target').value = state.targetTitle;
+                }
                 return;
             }
 
-            let topics;
-            state.maxClicks = mode === 'limited' ? 10 : null;
-            
             let topicsList;
             const rInfo = getRankInfo();
 
@@ -1188,26 +1211,23 @@
                 topicsList = HARD_TOPICS[state.language];
             } else if (mode === 'daily') {
                 topicsList = MEDIUM_TOPICS[state.language];
+            } else if (mode === 'practice') {
+                topicsList = [...EASY_TOPICS[state.language], ...MEDIUM_TOPICS[state.language]];
             } else {
-                // --- GRANULAR RANK-BASED DIFFICULTY SCALING ---
                 if (rInfo.tierIdx === -1 || rInfo.tierIdx === 0) {
-                    // Unranked / Bronze: Easy only
                     topicsList = EASY_TOPICS[state.language];
                 } else if (rInfo.tierIdx === 1) {
-                    // Silver: Mixture of Easy/Medium
                     topicsList = Math.random() > 0.6 ? EASY_TOPICS[state.language] : MEDIUM_TOPICS[state.language];
                 } else if (rInfo.tierIdx <= 3) {
-                    // Gold / Platinum: Medium topics
                     topicsList = MEDIUM_TOPICS[state.language];
                 } else if (rInfo.tierIdx <= 5) {
-                    // Diamond / Master: Mixture of Medium/Hard
                     topicsList = Math.random() > 0.5 ? MEDIUM_TOPICS[state.language] : HARD_TOPICS[state.language];
                 } else {
-                    // Grand Champion / Legend: Hard topics only
                     topicsList = HARD_TOPICS[state.language];
                 }
             }
 
+            let topics;
             if (mode === 'daily') topics = getDailyTopics(topicsList);
             else topics = getRandomTopics(topicsList);
             
@@ -1217,11 +1237,12 @@
             localStorage.setItem('wiki_start_' + mode, state.startTitle);
             localStorage.setItem('wiki_target_' + mode, state.targetTitle);
             
-            // CRITICAL: Updated innerText for solo-start and solo-target
-            const startEl = document.getElementById('solo-start');
-            const targetEl = document.getElementById('solo-target');
-            if (startEl) startEl.innerText = state.startTitle;
-            if (targetEl) targetEl.innerText = state.targetTitle;
+            document.getElementById('solo-start').innerText = state.startTitle;
+            document.getElementById('solo-target').innerText = state.targetTitle;
+            if (mode === 'practice') {
+                document.getElementById('input-practice-start').value = state.startTitle;
+                document.getElementById('input-practice-target').value = state.targetTitle;
+            }
             
             if (state.isMultiplayer && state.isHost) { updateLobbyWords(); sendPeerData({ type: 'lobbyUpdate', startTitle: state.startTitle, targetTitle: state.targetTitle, language: state.language }); }
         }
@@ -1327,6 +1348,13 @@
             if (isWinner) {
                 confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
                 
+                // Don't award rank points or coins in practice mode
+                if (mode === 'practice') {
+                    rewardEl.innerHTML = `<span class="text-sm font-bold text-gray-400 uppercase">Training Session Finished</span>`;
+                    xpRewardEl.innerHTML = `<span class="text-xs text-gray-500 italic">No MMR change in Practice Mode.</span>`;
+                    return;
+                }
+
                 localStorage.removeItem('wiki_start_' + mode);
                 localStorage.removeItem('wiki_target_' + mode);
 
@@ -1366,7 +1394,6 @@
                 let diff = state.clicks - shortestLen;
                 let gainedMMR = 0;
 
-                // --- BASE XP REWARDS ---
                 let gain = 20;
                 if (diff <= 1) gain = 250; 
                 else if (diff === 2) gain = 150;
@@ -1375,25 +1402,19 @@
                 else if (diff === 5) gain = 40;
                 else gain = 15;
 
-                // Bonus logic based on complexity
                 let info = getRankInfo();
-                let complexityBonus = 5; // Base 5%
+                let complexityBonus = 5;
                 if (mode === 'hard') complexityBonus += 75; 
                 if (info.tierIdx >= 5) complexityBonus += 40; 
                 if (state.startTitle.length > 15 || state.targetTitle.length > 15) complexityBonus += 30; 
                 
-                // Maximum +150% extra MMR
                 complexityBonus = Math.min(150, complexityBonus);
-
-                // Apply complexity bonus
                 gain = Math.floor(gain * (1 + (complexityBonus / 100)));
 
-                // Flat mode bonuses
-                if (mode === 'hard') gain += 15;
                 if (mode === 'daily') gain += 10;
                 if (mode === 'limited') gain += 20;
                 
-                if (info.tierIdx >= 3) { // Platinum and above
+                if (info.tierIdx >= 3) {
                     if (diff >= 10) gain = -15;
                     if (diff >= 20) gain = -30;
                 }
@@ -1417,7 +1438,6 @@
                     } else {
                         let nextXP = state.xp + gain;
                         if (nextXP < 0) nextXP = 0;
-                        
                         let currentCap = currentTierParams.cap;
                         
                         if (gain > 0 && nextXP >= currentCap && currentCap !== Infinity) {
@@ -1451,13 +1471,11 @@
                 if (gainedMMR > 0) {
                     newSpan.innerText = `+${gainedMMR} MMR`;
                     newSpan.classList.add('text-purple-500', 'dark:text-purple-400');
-                    
                     let bonusSpan = document.createElement('span');
                     bonusSpan.className = "text-[10px] uppercase font-bold text-blue-500 dark:text-blue-400 block mt-1";
                     bonusSpan.innerText = `✨ Complexity Bonus: +${complexityBonus}%`;
                     xpRewardEl.appendChild(newSpan);
                     xpRewardEl.appendChild(bonusSpan);
-
                     setTimeout(() => confetti({ particleCount: 80, spread: 100, origin: { y: 0.65 }, colors: ['#a855f7', '#d946ef', '#fbcfe8'] }), 100);
                 } else if (gainedMMR < 0) {
                     newSpan.innerText = `${gainedMMR} MMR`;
@@ -1607,6 +1625,12 @@
         };
 
         function startGame() {
+            const mode = currentMODES[currentModeIndex].id;
+            if (mode === 'practice') {
+                state.startTitle = document.getElementById('input-practice-start').value || "Wikipedia";
+                state.targetTitle = document.getElementById('input-practice-target').value || "Knowledge";
+            }
+
             state.isPlaying = true; state.clicks = 0; state.path = [state.startTitle]; state.currentTitle = state.startTitle; state.finished = false;
             document.getElementById('click-count').innerText = '0';
             document.getElementById('game-target-display').innerText = state.targetTitle;
@@ -1717,15 +1741,16 @@
             document.getElementById('tab-solo').classList.replace('text-gray-500', 'text-blue-600'); document.getElementById('tab-solo').classList.add('bg-white', 'shadow-lg'); document.getElementById('tab-multi').classList.replace('text-blue-600', 'text-gray-500'); document.getElementById('tab-multi').classList.remove('bg-white', 'shadow-lg');
             document.getElementById('solo-setup').classList.remove('hidden'); document.getElementById('multiplayer-setup').classList.add('hidden'); document.getElementById('mode-prev').classList.remove('hidden'); document.getElementById('mode-next').classList.remove('hidden'); document.getElementById('mode-display').classList.remove('hidden'); document.getElementById('instruction-field').classList.remove('hidden'); state.isMultiplayer = false;
         };
-        document.getElementById('tab-multi').onclick = () => {
-            // Disabled
-            return;
-        };
 
         document.getElementById('btn-solo-roll').onclick = () => {
+            const mode = currentMODES[currentModeIndex].id;
+            if (mode === 'practice') {
+                rollSoloWords(true);
+                return;
+            }
             if (state.coins >= 2) {
                 state.coins -= 2;
-                state.xp = Math.max(0, state.xp - 5); // Refresh costs 5 MMR
+                state.xp = Math.max(0, state.xp - 5);
                 localStorage.setItem('wiki_coins', state.coins);
                 localStorage.setItem('wiki_xp', state.xp);
                 updateUI();
@@ -1744,8 +1769,11 @@
         document.getElementById('modal-cancel').onclick = () => document.getElementById('modal-quit').classList.add('hidden');
         document.getElementById('modal-confirm').onclick = () => { 
             document.getElementById('modal-quit').classList.add('hidden'); 
-            state.xp = Math.max(0, state.xp - 10); // Give up costs 10 MMR
-            localStorage.setItem('wiki_xp', state.xp);
+            const mode = currentMODES[currentModeIndex].id;
+            if (mode !== 'practice') {
+                state.xp = Math.max(0, state.xp - 10);
+                localStorage.setItem('wiki_xp', state.xp);
+            }
             updateUI();
             document.getElementById('btn-home').click(); 
         };
@@ -1813,7 +1841,6 @@
 
         const screens = { menu: document.getElementById('screen-menu'), game: document.getElementById('screen-game'), results: document.getElementById('screen-results') };
         
-        // Timer Logic for Tickets 
         function updateTopRateTimer() {
             const now = new Date();
             const nextHour = new Date(now);
@@ -1832,7 +1859,6 @@
         updateUI(); 
         updateModeDisplay('none');
 
-        // Auto-show Tutorial on very first visit
         if (!localStorage.getItem('wiki_tutorial_seen')) {
             setTimeout(() => document.getElementById('btn-info-tutorial').click(), 500);
         }

@@ -539,7 +539,7 @@
 
     <!-- Changelog / Patch Notes Modal -->
     <div id="modal-changelog" class="hidden fixed inset-0 bg-gray-900/60 backdrop-blur-md flex items-center justify-center z-[200] p-6">
-        <div class="bg-white dark:bg-slate-800 rounded-[3rem] p-10 max-w-md w-full shadow-2xl border border-white dark:border-slate-700 max-h-[80vh] overflow-y-auto">
+        <div class="bg-white dark:bg-slate-800 rounded-[3rem] p-10 max-md w-full shadow-2xl border border-white dark:border-slate-700 max-h-[80vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-3xl font-black text-gray-900 dark:text-white tracking-tight">Patch Notes</h3>
                 <button id="changelog-close" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-slate-700 flex items-center justify-center text-gray-500 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600 transition-all font-bold">✕</button>
@@ -929,7 +929,7 @@
         };
         const MEDIUM_TOPICS = {
             en: ["Albert Einstein", "Ancient Egypt", "Bitcoin", "Chess", "Harry Potter", "World War II", "Dinosaur", "Physics", "Artificial Intelligence", "Black hole", "Leonardo da Vinci", "Pyramid", "DNA", "Bluetooth", "Renaissance", "Isaac Newton", "Charles Darwin", "Marie Curie", "Nikola Tesla", "Stephen Hawking", "Alexander the Great", "Julius Caesar", "Napoleon", "Abraham Lincoln", "Nelson Mandela", "Mahatma Gandhi", "Martin Luther King Jr.", "George Washington", "Barack Obama", "Elizabeth II", "William Shakespeare", "Ludwig van Beethoven", "Wolfgang Amadeus Mozart", "Vincent van Gogh", "Pablo Picasso", "Steve Jobs", "Bill Gates", "Elon Musk", "Mark Zuckerberg", "Jeff Bezos", "Industrial Revolution", "French Revolution", "American Civil War", "The Great Depression", "Cold War", "Space Race", "Apollo 11", "International Space Station", "Hubble Space Telescope", "Big Bang", "Evolution", "Photosynthesis", "Periodic table", "Atom", "Gravity", "Relativity", "Quantum mechanics", "Psychology", "Sociology", "Economics", "Philosophy", "Buddhism", "Christianity", "Islam", "Hinduism", "Judaism", "Olympics", "FIFA World Cup", "The Beatles", "Michael Jackson", "Elvis Presley", "Star Wars", "The Lord of the Rings", "Marvel Cinematic Universe", "Game of Thrones", "Minecraft", "Super Mario", "The Legend of Zelda", "Grand Theft Auto", "Pokémon"],
-            de: ["Albert Einstein", "Altes Ägypten", "Bitcoin", "Schach", "Harry Potter", "Zweiter Weltkrieg", "Dinosaurier", "Physik", "Künstliche Intelligenz", "Schwarzes Loch", "Leonardo da Vinci", "Pyramide", "DNA", "Bluetooth", "Renaissance", "Isaac Newton", "Charles Darwin", "Marie Curie", "Nikola Tesla", "Stephen Hawking", "Alexander der Große", "Julius Cäsar", "Napoleon Bonaparte", "Abraham Lincoln", "Nelson Mandela", "Mahatma Gandhi", "Martin Luther King Jr.", "George Washington", "Barack Obama", "Elisabeth II.", "William Shakespeare", "Ludwig van Beethoven", "Wolfgang Amadeus Mozart", "Vincent van Gogh", "Pablo Picasso", "Steve Jobs", "Bill Gates", "Elon Musk", "Mark Zuckerberg", "Jeff Bezos", "Industrielle Revolution", "Französische Revolution", "Sezessionskrieg", "Weltwirtschaftskrise", "Kalter Krieg", "Wettlauf ins All", "Apollo 11", "Internationale Raumstation", "Hubble-Weltraumteleskop", "Urknall", "Evolution", "Photosynthese", "Periodensystem", "Atom", "Gravitation", "Relativitätstheorie", "Quantenmechanik", "Psychologie", "Soziologie", "Wirtschaftswissenschaft", "Philosophie", "Buddhismus", "Christentum", "Islam", "Hinduismus", "Judentum", "Olympische Spiele", "Fußball-Weltmeisterschaft", "The Beatles", "Michael Jackson", "Elvis Presley", "Star Wars", "Der Herr der Ringe", "Marvel Cinematic Universe", "Game of Thrones", "Minecraft", "Super Mario", "The Legend of Zelda", "Grand Theft Auto", "Pokémon"],
+            de: ["Albert Einstein", "Altes Ägypten", "Bitcoin", "Schach", "Harry Potter", "Zweiter Weltkrieg", "Dinosaurier", "Physik", "Künstliche Intelligenz", "Schwarzes Loch", "Leonardo da Vinci", "Pyramide", "DNA", "Bluetooth", "Renaissance", "Isaac Newton", "Charles Darwin", "Marie Curie", "Nikola Tesla", "Stephen Hawking", "Alexander der Große", "Julius Cäsar", "Napoleon Bonaparte", "Abraham Lincoln", "Nelson Mandela", "Mahatma Gandhi", "Martin Luther King Jr.", "George Washington", "Barack Obama", "Elisabeth II.", "William Shakespeare", "Ludwig van Beethoven", "Wolfgang Amadeus Mozart", "Vincent van Gogh", "Pablo Picasso", "Steve Jobs", "Bill Gates", "Elon Musk", "Mark Zuckerberg", "Jeff Bezos", "Industrielle Revolution", "Französische Revolution", "Sezessionskrieg", "Weltwirtschaftskrise", "Kalter Krieg", "Wettlauf ins All", "Apollo 11", "Internationale Raumstation", "Hubble-Weltraumteleskop", "Urknall", "Evolution", "Photosynthese", "Periodensystem", "Atom", "Gravitation", "Relativitätstheorie", "Quantenmechanik", "Psychologie", "Soziologie", "Wirtschaftswissenschaft", "Philosophie", "Buddhismus", "Christentum", "Islam", "Hinduismus", "Judentum", "Olympische Spiele", "Fußball-Weltmeisterschaft", "The Beatles", "Michael Jackson", "Elvis Presley", "Star Wars", "Der Herr der Grund", "Marvel Cinematic Universe", "Game of Thrones", "Minecraft", "Super Mario", "The Legend of Zelda", "Grand Theft Auto", "Pokémon"],
             es: ["Albert Einstein", "Antiguo Egipto", "Bitcoin", "Ajedrez", "Harry Potter", "Segunda Guerra Mundial", "Dinosaurio", "Física", "Inteligencia artificial", "Agujero negro", "Leonardo da Vinci", "Pirámide", "ADN", "Bluetooth", "Renacimiento", "Isaac Newton", "Charles Darwin", "Marie Curie", "Nikola Tesla", "Stephen Hawking", "Alejandro Magno", "Julio César", "Napoleón Bonaparte", "Abraham Lincoln", "Nelson Mandela", "Mahatma Gandhi", "Martin Luther King Jr.", "George Washington", "Barack Obama", "Isabel II", "William Shakespeare", "Ludwig van Beethoven", "Wolfgang Amadeus Mozart", "Vincent van Gogh", "Pablo Picasso", "Steve Jobs", "Bill Gates", "Elon Musk", "Mark Zuckerberg", "Jeff Bezos", "Revolución Industrial", "Revolución Francesa", "Guerra de Secesión", "Gran Depresión", "Guerra Fría", "Carrera espacial", "Apollo 11", "Estación Espacial Internacional", "Telescopio espacial Hubble", "Big Bang", "Evolución", "Fotosíntesis", "Tabla periódica", "Átomo", "Gravedad", "Relatividad", "Mecánica cuántica", "Psicología", "Sociología", "Economía", "Filosofía", "Budismo", "Christianity", "Islam", "Hinduism", "Judaism", "Olympics", "FIFA World Cup", "The Beatles", "Michael Jackson", "Elvis Presley", "Star Wars", "The Lord of the Rings", "Marvel Cinematic Universe", "Game of Thrones", "Minecraft", "Super Mario", "The Legend of Zelda", "Grand Theft Auto", "Pokémon"]
         };
         const HARD_TOPICS = {
@@ -1182,16 +1182,30 @@
             state.maxClicks = mode === 'limited' ? 10 : null;
             
             let topicsList;
+            const rInfo = getRankInfo();
+
             if (mode === 'hard') {
                 topicsList = HARD_TOPICS[state.language];
             } else if (mode === 'daily') {
                 topicsList = MEDIUM_TOPICS[state.language];
             } else {
-                const rInfo = getRankInfo();
-                // --- RANK-BASED TOPIC SELECTION ---
-                if (rInfo.tierIdx <= 1) topicsList = EASY_TOPICS[state.language]; // Bronze, Silver
-                else if (rInfo.tierIdx <= 3) topicsList = MEDIUM_TOPICS[state.language]; // Gold, Platinum
-                else topicsList = HARD_TOPICS[state.language]; // Diamond+
+                // --- GRANULAR RANK-BASED DIFFICULTY SCALING ---
+                if (rInfo.tierIdx === -1 || rInfo.tierIdx === 0) {
+                    // Unranked / Bronze: Easy only
+                    topicsList = EASY_TOPICS[state.language];
+                } else if (rInfo.tierIdx === 1) {
+                    // Silver: Mixture of Easy/Medium
+                    topicsList = Math.random() > 0.6 ? EASY_TOPICS[state.language] : MEDIUM_TOPICS[state.language];
+                } else if (rInfo.tierIdx <= 3) {
+                    // Gold / Platinum: Medium topics
+                    topicsList = MEDIUM_TOPICS[state.language];
+                } else if (rInfo.tierIdx <= 5) {
+                    // Diamond / Master: Mixture of Medium/Hard
+                    topicsList = Math.random() > 0.5 ? MEDIUM_TOPICS[state.language] : HARD_TOPICS[state.language];
+                } else {
+                    // Grand Champion / Legend: Hard topics only
+                    topicsList = HARD_TOPICS[state.language];
+                }
             }
 
             if (mode === 'daily') topics = getDailyTopics(topicsList);

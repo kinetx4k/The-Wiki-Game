@@ -232,6 +232,12 @@
     <!-- Background Layer for Menu -->
     <div id="menu-background" class="fixed inset-0 pointer-events-none overflow-hidden z-0"></div>
 
+    <div id="top-left-ui" class="fixed top-6 left-6 z-50 transition-opacity duration-300">
+        <button id="btn-profile" class="flex items-center gap-2 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md px-4 py-2 rounded-2xl shadow-lg border border-white/50 dark:border-slate-700/50 font-black text-gray-800 dark:text-gray-200">
+            <span class="text-xl">👤</span> <span class="hidden sm:inline">Profile</span>
+        </button>
+    </div>
+
     <div id="top-ui-bar" class="fixed top-6 right-6 flex items-center gap-4 z-50 transition-opacity duration-300">
         <!-- Dark Mode Toggle -->
         <button id="btn-dark-mode" class="p-2.5 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl shadow-lg border border-white/50 dark:border-slate-700/50 text-xl">
@@ -422,6 +428,7 @@
                         <li><strong>Solo Mission:</strong> Play at your own pace and earn Rank MMR.</li>
                         <li><strong>Multiplayer:</strong> Race against a friend using a Lobby Code.</li>
                         <li><strong>Coins (🪙):</strong> Earned by winning. Spend 2 coins on "🎲 Randomize" to re-roll difficult words before you start.</li>
+                        <li><strong>Profile (Top Left):</strong> Check your stats and save/load your progress!</li>
                     </ul>
                 </div>
                 <!-- Step 2: Modes -->
@@ -458,6 +465,30 @@
                     <div class="w-3 h-3 rounded-full bg-gray-300 dark:bg-slate-600 transition-all"></div>
                 </div>
                 <button id="btn-tutorial-next" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black shadow-lg transition-all">Next ➔</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-profile" class="hidden fixed inset-0 bg-gray-900/40 dark:bg-slate-950/60 backdrop-blur-md flex items-center justify-center z-[100] p-6">
+        <div class="bg-white dark:bg-slate-800 rounded-[3rem] p-10 max-w-md w-full shadow-2xl border border-white dark:border-slate-700">
+            <div class="flex justify-between items-center mb-8">
+                <h3 class="text-3xl font-black text-gray-900 dark:text-white tracking-tight">Player Profile</h3>
+                <button id="profile-close" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-slate-700 flex items-center justify-center text-gray-500 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600 transition-all font-bold">✕</button>
+            </div>
+            <div class="space-y-4 mb-8 text-gray-800 dark:text-gray-200 font-medium">
+                <div class="flex justify-between border-b dark:border-slate-700 pb-2"><span>Current MMR:</span> <span id="stat-mmr" class="font-black text-blue-500">0</span></div>
+                <div class="flex justify-between border-b dark:border-slate-700 pb-2"><span>Highest MMR:</span> <span id="stat-high-mmr" class="font-black text-purple-500">0</span></div>
+                <div class="flex justify-between border-b dark:border-slate-700 pb-2"><span>Highest Rank:</span> <span id="stat-high-rank" class="font-black text-amber-500">Unranked</span></div>
+                <div class="flex justify-between border-b dark:border-slate-700 pb-2"><span>Fastest Run:</span> <span id="stat-fastest" class="font-black text-green-500">-</span></div>
+                <div class="flex justify-between border-b dark:border-slate-700 pb-2"><span>Longest Run:</span> <span id="stat-longest" class="font-black text-red-500">-</span></div>
+            </div>
+            <div class="space-y-3 pt-4 border-t dark:border-slate-700">
+                <p class="text-xs text-gray-400 font-bold uppercase text-center tracking-widest">Save / Load Data</p>
+                <input type="text" id="save-code-input" class="w-full p-3 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl text-xs font-mono text-center outline-none focus:ring-2 focus:ring-blue-500 dark:text-white" placeholder="Paste code here to load...">
+                <div class="flex gap-2">
+                    <button id="btn-export-save" class="flex-1 py-3 bg-blue-100 dark:bg-blue-900/30 hover:bg-blue-200 dark:hover:bg-blue-800/50 text-blue-700 dark:text-blue-400 rounded-xl font-bold text-sm transition-all shadow-sm">Copy Code</button>
+                    <button id="btn-import-save" class="flex-1 py-3 bg-green-100 dark:bg-green-900/30 hover:bg-green-200 dark:hover:bg-green-800/50 text-green-700 dark:text-green-400 rounded-xl font-bold text-sm transition-all shadow-sm">Load Code</button>
+                </div>
             </div>
         </div>
     </div>
@@ -736,6 +767,9 @@
             totalRounds: parseInt(localStorage.getItem('wiki_total_rounds')) || 0, 
             recoveryStreak: parseInt(localStorage.getItem('wiki_recovery_streak')) || 0,
             xp: parseInt(localStorage.getItem('wiki_xp')) || 0,
+            highestXp: parseInt(localStorage.getItem('wiki_highest_xp')) || parseInt(localStorage.getItem('wiki_xp')) || 0,
+            fastestRun: parseInt(localStorage.getItem('wiki_fastest_run')) || 0,
+            longestRun: parseInt(localStorage.getItem('wiki_longest_run')) || 0,
             isPromo: localStorage.getItem('wiki_promo') === 'true',
             localPlayAgain: false, opponentPlayAgain: false
         };
@@ -1177,6 +1211,11 @@
                 localStorage.setItem('wiki_xp', state.xp);
                 localStorage.setItem('wiki_promo', state.isPromo);
 
+                // Update Stats (Fastest, Longest, Highest MMR)
+                if (state.xp > state.highestXp) { state.highestXp = state.xp; localStorage.setItem('wiki_highest_xp', state.highestXp); }
+                if (state.clicks > state.longestRun) { state.longestRun = state.clicks; localStorage.setItem('wiki_longest_run', state.longestRun); }
+                if (state.fastestRun === 0 || state.clicks < state.fastestRun) { state.fastestRun = state.clicks; localStorage.setItem('wiki_fastest_run', state.fastestRun); }
+
                 // MMR fertig -> Zweites Konfetti & Anzeige!
                 xpRewardEl.innerHTML = '';
                 let newSpan = document.createElement('span');
@@ -1247,6 +1286,73 @@
             document.getElementById('modal-calendar').classList.remove('hidden');
         });
         document.getElementById('calendar-close').addEventListener('click', () => document.getElementById('modal-calendar').classList.add('hidden'));
+
+        // Profile Logic
+        function getRankNameFromXp(xp) {
+            const TIERS = [
+                { name: "Bronze", cap: 500 }, { name: "Silver", cap: 1000 }, { name: "Gold", cap: 1500 }, 
+                { name: "Platinum", cap: 2000 }, { name: "Diamond", cap: 2500 }, { name: "Master", cap: 3000 }, 
+                { name: "Champion", cap: 3500 }, { name: "Grand Champion", cap: 4000 }, { name: "Legend", cap: Infinity }
+            ];
+            let currentTierIdx = 0;
+            for (let i=0; i<TIERS.length; i++) { if (xp < TIERS[i].cap || i === TIERS.length - 1) { currentTierIdx = i; break; } }
+            const tier = TIERS[currentTierIdx];
+            const prevCap = currentTierIdx > 0 ? TIERS[currentTierIdx-1].cap : 0;
+            const tierXP = xp - prevCap;
+            let div = 5 - Math.floor(tierXP / 100);
+            if (div < 1) div = 1;
+            if (tier.name === "Legend") div = "";
+            return `${tier.name} ${div}`.trim();
+        }
+
+        document.getElementById('btn-profile').addEventListener('click', () => {
+            document.getElementById('stat-mmr').innerText = state.xp;
+            document.getElementById('stat-high-mmr').innerText = state.highestXp;
+            document.getElementById('stat-high-rank').innerText = state.totalRounds < 10 ? "Unranked" : getRankNameFromXp(state.highestXp);
+            document.getElementById('stat-fastest').innerText = state.fastestRun > 0 ? `${state.fastestRun} clicks` : "-";
+            document.getElementById('stat-longest').innerText = state.longestRun > 0 ? `${state.longestRun} clicks` : "-";
+            document.getElementById('modal-profile').classList.remove('hidden');
+        });
+
+        document.getElementById('profile-close').addEventListener('click', () => document.getElementById('modal-profile').classList.add('hidden'));
+
+        document.getElementById('btn-export-save').onclick = () => {
+            const data = {
+                xp: state.xp, highestXp: state.highestXp, coins: state.coins, dailyStreak: state.dailyStreak, 
+                totalRounds: state.totalRounds, fastestRun: state.fastestRun, longestRun: state.longestRun, 
+                history: state.history, lastDailyWin: state.lastDailyWin, isPromo: state.isPromo
+            };
+            const code = btoa(JSON.stringify(data));
+            const input = document.getElementById('save-code-input');
+            input.value = code;
+            input.select();
+            document.execCommand('copy');
+            const btn = document.getElementById('btn-export-save');
+            btn.innerText = "Copied!"; setTimeout(()=>btn.innerText="Copy Code", 2000);
+        };
+
+        document.getElementById('btn-import-save').onclick = () => {
+            try {
+                const code = document.getElementById('save-code-input').value;
+                const data = JSON.parse(atob(code));
+                if (data.xp !== undefined) {
+                    localStorage.setItem('wiki_xp', data.xp);
+                    localStorage.setItem('wiki_highest_xp', data.highestXp !== undefined ? data.highestXp : data.xp);
+                    localStorage.setItem('wiki_coins', data.coins || 0);
+                    localStorage.setItem('wiki_daily_streak', data.dailyStreak || 0);
+                    localStorage.setItem('wiki_total_rounds', data.totalRounds || 0);
+                    localStorage.setItem('wiki_fastest_run', data.fastestRun || 0);
+                    localStorage.setItem('wiki_longest_run', data.longestRun || 0);
+                    localStorage.setItem('wiki_history', JSON.stringify(data.history || {}));
+                    if (data.lastDailyWin) localStorage.setItem('wiki_last_daily_win', data.lastDailyWin);
+                    localStorage.setItem('wiki_promo', data.isPromo || false);
+                    location.reload(); 
+                }
+            } catch(e) {
+                const btn = document.getElementById('btn-import-save');
+                btn.innerText = "Invalid Code!"; setTimeout(()=>btn.innerText="Load Code", 2000);
+            }
+        };
 
         function startGame() {
             state.isPlaying = true; state.clicks = 0; state.path = [state.startTitle]; state.currentTitle = state.startTitle; state.finished = false;

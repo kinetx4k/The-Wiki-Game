@@ -229,7 +229,6 @@
 </head>
 <body class="min-h-screen relative text-[#1a1a1a] dark:text-[#f8fafc]">
 
-    <!-- Background Layer for Menu -->
     <div id="menu-background" class="fixed inset-0 pointer-events-none overflow-hidden z-0"></div>
 
     <div id="top-left-ui" class="fixed top-6 left-6 z-50 transition-opacity duration-300 flex items-center gap-3 flex-wrap">
@@ -240,7 +239,6 @@
             <span class="text-xl">⚙️</span>
         </button>
 
-        <!-- New Ticket Banner & Info Box -->
         <div class="group relative flex items-center gap-2 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md px-3 py-2 rounded-2xl shadow-lg border border-white/50 dark:border-slate-700/50 font-black text-gray-800 dark:text-gray-200 cursor-help">
             <span class="text-xl">🎟️</span>
             <span class="text-[10px] uppercase tracking-widest hidden md:inline text-blue-600 dark:text-blue-400">Your tickets will renew in :</span>
@@ -253,7 +251,6 @@
     </div>
 
     <div id="top-ui-bar" class="fixed top-6 right-6 flex items-center gap-4 z-50 transition-opacity duration-300">
-        <!-- Dark Mode Toggle -->
         <button id="btn-dark-mode" class="p-2.5 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl shadow-lg border border-white/50 dark:border-slate-700/50 text-xl">
             <span id="dark-icon">☀️</span>
         </button>
@@ -270,7 +267,6 @@
             </div>
             <div class="h-6 w-px bg-gray-200 dark:bg-gray-700"></div>
             
-            <!-- Rank XP Widget -->
             <div id="btn-rank-map" class="flex items-center gap-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-700/50 p-1.5 -m-1.5 rounded-xl transition-all">
                 <span class="text-2xl">🏆</span>
                 <div class="flex flex-col min-w-[80px]">
@@ -296,7 +292,6 @@
     <div id="screen-menu" class="flex items-center justify-center min-h-screen p-6 overflow-x-hidden relative z-10 bg-transparent">
         <div class="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
-            <!-- Left Side: Branding & Mode -->
             <div class="lg:col-span-5 flex flex-col gap-6">
                 <div class="text-left">
                     <h1 class="text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-blue-700 via-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-600 leading-none mb-4 drop-shadow-sm pb-1" data-i18n="title">The Wiki Game</h1>
@@ -339,11 +334,9 @@
                 </div>
             </div>
 
-            <!-- Right Side: Interaction Area & Instruction -->
             <div class="lg:col-span-7 flex flex-col gap-6">
                 <div id="main-menu-box" class="bg-white dark:bg-slate-800 rounded-[3rem] p-10 shadow-2xl shadow-blue-100/50 dark:shadow-none border border-white dark:border-slate-700 relative">
                     
-                    <!-- Solo Setup View -->
                     <div id="solo-setup" class="space-y-8">
                         <div class="mission-path space-y-6">
                             <div class="flex items-start gap-6">
@@ -358,7 +351,6 @@
                                 <div class="w-12 h-12 rounded-2xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-xl font-black text-red-600 dark:text-red-400 z-10 shadow-sm border-4 border-white dark:border-slate-800">T</div>
                                 <div class="flex-1 pt-1 text-left">
                                     <span class="text-[10px] font-black uppercase tracking-widest text-red-400" data-i18n="targetArticle">Target Destination</span>
-                                    <!-- FIXED: Duplicate ID 'solo-start' changed to 'solo-target' -->
                                     <div id="solo-target" class="text-2xl font-black text-gray-800 dark:text-gray-100 leading-tight mt-1">Loading...</div>
                                 </div>
                             </div>
@@ -373,7 +365,6 @@
                         </div>
                     </div>
 
-                    <!-- Multiplayer Setup View -->
                     <div id="multiplayer-setup" class="hidden space-y-6">
                         <div id="role-selection" class="flex flex-col gap-4">
                             <button id="btn-host" class="w-full py-6 bg-blue-600 text-white rounded-[2rem] font-black shadow-xl shadow-blue-200 dark:shadow-none text-xl" data-i18n="btnHost">Create Lobby</button>
@@ -420,7 +411,6 @@
                     </div>
                 </div>
 
-                <!-- Manual / Instruction Card -->
                 <div id="instruction-field" class="bg-white dark:bg-slate-800 rounded-[2rem] p-6 shadow-xl border border-gray-100 dark:border-slate-700 text-left">
                     <span class="text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500 block mb-2">Mission</span>
                     <p id="mode-description" class="text-gray-500 dark:text-gray-400 text-sm font-medium leading-relaxed italic">Find the shortest path between two articles.</p>
@@ -429,18 +419,14 @@
         </div>
     </div>
 
-    <!-- Modals & Rest -->
     <div id="modal-tutorial" class="hidden fixed inset-0 bg-gray-900/80 backdrop-blur-sm flex items-center justify-center z-[200] p-4">
         <div class="bg-white dark:bg-slate-800 rounded-[3rem] p-8 md:p-10 max-w-2xl w-full shadow-2xl border border-white dark:border-slate-700 relative overflow-hidden">
-            <!-- Header -->
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-3xl font-black text-blue-600 dark:text-blue-400">How to Play</h3>
                 <button id="btn-close-tutorial" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-slate-700 flex items-center justify-center text-gray-500 font-bold hover:bg-gray-200 dark:hover:bg-slate-600 transition-all">✕</button>
             </div>
 
-            <!-- Content Container -->
             <div id="tutorial-content" class="min-h-[250px]">
-                <!-- Step 1: Basics -->
                 <div class="tutorial-step space-y-4 text-gray-700 dark:text-gray-300">
                     <h4 class="text-xl font-bold text-gray-900 dark:text-white">🏁 The Objective</h4>
                     <p>Navigate from a <strong class="text-blue-500">Start Article</strong> to a <strong class="text-red-500">Target Article</strong> using only the links within the Wikipedia pages!</p>
@@ -451,7 +437,6 @@
                         <li><strong>Profile (Top Left):</strong> Check your stats and save/load your progress!</li>
                     </ul>
                 </div>
-                <!-- Step 2: Modes -->
                 <div class="tutorial-step hidden space-y-4 text-gray-700 dark:text-gray-300">
                     <h4 class="text-xl font-bold text-gray-900 dark:text-white">🎮 Game Modes</h4>
                     <p>Use the <strong class="bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded">←</strong> and <strong class="bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded">→</strong> arrows in the menu to change modes!</p>
@@ -462,9 +447,8 @@
                         <li><strong class="text-purple-500">10 Clicks:</strong> Reach the target in 10 clicks or less. Efficiency is everything!</li>
                     </ul>
                 </div>
-                <!-- Step 3: Ranks -->
                 <div class="tutorial-step hidden space-y-4 text-gray-700 dark:text-gray-300">
-                    <h4 class="text-xl font-bold text-gray-900 dark:text-white">🏆 MMR & Ranking</h4>
+                    <h4 class="text-xl font-bold text-gray-900 dark:text-white">📊 MMR Rewards</h4>
                     <p>MMR is gained based on your efficiency compared to the shortest possible path:</p>
                     <div class="grid grid-cols-2 gap-2 text-xs font-bold my-4 bg-gray-50 dark:bg-slate-900/50 p-4 rounded-2xl border dark:border-slate-700">
                         <div class="flex justify-between border-b dark:border-slate-700 pb-1"><span>+1 Click:</span> <span class="text-blue-500">+250</span></div>
@@ -474,33 +458,24 @@
                         <div class="flex justify-between border-b dark:border-slate-700 pb-1"><span>+5 Clicks:</span> <span class="text-orange-500">+40</span></div>
                     </div>
                     <p class="text-sm italic font-bold text-blue-600 dark:text-blue-400">✨ Complexity Bonus: Win harder topics (Hardcore/Master+) to earn up to <strong class="text-purple-500">+150%</strong> extra MMR per win!</p>
-                    <ul class="list-disc pl-5 space-y-2 font-medium text-xs mt-4">
-                        <li>Reach the top of your tier to trigger a <strong>PROMO</strong> (Win 10-Clicks).</li>
-                    </ul>
                 </div>
-                <!-- Step 4: Penalties -->
                 <div class="tutorial-step hidden space-y-4 text-gray-700 dark:text-gray-300">
-                    <h4 class="text-xl font-bold text-gray-900 dark:text-white">⚠️ MMR Penalties</h4>
-                    <p>Be careful! Starting from <strong class="text-cyan-500">Platinum</strong>, your decisions have weight:</p>
-                    <ul class="space-y-3 font-medium">
-                        <li class="flex items-center gap-3">
-                            <span class="w-8 h-8 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-600 flex items-center justify-center font-bold">Q</span>
-                            <span><strong>Giving Up:</strong> Aborting a mission costs <strong class="text-red-500">-10 MMR</strong>.</span>
-                        </li>
-                        <li class="flex items-center gap-3">
-                            <span class="w-8 h-8 rounded-lg bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 flex items-center justify-center font-bold">R</span>
-                            <span><strong>Randomizing:</strong> Re-rolling words costs <strong class="text-orange-500">-5 MMR</strong> (plus coins).</span>
-                        </li>
-                        <li class="flex items-center gap-3">
-                            <span class="w-8 h-8 rounded-lg bg-gray-100 dark:bg-slate-700 text-gray-600 flex items-center justify-center font-bold">P</span>
-                            <span><strong>Low Performance:</strong> Taking too many clicks in high ranks (Platinum+) will result in MMR loss!</span>
-                        </li>
-                    </ul>
-                    <p class="text-xs italic text-gray-400 pt-2">Tip: It is always better to finish the game with many clicks than to give up!</p>
+                    <h4 class="text-xl font-bold text-gray-900 dark:text-white">🏆 Ranks & Divisions</h4>
+                    <p>Climb from <strong class="text-amber-600">Bronze</strong> all the way to <strong class="text-yellow-400">Legend</strong>!</p>
+                    <div class="space-y-4 bg-gray-50 dark:bg-slate-900/50 p-5 rounded-2xl border dark:border-slate-700">
+                        <div>
+                            <span class="block text-sm font-black text-gray-900 dark:text-white uppercase tracking-wider">The Division System</span>
+                            <p class="text-xs font-medium leading-relaxed mt-1">Each Tier (Bronze, Silver, Gold, etc.) is split into <strong>5 Divisions</strong>. You start at Division 5 and work your way up to Division 1 to reach the next Tier.</p>
+                        </div>
+                        <div>
+                            <span class="block text-sm font-black text-blue-500 uppercase tracking-wider">Promotion Matches</span>
+                            <p class="text-xs font-medium leading-relaxed mt-1">Once you hit the MMR cap of Division 1, you enter a <strong>PROMO</strong>. To advance to the next higher Tier, you must win a game in <strong>"10 Clicks"</strong> mode!</p>
+                        </div>
+                    </div>
+                    <p class="text-[10px] italic text-gray-400">Note: High ranks (Platinum+) will lose MMR for giving up or performing poorly!</p>
                 </div>
             </div>
 
-            <!-- Footer / Controls -->
             <div class="flex justify-between items-center mt-8 pt-6 border-t dark:border-slate-700">
                 <div class="flex gap-2" id="tutorial-dots">
                     <div class="w-3 h-3 rounded-full bg-blue-600 transition-all"></div>
@@ -537,7 +512,6 @@
         </div>
     </div>
 
-    <!-- Changelog / Patch Notes Modal -->
     <div id="modal-changelog" class="hidden fixed inset-0 bg-gray-900/60 backdrop-blur-md flex items-center justify-center z-[200] p-6">
         <div class="bg-white dark:bg-slate-800 rounded-[3rem] p-10 max-w-md w-full shadow-2xl border border-white dark:border-slate-700 max-h-[80vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-6">
@@ -545,7 +519,6 @@
                 <button id="changelog-close" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-slate-700 flex items-center justify-center text-gray-500 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600 transition-all font-bold">✕</button>
             </div>
             <div class="space-y-6 text-left">
-                <!-- Patch Notes List -->
                 <div>
                     <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.9 - Current</h4>
                     <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
@@ -898,7 +871,7 @@
                 descClassic: "Comienza en el artículo dado y llega al objetivo con la menor cantidad de clics.",
                 descHardcore: "Como el clásico, aber con términos extremadamente difíciles. ¡Gran riesgo!",
                 descDaily: "Un desafío único cada 24 horas. ¡Aumenta tu racha y gana monedas según tu nivel de racha!",
-                descLimited: "Llega al destino en 10 clics o menos. ¡La eficiencia lo es todo!"
+                descLimited: "Llega al destino in 10 clics o menos. ¡La eficiencia lo es todo!"
             }
         };
 

@@ -710,6 +710,23 @@
                 span.style.fontSize = 1.5 + Math.random() * 5 + 'rem';
                 container.appendChild(span);
             }
+
+            const rInfo = getRankInfo();
+            for (let i = 0; i < 5; i++) {
+                const span = document.createElement('span');
+                span.className = 'floating-word floating-rank';
+                span.innerText = rInfo.title;
+                span.style.setProperty('--start-x', Math.random() * 100 + 'vw');
+                span.style.setProperty('--start-y', Math.random() * 100 + 'vh');
+                span.style.setProperty('--end-x', (Math.random() * 120 - 60) + 'vw');
+                span.style.setProperty('--end-y', (Math.random() * 120 - 60) + 'vh');
+                span.style.setProperty('--rot', (Math.random() * 40 - 20) + 'deg');
+                span.style.setProperty('--blur', Math.random() * 8 + 'px');
+                span.style.animationDuration = 30 + Math.random() * 50 + 's';
+                span.style.animationDelay = -(Math.random() * 50) + 's';
+                span.style.fontSize = 2 + Math.random() * 5 + 'rem';
+                container.appendChild(span);
+            }
             
             // Start Countdown logic
             updateDailyCountdown();
@@ -1045,6 +1062,8 @@
             document.getElementById('rank-xp-top').innerText = state.totalRounds < 5 ? `${state.totalRounds}/5 Games` : rInfo.xpStr;
             document.getElementById('rank-progress-bar').style.width = rInfo.p + '%';
             document.getElementById('rank-progress-bar').className = `h-full transition-all ${rInfo.color.replace('text-', 'bg-')}`;
+
+            document.querySelectorAll('.floating-rank').forEach(el => el.innerText = rInfo.title);
 
             const todayStr = new Date().toISOString().split('T')[0];
             const hasPlayedDaily = state.lastDailyWin === todayStr;

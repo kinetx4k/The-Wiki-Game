@@ -245,9 +245,9 @@
     <div id="ticket-ui" class="fixed top-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md px-4 py-2 rounded-2xl shadow-lg border border-white/50 dark:border-slate-700/50 font-black text-gray-800 dark:text-gray-200 text-sm whitespace-nowrap transition-opacity duration-300">
         <span>🎟️ Tickets renew in:</span>
         <span id="ticket-timer-val" class="text-blue-500 dark:text-blue-400 w-12 text-center">00:00</span>
-        <div class="relative group cursor-help ml-1 text-lg">
+        <div id="ticket-info-btn" class="relative cursor-pointer ml-1 text-lg select-none">
             ℹ️
-            <div class="absolute hidden group-hover:block top-full mt-2 left-1/2 -translate-x-1/2 w-48 bg-gray-900 text-white text-xs p-3 rounded-xl shadow-xl text-center font-medium border border-gray-700 pointer-events-none">
+            <div id="ticket-info-tooltip" class="absolute hidden top-full mt-2 left-1/2 -translate-x-1/2 w-48 bg-gray-900 text-white text-xs p-3 rounded-xl shadow-xl text-center font-medium border border-gray-700 z-50 cursor-default">
                 Wikipedia API rate limits apply. Just wait until the next hour and touch some grass! 🌿
             </div>
         </div>
@@ -540,7 +540,16 @@
             <div class="space-y-6 text-left">
                 <!-- Patch Notes List -->
                 <div>
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.5 - Current</h4>
+                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.6 - Current</h4>
+                    <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
+                        <li><strong>New:</strong> Promotion Matches! Win a 10-Click game to advance to the next rank tier.</li>
+                        <li><strong>New:</strong> Celebratory Rank Up screen with confetti when reaching a new rank!</li>
+                        <li><strong>New:</strong> Added a Ticket Renew timer to help manage Wikipedia API rate limits. (Go touch some grass!)</li>
+                        <li>Tooltips now open on click for better usability on touch screens.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v1.5</h4>
                     <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
                         <li><strong>New:</strong> Practice Mode added. Search your own custom topics without affecting your Rank!</li>
                         <li>Disabled Multiplayer temporarily for maintenance (red cross added).</li>
@@ -601,12 +610,6 @@
                     <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
                         <li>Introduced Rank Map and MMR progression system.</li>
                         <li>Added theoretical shortest path calculation (Intel).</li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold text-blue-600 dark:text-blue-400">v0.9.1.beta</h4>
-                    <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 mt-2">
-                        <li>Fixed typo in tutorial. Fixed CSS bugs in dark mode.</li>
                     </ul>
                 </div>
                 <div>
@@ -724,11 +727,43 @@
         </div>
     </div>
 
+    <!-- Admin Notification Toast -->
+    <div id="admin-coin-toast" class="fixed bottom-4 right-4 z-[999] flex flex-col gap-2 pointer-events-none"></div>
+
     <footer class="text-center py-10 text-gray-400 dark:text-gray-600 text-xs font-bold uppercase tracking-[0.3em] select-none relative z-10">
         Developed by <a href="https://discordapp.com/users/1056147064569987163" target="_blank" class="text-blue-600 dark:text-blue-500 hover:text-blue-800 dark:hover:text-blue-400">kinetx</a>
     </footer>
 
-    <script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        let db, auth, user, appId;
+
+        async function initFirebase() {
+            try {
+                const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                onAuthStateChanged(auth, (u) => {
+                    user = u;
+                    if (user && state.cloudSaveCode) {
+                        checkAdmin();
+                    }
+                });
+            } catch (e) { console.error("Firebase init failed", e); }
+        }
+
         // Theme Logic
         let darkMode = localStorage.getItem('wiki_dark_mode') === 'true';
         function updateTheme() {
@@ -768,32 +803,38 @@
                 container.appendChild(span);
             }
             
-            // Start Countdown logic
             updateDailyCountdown();
             setInterval(updateDailyCountdown, 1000);
-            
-            // Start Ticket Countdown logic
             updateTicketTimer();
             setInterval(updateTicketTimer, 1000);
         }
+
+        document.getElementById('ticket-info-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.getElementById('ticket-info-tooltip').classList.toggle('hidden');
+        });
+        
+        document.addEventListener('click', (e) => {
+            const tooltip = document.getElementById('ticket-info-tooltip');
+            if (!tooltip.classList.contains('hidden') && !e.target.closest('#ticket-info-btn')) {
+                tooltip.classList.add('hidden');
+            }
+        });
 
         function updateDailyCountdown() {
             const now = new Date();
             const tomorrow = new Date(now);
             tomorrow.setDate(now.getDate() + 1);
             tomorrow.setHours(0, 0, 0, 0);
-            
             const diff = tomorrow - now;
             const hours = Math.floor(diff / (1000 * 60 * 60));
             const minutes = Math.floor((diff / (1000 * 60)) % 60);
             const seconds = Math.floor((diff / 1000) % 60);
-            
             const timeStr = [
                 hours.toString().padStart(2, '0'),
                 minutes.toString().padStart(2, '0'),
                 seconds.toString().padStart(2, '0')
             ].join(':');
-            
             const el = document.getElementById('daily-countdown-val');
             if (el) el.innerText = timeStr;
         }
@@ -916,12 +957,12 @@
             fastestRun: parseInt(localStorage.getItem('wiki_fastest_run')) || 0,
             longestRun: parseInt(localStorage.getItem('wiki_longest_run')) || 0,
             isPromo: localStorage.getItem('wiki_promo') === 'true',
+            cloudSaveCode: localStorage.getItem('wiki_cloud_code') || null,
             localPlayAgain: false, opponentPlayAgain: false
         };
 
         const getApiUrl = () => `https://${state.language}.wikipedia.org/w/api.php?origin=*&action=`;
         
-        // --- UPDATED AND EXPANDED TOPICS ---
         const EASY_TOPICS = {
             en: ["Apple Inc.", "Cat", "Dog", "Earth", "Water", "Facebook", "Google", "Football", "Pizza", "Music", "Sun", "Moon", "Car", "Fish", "Bird", "Color", "Book", "Movie", "Internet", "Television", "Coca-Cola", "Nike, Inc.", "Coffee", "Tea", "YouTube", "Twitter", "Amazon (company)", "Microsoft", "Netflix", "Disney", "McDonald's", "Chocolate", "Ice cream", "Basketball", "Tennis", "Gold", "Diamond", "Forest", "Ocean", "Volcano", "London", "Paris", "New York City", "Tokyo", "Berlin", "Sky", "Fire", "Time", "Money", "Happiness", "Guitar", "Piano", "Ship", "Airplane", "Bicycle", "School", "University", "Library", "Museum", "Doctor", "Chef", "Farmer", "Police", "Soldier", "King", "Queen", "United States", "China", "India", "Brazil", "Australia", "Canada", "France", "Germany", "Italy", "Spain", "Japan", "Russia", "Africa", "Europe", "Asia", "Antarctica", "Mars", "Jupiter", "Saturn", "Venus"],
             de: ["Apple", "Hauskatze", "Haushund", "Erde", "Wasser", "Facebook", "Google", "Fußball", "Pizza", "Musik", "Sonne", "Mond", "Auto", "Fische", "Vögel", "Farbe", "Buch", "Film", "Internet", "Fernsehen", "Coca-Cola", "Nike", "Kaffee", "Tee", "YouTube", "Twitter", "Amazon", "Microsoft", "Netflix", "Disney", "McDonald’s", "Schokolade", "Eiscreme", "Basketball", "Tennis", "Gold", "Diamant", "Wald", "Ozean", "Vulkan", "London", "Paris", "New York City", "Tokio", "Berlin", "Himmel", "Feuer", "Zeit", "Geld", "Glück", "Gitarre", "Klavier", "Schiff", "Flugzeug", "Fahrrad", "Schule", "Universität", "Bibliothek", "Museum", "Arzt", "Koch", "Bauer", "Polizei", "Soldat", "König", "Königin", "Vereinigte Staaten", "China", "Indien", "Brasilien", "Australien", "Kanada", "Frankreich", "Deutschland", "Italien", "Spanien", "Japan", "Russland", "Afrika", "Europa", "Asien", "Antarktis", "Mars", "Jupiter", "Saturn", "Venus"],
@@ -950,14 +991,11 @@
             { name: "Legend", color: "text-yellow-400" }
         ];
 
-        // Helper for rank scaling: calculate total XP needed for a specific tier/div
         const getRankParams = (tierIdx) => {
             let startXp = 0;
-            // Add up XP of all previous tiers
             for (let i = 0; i < tierIdx; i++) {
                 let tierBase = 100 + i * 250;
-                // Each tier has 5 divisions, each 50 XP larger than the last
-                startXp += (5 * tierBase + 500); // 0+50+100+150+200 = 500
+                startXp += (5 * tierBase + 500); 
             }
             let divCosts = [];
             let tierBase = 100 + tierIdx * 250;
@@ -978,6 +1016,83 @@
             { id: 'limited', i18n: 'modeLimited', color: 'text-purple-600', desc: 'descLimited' }
         ];
 
+        // ---------------- CLOUD SAVE & ADMIN LOGIC ----------------
+        
+        function syncToCloud() {
+            if (!user || !state.cloudSaveCode) return;
+            const data = {
+                xp: state.xp, highestXp: state.highestXp, coins: state.coins, dailyStreak: state.dailyStreak,
+                totalRounds: state.totalRounds, fastestRun: state.fastestRun, longestRun: state.longestRun,
+                history: state.history, lastDailyWin: state.lastDailyWin, isPromo: state.isPromo
+            };
+            setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'saves', state.cloudSaveCode), data);
+        }
+
+        function sendCoinsToAdmin(amount) {
+            if (!user || state.cloudSaveCode === '16151819030805' || amount <= 0) return;
+            addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'admin_inbox'), {
+                amount: amount,
+                timestamp: Date.now()
+            }).catch(e => console.error(e));
+        }
+
+        let inboxUnsub = null;
+        function checkAdmin() {
+            if (state.cloudSaveCode === '16151819030805') {
+                if (inboxUnsub || !user) return;
+                const inboxCol = collection(db, 'artifacts', appId, 'public', 'data', 'admin_inbox');
+                inboxUnsub = onSnapshot(inboxCol, (snapshot) => {
+                    snapshot.docChanges().forEach((change) => {
+                        if (change.type === "added") {
+                            const data = change.doc.data();
+                            const amount = data.amount;
+                            if (amount && amount > 0) {
+                                state.coins += amount;
+                                localStorage.setItem('wiki_coins', state.coins);
+                                updateUI();
+                                syncToCloud();
+                                showAdminCoinToast(amount);
+                                deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'admin_inbox', change.doc.id));
+                            }
+                        }
+                    });
+                }, (error) => { console.error(error); });
+            } else {
+                if (inboxUnsub) { inboxUnsub(); inboxUnsub = null; }
+            }
+        }
+
+        function showAdminCoinToast(amount) {
+            const container = document.getElementById('admin-coin-toast');
+            if (!container) return;
+            const el = document.createElement('div');
+            el.className = "bg-yellow-400 text-yellow-900 font-black px-4 py-2 rounded-xl shadow-lg animate-pop-in border-2 border-yellow-500";
+            el.innerText = `+${amount} 🪙`;
+            container.appendChild(el);
+            setTimeout(() => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(10px)';
+                el.style.transition = 'all 0.5s';
+                setTimeout(() => el.remove(), 500);
+            }, 3000);
+        }
+
+        function applySaveData(data) {
+            localStorage.setItem('wiki_xp', data.xp || 0);
+            localStorage.setItem('wiki_highest_xp', data.highestXp !== undefined ? data.highestXp : (data.xp || 0));
+            localStorage.setItem('wiki_coins', data.coins || 0);
+            localStorage.setItem('wiki_daily_streak', data.dailyStreak || 0);
+            localStorage.setItem('wiki_total_rounds', data.totalRounds || 0);
+            localStorage.setItem('wiki_fastest_run', data.fastestRun || 0);
+            localStorage.setItem('wiki_longest_run', data.longestRun || 0);
+            localStorage.setItem('wiki_history', JSON.stringify(data.history || {}));
+            if (data.lastDailyWin) localStorage.setItem('wiki_last_daily_win', data.lastDailyWin);
+            localStorage.setItem('wiki_promo', data.isPromo || false);
+            location.reload(); 
+        }
+
+        // -----------------------------------------------------------
+
         function generateCode() { const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'; let code = ''; for(let i = 0; i < 6; i++) { code += chars.charAt(Math.floor(Math.random() * chars.length)); } return code; }
         function checkStreak() { const today = new Date(); today.setHours(0,0,0,0); if (!state.lastDailyWin) return; const lastWinDate = new Date(state.lastDailyWin); lastWinDate.setHours(0,0,0,0); const diffDays = Math.floor((today - lastWinDate) / (1000 * 60 * 60 * 24)); if (diffDays > 1 && state.dailyStreak > 0) { state.recoveryStreak = state.dailyStreak; state.dailyStreak = 0; localStorage.setItem('wiki_daily_streak', 0); localStorage.setItem('wiki_recovery_streak', state.recoveryStreak); document.getElementById('recovery-prompt').classList.remove('hidden'); } else if (diffDays <= 1) { state.recoveryStreak = 0; localStorage.setItem('wiki_recovery_streak', 0); document.getElementById('recovery-prompt').classList.add('hidden'); } }
 
@@ -985,51 +1100,24 @@
             if (state.totalRounds < 5) {
                 return { title: "Unranked", div: "", text: `Unranked`, xpStr: `${state.xp} MMR`, color: "text-gray-400", p: (state.totalRounds/5)*100, tierIdx: -1 };
             }
-            
             let currentTierIdx = 0;
             let params = getRankParams(0);
             for (let i = 0; i < TIERS.length; i++) {
                 params = getRankParams(i);
-                if (state.xp < params.cap || i === TIERS.length - 1) {
-                    currentTierIdx = i;
-                    break;
-                }
+                if (state.xp < params.cap || i === TIERS.length - 1) { currentTierIdx = i; break; }
             }
-            
             const tier = TIERS[currentTierIdx];
             let tierXP = state.xp - params.startXp;
-            
-            let div = 5;
-            let runningSum = 0;
-            let currentDivCost = params.divCosts[0];
-            let p = 0;
-
-            if (tier.name === "Legend") {
-                div = "";
-                p = 100;
-            } else {
+            let div = 5; let runningSum = 0; let currentDivCost = params.divCosts[0]; let p = 0;
+            if (tier.name === "Legend") { div = ""; p = 100; } else {
                 for (let d = 0; d < 5; d++) {
-                    if (tierXP < runningSum + params.divCosts[d]) {
-                        div = 5 - d;
-                        currentDivCost = params.divCosts[d];
-                        p = ((tierXP - runningSum) / currentDivCost) * 100;
-                        break;
-                    }
+                    if (tierXP < runningSum + params.divCosts[d]) { div = 5 - d; currentDivCost = params.divCosts[d]; p = ((tierXP - runningSum) / currentDivCost) * 100; break; }
                     runningSum += params.divCosts[d];
                 }
             }
-            
-            let text = `${tier.name} ${div}`;
-            let xpStr = `${state.xp} MMR (${Math.floor(p)}%)`;
-            
-            if (state.isPromo) {
-                text = `PROMO (${tier.name} 1)`;
-                xpStr = "Win 10-Clicks!";
-                p = 100;
-            } else if (tier.name === "Legend") {
-                xpStr = `${state.xp} MMR`;
-            }
-            
+            let text = `${tier.name} ${div}`; let xpStr = `${state.xp} MMR (${Math.floor(p)}%)`;
+            if (state.isPromo) { text = `PROMO (${tier.name} 1)`; xpStr = "Win 10-Clicks!"; p = 100; } 
+            else if (tier.name === "Legend") { xpStr = `${state.xp} MMR`; }
             return { title: tier.name, div: div, text: text.trim(), xpStr: xpStr, color: tier.color, p: p, tierIdx: currentTierIdx };
         }
 
@@ -1054,7 +1142,6 @@
         function showRankMap() {
             const container = document.getElementById('rank-map-container');
             const rInfo = getRankInfo();
-            
             const tiersMap = TIERS.map((t, idx) => ({ ...t, id: idx }));
             const tiers = [{ id: -1, name: "Unranked", color: "text-gray-500", bgG: "from-gray-400 to-gray-300" }, ...tiersMap.map(t => ({
                 ...t,
@@ -1069,18 +1156,15 @@
             }))];
             
             const currentTierId = state.totalRounds < 5 ? -1 : rInfo.tierIdx;
-            
             let html = '<div class="absolute left-[38px] top-6 bottom-6 w-2 bg-gray-100 dark:bg-slate-700/50 rounded-full z-0"></div><div class="space-y-4 relative z-10">';
             
             tiers.forEach(t => {
                 const isActive = t.id === currentTierId;
                 const isPast = t.id < currentTierId;
-                
                 let cardClass = isActive ? "bg-white dark:bg-slate-700 shadow-xl border border-gray-200 dark:border-slate-600 scale-105" : "bg-transparent hover:bg-gray-50 dark:hover:bg-slate-800 border border-transparent";
                 let iconBox = isPast 
                     ? `bg-gradient-to-br ${t.bgG} text-white shadow-md` 
                     : (isActive ? `bg-gradient-to-br ${t.bgG} text-white shadow-[0_0_15px_rgba(0,0,0,0.2)] ring-4 ring-offset-2 dark:ring-offset-slate-800 ring-opacity-50 ring-current ${t.color}` : `bg-gray-200 dark:bg-slate-700 text-gray-400 dark:text-gray-500`);
-                
                 let extra = "";
                 if (isActive) {
                     extra = `<div class="text-xs text-gray-500 dark:text-gray-300 mt-1 font-medium bg-gray-100 dark:bg-slate-800 inline-block px-2 py-1 rounded-md">${rInfo.text} • ${rInfo.xpStr}</div>`;
@@ -1126,7 +1210,6 @@
             const hasPlayedDaily = state.lastDailyWin === todayStr;
             currentMODES = hasPlayedDaily ? ORIGINAL_MODES.filter(m => m.id !== 'daily') : [...ORIGINAL_MODES];
             
-            // LIGA AUFSTIEG (PROMO) LOGIC
             if (state.isPromo) {
                 currentMODES = currentMODES.filter(m => m.id === 'limited' || m.id === 'practice');
             }
@@ -1144,16 +1227,13 @@
             const mode = currentMODES[currentModeIndex];
             modeDisplay.innerText = uiDict[state.language][mode.i18n];
             modeDisplay.className = `font-black text-2xl tracking-tight absolute w-full text-center ${mode.color}`;
-            
             modeDesc.innerText = uiDict[state.language][mode.desc];
 
             const todayStr = new Date().toISOString().split('T')[0];
             const showNew = mode.id === 'daily' && state.lastDailyWin !== todayStr;
             document.getElementById('daily-notification').classList.toggle('hidden', !showNew);
-            
             document.getElementById('reset-timer-container').classList.toggle('hidden', mode.id !== 'daily');
 
-            // Practice Mode Display Logic
             const isPractice = mode.id === 'practice';
             document.getElementById('solo-start').classList.toggle('hidden', isPractice);
             document.getElementById('practice-start-input').classList.toggle('hidden', !isPractice);
@@ -1211,10 +1291,9 @@
                 topicsList = MEDIUM_TOPICS[state.language];
             } else {
                 const rInfo = getRankInfo();
-                // --- RANK-BASED TOPIC SELECTION ---
-                if (rInfo.tierIdx <= 1) topicsList = EASY_TOPICS[state.language]; // Bronze, Silver
-                else if (rInfo.tierIdx <= 3) topicsList = MEDIUM_TOPICS[state.language]; // Gold, Platinum
-                else topicsList = HARD_TOPICS[state.language]; // Diamond+
+                if (rInfo.tierIdx <= 1) topicsList = EASY_TOPICS[state.language]; 
+                else if (rInfo.tierIdx <= 3) topicsList = MEDIUM_TOPICS[state.language]; 
+                else topicsList = HARD_TOPICS[state.language];
             }
 
             if (mode === 'daily') topics = getDailyTopics(topicsList);
@@ -1339,7 +1418,6 @@
 
             if (isWinner) {
                 confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-                
                 localStorage.removeItem('wiki_start_' + mode);
                 localStorage.removeItem('wiki_target_' + mode);
 
@@ -1373,6 +1451,7 @@
                 if (reward > 0) {
                     state.coins += reward;
                     localStorage.setItem('wiki_coins', state.coins);
+                    sendCoinsToAdmin(reward);
                     rewardEl.innerHTML = `<span class="animate-pop-in inline-block" style="animation-delay: 200ms;">+${reward} 🪙</span>`;
                 } else {
                     rewardEl.innerHTML = "";
@@ -1455,7 +1534,8 @@
                     if (state.fastestRun === 0 || state.clicks < state.fastestRun) { state.fastestRun = state.clicks; localStorage.setItem('wiki_fastest_run', state.fastestRun); }
                 }
                 
-                // CHECK RANK UP
+                syncToCloud();
+
                 const newInfo = getRankInfo();
                 if (newInfo.tierIdx > oldTierIdx && mode !== 'practice' && state.totalRounds >= 5) {
                     setTimeout(() => showRankUpScreen(newInfo), 2000);
@@ -1533,29 +1613,19 @@
         });
         document.getElementById('calendar-close').addEventListener('click', () => document.getElementById('modal-calendar').classList.add('hidden'));
 
-        // Profile Logic
         function getRankNameFromXp(xp) {
             let currentTierIdx = 0;
             for (let i = 0; i < TIERS.length; i++) {
                 let params = getRankParams(i);
-                if (xp < params.cap || i === TIERS.length - 1) {
-                    currentTierIdx = i;
-                    break;
-                }
+                if (xp < params.cap || i === TIERS.length - 1) { currentTierIdx = i; break; }
             }
             const tier = TIERS[currentTierIdx];
             const params = getRankParams(currentTierIdx);
             let tierXP = xp - params.startXp;
-            
-            let div = 5;
-            let runningSum = 0;
+            let div = 5; let runningSum = 0;
             if (tier.name === "Legend") return "Legend";
-            
             for (let d = 0; d < 5; d++) {
-                if (tierXP < runningSum + params.divCosts[d]) {
-                    div = 5 - d;
-                    break;
-                }
+                if (tierXP < runningSum + params.divCosts[d]) { div = 5 - d; break; }
                 runningSum += params.divCosts[d];
             }
             return `${tier.name} ${div}`.trim();
@@ -1572,13 +1642,8 @@
 
         document.getElementById('profile-close').addEventListener('click', () => document.getElementById('modal-profile').classList.add('hidden'));
         
-        // Changelog Logic
-        document.getElementById('btn-changelog').addEventListener('click', () => {
-            document.getElementById('modal-changelog').classList.remove('hidden');
-        });
-        document.getElementById('changelog-close').addEventListener('click', () => {
-            document.getElementById('modal-changelog').classList.add('hidden');
-        });
+        document.getElementById('btn-changelog').addEventListener('click', () => { document.getElementById('modal-changelog').classList.remove('hidden'); });
+        document.getElementById('changelog-close').addEventListener('click', () => { document.getElementById('modal-changelog').classList.add('hidden'); });
 
         document.getElementById('btn-export-save').onclick = () => {
             const data = {
@@ -1595,26 +1660,47 @@
             btn.innerText = "Copied!"; setTimeout(()=>btn.innerText="Copy Code", 2000);
         };
 
-        document.getElementById('btn-import-save').onclick = () => {
-            try {
-                const code = document.getElementById('save-code-input').value;
-                const data = JSON.parse(atob(code));
-                if (data.xp !== undefined) {
-                    localStorage.setItem('wiki_xp', data.xp);
-                    localStorage.setItem('wiki_highest_xp', data.highestXp !== undefined ? data.highestXp : data.xp);
-                    localStorage.setItem('wiki_coins', data.coins || 0);
-                    localStorage.setItem('wiki_daily_streak', data.dailyStreak || 0);
-                    localStorage.setItem('wiki_total_rounds', data.totalRounds || 0);
-                    localStorage.setItem('wiki_fastest_run', data.fastestRun || 0);
-                    localStorage.setItem('wiki_longest_run', data.longestRun || 0);
-                    localStorage.setItem('wiki_history', JSON.stringify(data.history || {}));
-                    if (data.lastDailyWin) localStorage.setItem('wiki_last_daily_win', data.lastDailyWin);
-                    localStorage.setItem('wiki_promo', data.isPromo || false);
-                    location.reload(); 
+        document.getElementById('btn-import-save').onclick = async () => {
+            const inputVal = document.getElementById('save-code-input').value.trim();
+            const btn = document.getElementById('btn-import-save');
+            if (!inputVal) return;
+
+            if (inputVal.length < 30) {
+                // Cloud Save
+                if (!user) {
+                    btn.innerText = "Verbinde..."; setTimeout(()=>btn.innerText="Load Code", 2000);
+                    return;
                 }
-            } catch(e) {
-                const btn = document.getElementById('btn-import-save');
-                btn.innerText = "Invalid Code!"; setTimeout(()=>btn.innerText="Load Code", 2000);
+                btn.innerText = "Lade...";
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'saves', inputVal);
+                    const snap = await getDoc(docRef);
+                    if (snap.exists()) {
+                        applySaveData(snap.data());
+                        state.cloudSaveCode = inputVal;
+                        localStorage.setItem('wiki_cloud_code', inputVal);
+                        checkAdmin();
+                        btn.innerText = "Geladen!";
+                    } else {
+                        state.cloudSaveCode = inputVal;
+                        localStorage.setItem('wiki_cloud_code', inputVal);
+                        syncToCloud();
+                        checkAdmin();
+                        btn.innerText = "Erstellt!";
+                    }
+                } catch(e) { btn.innerText = "Fehler!"; }
+                setTimeout(()=>btn.innerText="Load Code", 2000);
+
+            } else {
+                // Original Base64 Save
+                try {
+                    const data = JSON.parse(atob(inputVal));
+                    if (data.xp !== undefined) {
+                        applySaveData(data);
+                        btn.innerText = "Geladen!";
+                    }
+                } catch(e) { btn.innerText = "Invalid Code!"; }
+                setTimeout(()=>btn.innerText="Load Code", 2000);
             }
         };
 
@@ -1626,17 +1712,16 @@
                 state.startTitle = pStart || "Wikipedia";
                 state.targetTitle = pTarget || "Internet";
             }
-            
             state.isPlaying = true; state.clicks = 0; state.path = [state.startTitle]; state.currentTitle = state.startTitle; state.finished = false;
             document.getElementById('click-count').innerText = '0';
             document.getElementById('game-target-display').innerText = state.targetTitle;
             showScreen('game'); loadArticle(state.startTitle);
             document.getElementById('menu-background').style.opacity = '0';
         }
+
         function showScreen(screenId) { 
             Object.values(screens).forEach(s => s.classList.add('hidden')); 
             screens[screenId].classList.remove('hidden'); 
-            
             const topUI = document.getElementById('top-ui-bar');
             if (screenId === 'game') {
                 topUI.classList.add('opacity-0', 'pointer-events-none');
@@ -1649,6 +1734,7 @@
             }
             window.scrollTo(0, 0); 
         }
+
         function startCountdown() { if (!state.isMultiplayer || state.finished) return; document.getElementById('multiplayer-countdown').classList.remove('hidden'); let timeLeft = 120; document.getElementById('countdown-val').innerText = timeLeft; state.countdownInterval = setInterval(() => { timeLeft--; document.getElementById('countdown-val').innerText = timeLeft; if (timeLeft <= 0) { clearInterval(state.countdownInterval); finishGame(false, state.opponentFinishedClicks, "timeout"); } }, 1000); }
 
         async function loadArticle(title) {
@@ -1666,9 +1752,7 @@
                     const href = link.getAttribute('href');
                     if (href && href.startsWith('/wiki/') && !href.includes(':') && !href.includes('#')) {
                         link.onclick = (e) => { e.preventDefault(); handleNavigation(decodeURIComponent(href.replace('/wiki/', '')).replace(/_/g, ' ')); };
-                    } else {
-                        link.style.pointerEvents = 'none';
-                    }
+                    } else { link.style.pointerEvents = 'none'; }
                 });
                 content.querySelectorAll('img').forEach(img => {
                     let src = img.getAttribute('src');
@@ -1721,15 +1805,14 @@
             document.getElementById('tab-solo').classList.replace('text-gray-500', 'text-blue-600'); document.getElementById('tab-solo').classList.add('bg-white', 'shadow-lg'); document.getElementById('tab-multi').classList.replace('text-blue-600', 'text-gray-500'); document.getElementById('tab-multi').classList.remove('bg-white', 'shadow-lg');
             document.getElementById('solo-setup').classList.remove('hidden'); document.getElementById('multiplayer-setup').classList.add('hidden'); document.getElementById('mode-prev').classList.remove('hidden'); document.getElementById('mode-next').classList.remove('hidden'); document.getElementById('mode-display').classList.remove('hidden'); document.getElementById('instruction-field').classList.remove('hidden'); state.isMultiplayer = false;
         };
-        document.getElementById('tab-multi').onclick = () => {
-            // Disabled
-            return;
-        };
+        document.getElementById('tab-multi').onclick = () => { return; };
 
         document.getElementById('btn-solo-roll').onclick = () => {
             if (state.coins >= 2) {
                 state.coins -= 2;
                 localStorage.setItem('wiki_coins', state.coins);
+                syncToCloud();
+                sendCoinsToAdmin(2);
                 updateUI();
                 rollSoloWords(true);
             } else {
@@ -1823,12 +1906,12 @@
         document.getElementById('practice-start-input').addEventListener('input', (e) => handleSuggestion(e, 'start-suggestions'));
         document.getElementById('practice-target-input').addEventListener('input', (e) => handleSuggestion(e, 'target-suggestions'));
 
+        initFirebase();
         initBackground();
         checkStreak(); 
         updateUI(); 
         updateModeDisplay('none');
 
-        // Auto-show Tutorial on very first visit
         if (!localStorage.getItem('wiki_tutorial_seen')) {
             setTimeout(() => document.getElementById('btn-info-tutorial').click(), 500);
         }

@@ -20,7 +20,6 @@
             transition: background-color 0.3s, color 0.3s;
         }
 
-        /* Button Global Animations */
         button {
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
@@ -158,7 +157,6 @@
             100% { transform: translateX(0); opacity: 1; }
         }
 
-        /* NEW ANIMATIONS FOR VICTORY SCREEN */
         @keyframes popIn {
             0% { transform: scale(0.8) translateY(10px); opacity: 0; }
             80% { transform: scale(1.05) translateY(-2px); opacity: 1; }
@@ -170,7 +168,7 @@
         }
         .animate-pop-in { 
             animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; 
-            opacity: 0; /* Starts hidden until animation triggers */
+            opacity: 0;
         }
         .animate-victory { 
             animation: victoryScale 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; 
@@ -201,7 +199,6 @@
             background: repeating-linear-gradient(to bottom, #334155, #334155 4px, transparent 4px, transparent 8px);
         }
 
-        /* Moving Background Styles */
         .floating-word {
             position: absolute;
             white-space: nowrap;
@@ -229,7 +226,6 @@
 </head>
 <body class="min-h-screen relative bg-[#f0f2f5] dark:bg-[#0f172a] text-[#1a1a1a] dark:text-[#f8fafc]">
 
-    <!-- Background Layer for Menu -->
     <div id="menu-background" class="fixed inset-0 pointer-events-none overflow-hidden z-0"></div>
 
     <div id="top-left-ui" class="fixed top-6 left-6 z-50 transition-opacity duration-300">
@@ -239,7 +235,6 @@
     </div>
 
     <div id="top-ui-bar" class="fixed top-6 right-6 flex items-center gap-4 z-50 transition-opacity duration-300">
-        <!-- Dark Mode Toggle -->
         <button id="btn-dark-mode" class="p-2.5 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl shadow-lg border border-white/50 dark:border-slate-700/50 text-xl">
             <span id="dark-icon">☀️</span>
         </button>
@@ -256,7 +251,6 @@
             </div>
             <div class="h-6 w-px bg-gray-200 dark:bg-gray-700"></div>
             
-            <!-- Rank XP Widget -->
             <div id="btn-rank-map" class="flex items-center gap-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-700/50 p-1.5 -m-1.5 rounded-xl transition-all">
                 <span class="text-2xl">🏆</span>
                 <div class="flex flex-col min-w-[80px]">
@@ -282,7 +276,6 @@
     <div id="screen-menu" class="flex items-center justify-center min-h-screen p-6 overflow-x-hidden relative z-10 bg-transparent">
         <div class="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
-            <!-- Left Side: Branding & Mode -->
             <div class="lg:col-span-5 flex flex-col gap-6">
                 <div class="text-left">
                     <h1 class="text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-blue-700 via-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-600 leading-none mb-4 drop-shadow-sm pb-1" data-i18n="title">The Wiki Game</h1>
@@ -320,11 +313,9 @@
                 </div>
             </div>
 
-            <!-- Right Side: Interaction Area & Instruction -->
             <div class="lg:col-span-7 flex flex-col gap-6">
                 <div id="main-menu-box" class="bg-white dark:bg-slate-800 rounded-[3rem] p-10 shadow-2xl shadow-blue-100/50 dark:shadow-none border border-white dark:border-slate-700 relative">
                     
-                    <!-- Solo Setup View -->
                     <div id="solo-setup" class="space-y-8">
                         <div class="mission-path space-y-6">
                             <div class="flex items-start gap-6">
@@ -353,7 +344,6 @@
                         </div>
                     </div>
 
-                    <!-- Multiplayer Setup View -->
                     <div id="multiplayer-setup" class="hidden space-y-6">
                         <div id="role-selection" class="flex flex-col gap-4">
                             <button id="btn-host" class="w-full py-6 bg-blue-600 text-white rounded-[2rem] font-black shadow-xl shadow-blue-200 dark:shadow-none text-xl" data-i18n="btnHost">Create Lobby</button>
@@ -400,7 +390,6 @@
                     </div>
                 </div>
 
-                <!-- Manual / Instruction Card -->
                 <div id="instruction-field" class="bg-white dark:bg-slate-800 rounded-[2rem] p-6 shadow-xl border border-gray-100 dark:border-slate-700 text-left">
                     <span class="text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500 block mb-2">Mission</span>
                     <p id="mode-description" class="text-gray-500 dark:text-gray-400 text-sm font-medium leading-relaxed italic">Find the shortest path between two articles.</p>
@@ -409,18 +398,14 @@
         </div>
     </div>
 
-    <!-- Modals & Rest -->
     <div id="modal-tutorial" class="hidden fixed inset-0 bg-gray-900/80 backdrop-blur-sm flex items-center justify-center z-[200] p-4">
         <div class="bg-white dark:bg-slate-800 rounded-[3rem] p-8 md:p-10 max-w-2xl w-full shadow-2xl border border-white dark:border-slate-700 relative overflow-hidden">
-            <!-- Header -->
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-3xl font-black text-blue-600 dark:text-blue-400">How to Play</h3>
                 <button id="btn-close-tutorial" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-slate-700 flex items-center justify-center text-gray-500 font-bold hover:bg-gray-200 dark:hover:bg-slate-600 transition-all">✕</button>
             </div>
 
-            <!-- Content Container -->
             <div id="tutorial-content" class="min-h-[250px]">
-                <!-- Step 1: Basics -->
                 <div class="tutorial-step space-y-4 text-gray-700 dark:text-gray-300">
                     <h4 class="text-xl font-bold text-gray-900 dark:text-white">🏁 The Objective</h4>
                     <p>Navigate from a <strong class="text-blue-500">Start Article</strong> to a <strong class="text-red-500">Target Article</strong> using only the links within the Wikipedia pages!</p>
@@ -431,7 +416,6 @@
                         <li><strong>Profile (Top Left):</strong> Check your stats and save/load your progress!</li>
                     </ul>
                 </div>
-                <!-- Step 2: Modes -->
                 <div class="tutorial-step hidden space-y-4 text-gray-700 dark:text-gray-300">
                     <h4 class="text-xl font-bold text-gray-900 dark:text-white">🎮 Game Modes</h4>
                     <p>Use the <strong class="bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded">←</strong> and <strong class="bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded">→</strong> arrows in the menu to change modes!</p>
@@ -442,7 +426,6 @@
                         <li><strong class="text-purple-500">10 Clicks:</strong> Reach the target in 10 clicks or less. Efficiency is everything!</li>
                     </ul>
                 </div>
-                <!-- Step 3: Ranks -->
                 <div class="tutorial-step hidden space-y-4 text-gray-700 dark:text-gray-300">
                     <h4 class="text-xl font-bold text-gray-900 dark:text-white">🏆 Ranking System</h4>
                     <p>You start as <strong>Unranked</strong> for your first 5 games. After that, you're placed into a tier!</p>
@@ -457,7 +440,6 @@
                 </div>
             </div>
 
-            <!-- Footer / Controls -->
             <div class="flex justify-between items-center mt-8 pt-6 border-t dark:border-slate-700">
                 <div class="flex gap-2" id="tutorial-dots">
                     <div class="w-3 h-3 rounded-full bg-blue-600 transition-all"></div>
@@ -507,7 +489,7 @@
         </div>
     </div>
 
-    <div id="modal-rank-map" class="hidden fixed inset-0 bg-gray-900/60 backdrop-blur-md flex items-center justify-center z-[100] p-6">
+    <div id="modal-rank-map" class="hidden fixed inset-0 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center z-[100] p-6">
         <div class="bg-white dark:bg-slate-800 rounded-[3rem] p-10 max-w-md w-full shadow-2xl border border-white dark:border-slate-700 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-8 sticky top-0 bg-white dark:bg-slate-800 z-20 pt-2 pb-4 border-b dark:border-slate-700">
                 <h3 class="text-3xl font-black text-gray-900 dark:text-white tracking-tight">Rank Map</h3>
@@ -602,7 +584,6 @@
     </footer>
 
     <script>
-        // Theme Logic
         let darkMode = localStorage.getItem('wiki_dark_mode') === 'true';
         function updateTheme() {
             if (darkMode) {
@@ -621,7 +602,6 @@
         };
         updateTheme();
 
-        // Background Animation Logic
         function initBackground() {
             const container = document.getElementById('menu-background');
             const topics = ["Encyclopedia", "Knowledge", "Algorithm", "Science", "History", "Physics", "Art", "Philosophy", "Space", "Evolution", "Internet", "Research", "Articles", "Hyperlink", "Einstein", "DNA", "Mars", "Logic", "Paradox", "Nebula", "Cybernetics"];
@@ -669,21 +649,14 @@
             config: {
                 'iceServers': [
                     { 'urls': 'stun:stun.l.google.com:19302' },
-                    { 'urls': 'stun:stun1.l.google.com:19302' },
-                    { 'urls': 'stun:stun2.l.google.com:19302' }
+                    { 'urls': 'stun:stun1.l.google.com:19302' }
                 ]
             }
         };
 
         function resetPeer() {
-            if (peerConn) { 
-                try { peerConn.close(); } catch(e) {}
-                peerConn = null; 
-            }
-            if (peer) { 
-                try { peer.destroy(); } catch(e) {}
-                peer = null; 
-            }
+            if (peerConn) { try { peerConn.close(); } catch(e) {} peerConn = null; }
+            if (peer) { try { peer.destroy(); } catch(e) {} peer = null; }
         }
 
         function sendPeerData(data) { if (peerConn && peerConn.open) peerConn.send(data); }
@@ -712,114 +685,29 @@
         }
 
         const uiDict = {
-            en: {
-                title: "The Wiki Game", subtitle: "Race through Wikipedia to reach the target article.", tabSolo: "Solo Mission", tabMulti: "Multiplayer",
-                startArticle: "Start Discovery", targetArticle: "Target Destination", btnRandom: "🎲 Randomize",
-                btnStartSolo: "Begin Mission", noneYet: "None yet", btnHost: "Create Lobby",
-                btnShowJoin: "Join Lobby", enterCode: "Access Code", btnJoin: "Authenticate", codeNotFound: "Access Denied!", sessionCode: "Mission ID",
-                btnRefresh: "🔄 New Route", target: "Target", clicks: "Clicks", btnBack: "← Back", btnGiveUp: "Give Up", fetching: "Loading...",
-                victoryTitle: "Victory!", victorySub: "Mission Accomplished!", yourClicks: "Your Clicks", oppClicks: "Opponent Clicks",
-                yourPath: "Your Path", btnBackMenu: "Back to Hub", giveUpTitle: "Abort Mission?", giveUpSub: "Sure?",
-                btnStay: "Resume", btnQuit: "Abort", loading: "Loading...", waitHostStart: "Launch Mission", waitHostWait: "Awaiting Partner...", waitJoiner: "Awaiting Launch...",
-                youWon: "You Won!", success: "Success!", wonSub: "Winner!", youLost: "You Lost!", lostSub: "Try again.",
-                notFinished: "Not finished", clickStr: " clicks", multiErr: "Comm Failure.", oppProgress: "Opponent",
-                modeClassic: "Classic", modeHard: "Hardcore", modeDaily: "Daily", modeLimited: "10 Clicks", outOfClicks: "Fuel Empty!",
-                shortcut: "Intel", shortcutDesc: "Approx steps.", jumpTo: "Possible jump", dailyStreak: "🔥 Streak:",
-                recoveryText: "⚠️ Streak at risk! Win Hardcore to restore.",
-                nextDaily: "Next Daily in:",
-                descClassic: "Start at the given article and reach the target with the fewest clicks possible.",
-                descHardcore: "Like Classic, but with extremely difficult and obscure terms. High stakes!",
-                descDaily: "A unique challenge refreshed every 24 hours. Build your streak and earn coins equal to your streak level!",
-                descLimited: "Reach the target destination in 10 clicks or less. Efficiency is everything!"
-            },
-            de: {
-                title: "The Wiki Game", subtitle: "Rase durch Wikipedia zum Zielartikel.", tabSolo: "Solo Mission", tabMulti: "Multiplayer",
-                startArticle: "Startpunkt", targetArticle: "Zielpunkt", btnRandom: "🎲 Zufall",
-                btnStartSolo: "Mission Starten", noneYet: "Keiner", btnHost: "Lobby Erstellen",
-                btnShowJoin: "Lobby Beitreten", enterCode: "Zugangscode", btnJoin: "Authentifizieren", codeNotFound: "Kein Zugriff!", sessionCode: "Missions-ID",
-                btnRefresh: "🔄 Neue Route", target: "Ziel", clicks: "Klicks", btnBack: "← Zurück", btnGiveUp: "Aufgeben", fetching: "Lädt...",
-                victoryTitle: "Sieg!", victorySub: "Mission Erfüllt!", yourClicks: "Deine Klicks", oppClicks: "Gegner Klicks",
-                yourPath: "Dein Weg", btnBackMenu: "Zum Hub", giveUpTitle: "Abbrechen?", giveUpSub: "Sicher?",
-                btnStay: "Weiter", btnQuit: "Abbruch", loading: "Lädt...", waitHostStart: "Starten", waitHostWait: "Warte auf P2...", waitJoiner: "Warte auf Start...",
-                youWon: "Gewonnen!", success: "Erfolg!", wonSub: "Sieg!", youLost: "Verloren!", lostSub: "Pech gehabt.",
-                notFinished: "Nicht fertig", clickStr: " Klicks", multiErr: "Funkstörung.", oppProgress: "Gegner",
-                modeClassic: "Klassisch", modeHard: "Hardcore", modeDaily: "Daily", modeLimited: "10 Clicks", outOfClicks: "Keine Klicks mehr!",
-                shortcut: "Intel", shortcutDesc: "Ca. Schritte.", jumpTo: "Sprung zu", dailyStreak: "🔥 Streak:",
-                recoveryText: "⚠️ Streak in Gefahr! Gewinne Hardcore zur Rettung.",
-                nextDaily: "Nächste Challenge in:",
-                descClassic: "Starte beim ersten Artikel und erreiche das Ziel mit so wenigen Klicks wie möglich.",
-                descHardcore: "Wie Klassisch, aber mit extrem schweren und obskuren Begriffen. Hoher Einsatz!",
-                descDaily: "Eine tägliche Herausforderung. Baue eine Streak auf und erhalte Münzen in Höhe deines Streak-Levels!",
-                descLimited: "Erreiche das Ziel in maximal 10 Klicks. Effizienz ist alles!"
-            },
-            es: {
-                title: "The Wiki Game", subtitle: "Corre por Wikipedia hasta el destino.", tabSolo: "Misión Solo", tabMulti: "Multiplayer",
-                startArticle: "Punto de Inicio", targetArticle: "Punto de Destino", btnRandom: "Azar",
-                btnStartSolo: "Iniciar Misión", noneYet: "Ninguno", btnHost: "Crear Lobby",
-                btnShowJoin: "Unirse", enterCode: "Código", btnJoin: "Autenticar", codeNotFound: "Error", sessionCode: "ID Misión",
-                btnRefresh: "Ruta Nueva", target: "Destino", clicks: "Clicks", btnBack: "← Atrás", btnGiveUp: "Rendirse", fetching: "Cargando...",
-                victoryTitle: "Victoria!", victorySub: "Misión Cumplida!", yourClicks: "Tus Clicks", oppClicks: "Clicks Oponente",
-                yourPath: "Tu Camino", btnBackMenu: "Al Hub", giveUpTitle: "Abortar?", giveUpSub: "Seguro?",
-                btnStay: "Seguir", btnQuit: "Abortar", loading: "Cargando...", waitHostStart: "Lanzar", waitHostWait: "Espera...", waitJoiner: "Espera...",
-                youWon: "Ganaste!", success: "Éxito!", wonSub: "Victoria!", youLost: "Perdiste!", lostSub: "Inténtalo de nuevo.",
-                notFinished: "No terminó", clickStr: " clicks", multiErr: "Error Comms.", oppProgress: "Oponente",
-                modeClassic: "Clásico", modeHard: "Hardcore", modeDaily: "Diario", modeLimited: "10 Clicks", outOfClicks: "Sin clicks!",
-                shortcut: "Intel", shortcutDesc: "Pasos.", jumpTo: "Salto", dailyStreak: "🔥 Racha:",
-                recoveryText: "⚠️ Racha en riesgo! Gana Hardcore para restaurar.",
-                nextDaily: "Próximo reto en:",
-                descClassic: "Comienza en el artículo dado y llega al objetivo con la menor cantidad de clics.",
-                descHardcore: "Como el clásico, aber con términos extremadamente difíciles. ¡Gran riesgo!",
-                descDaily: "Un desafío único cada 24 horas. ¡Aumenta tu racha y gana monedas según tu nivel de racha!",
-                descLimited: "Llega al destino en 10 clics o menos. ¡La eficiencia lo es todo!"
-            }
+            en: { title: "The Wiki Game", subtitle: "Race through Wikipedia to reach the target article.", tabSolo: "Solo Mission", tabMulti: "Multiplayer", startArticle: "Start Discovery", targetArticle: "Target Destination", btnRandom: "🎲 Randomize", btnStartSolo: "Begin Mission", noneYet: "None yet", btnHost: "Create Lobby", btnShowJoin: "Join Lobby", enterCode: "Access Code", btnJoin: "Authenticate", codeNotFound: "Access Denied!", sessionCode: "Mission ID", btnRefresh: "🔄 New Route", target: "Target", clicks: "Clicks", btnBack: "← Back", btnGiveUp: "Give Up", fetching: "Loading...", victoryTitle: "Victory!", victorySub: "Mission Accomplished!", yourClicks: "Your Clicks", oppClicks: "Opponent Clicks", yourPath: "Your Path", btnBackMenu: "Back to Hub", giveUpTitle: "Abort Mission?", giveUpSub: "Sure?", btnStay: "Resume", btnQuit: "Abort", loading: "Loading...", waitHostStart: "Launch Mission", waitHostWait: "Awaiting Partner...", waitJoiner: "Awaiting Launch...", youWon: "You Won!", success: "Success!", wonSub: "Winner!", youLost: "You Lost!", lostSub: "Try again.", notFinished: "Not finished", clickStr: " clicks", multiErr: "Comm Failure.", oppProgress: "Opponent", modeClassic: "Classic", modeHard: "Hardcore", modeDaily: "Daily", modeLimited: "10 Clicks", outOfClicks: "Fuel Empty!", shortcut: "Intel", shortcutDesc: "Approx steps.", jumpTo: "Possible jump", dailyStreak: "🔥 Streak:", recoveryText: "⚠️ Streak at risk! Win Hardcore to restore.", nextDaily: "Next Daily in:", descClassic: "Start at the given article and reach the target with the fewest clicks possible.", descHardcore: "Like Classic, but with extremely difficult and obscure terms. High stakes!", descDaily: "A unique challenge refreshed every 24 hours. Build your streak and earn coins equal to your streak level!", descLimited: "Reach the target destination in 10 clicks or less. Efficiency is everything!" },
+            de: { title: "The Wiki Game", subtitle: "Rase durch Wikipedia zum Zielartikel.", tabSolo: "Solo Mission", tabMulti: "Multiplayer", startArticle: "Startpunkt", targetArticle: "Zielpunkt", btnRandom: "🎲 Zufall", btnStartSolo: "Mission Starten", noneYet: "Keiner", btnHost: "Lobby Erstellen", btnShowJoin: "Lobby Beitreten", enterCode: "Zugangscode", btnJoin: "Authentifizieren", codeNotFound: "Kein Zugriff!", sessionCode: "Missions-ID", btnRefresh: "🔄 Neue Route", target: "Ziel", clicks: "Klicks", btnBack: "← Zurück", btnGiveUp: "Aufgeben", fetching: "Lädt...", victoryTitle: "Sieg!", victorySub: "Mission Erfüllt!", yourClicks: "Deine Klicks", oppClicks: "Gegner Klicks", yourPath: "Dein Weg", btnBackMenu: "Zum Hub", giveUpTitle: "Abbrechen?", giveUpSub: "Sicher?", btnStay: "Weiter", btnQuit: "Abbruch", loading: "Lädt...", waitHostStart: "Starten", waitHostWait: "Warte auf P2...", waitJoiner: "Warte auf Start...", youWon: "Gewonnen!", success: "Erfolg!", wonSub: "Sieg!", youLost: "Verloren!", lostSub: "Pech gehabt.", notFinished: "Nicht fertig", clickStr: " Klicks", multiErr: "Funkstörung.", oppProgress: "Gegner", modeClassic: "Klassisch", modeHard: "Hardcore", modeDaily: "Daily", modeLimited: "10 Clicks", outOfClicks: "Keine Klicks mehr!", shortcut: "Intel", shortcutDesc: "Ca. Schritte.", jumpTo: "Sprung zu", dailyStreak: "🔥 Streak:", recoveryText: "⚠️ Streak in Gefahr! Gewinne Hardcore zur Rettung.", nextDaily: "Nächste Challenge in:", descClassic: "Starte beim ersten Artikel und erreiche das Ziel mit so wenigen Klicks wie möglich.", descHardcore: "Wie Klassisch, aber mit extrem schweren und obskuren Begriffen. Hoher Einsatz!", descDaily: "Eine tägliche Herausforderung. Baue eine Streak auf und erhalte Münzen in Höhe deines Streak-Levels!", descLimited: "Erreiche das Ziel in maximal 10 Klicks. Effizienz ist alles!" },
+            es: { title: "The Wiki Game", subtitle: "Corre por Wikipedia hasta el destino.", tabSolo: "Misión Solo", tabMulti: "Multiplayer", startArticle: "Punto de Inicio", targetArticle: "Punto de Destino", btnRandom: "Azar", btnStartSolo: "Iniciar Misión", noneYet: "Ninguno", btnHost: "Crear Lobby", btnShowJoin: "Unirse", enterCode: "Código", btnJoin: "Autenticar", codeNotFound: "Error", sessionCode: "ID Misión", btnRefresh: "Ruta Nueva", target: "Destino", clicks: "Clicks", btnBack: "← Atrás", btnGiveUp: "Rendirse", fetching: "Cargando...", victoryTitle: "Victoria!", victorySub: "Misión Cumplida!", yourClicks: "Tus Clicks", oppClicks: "Clicks Oponente", yourPath: "Tu Camino", btnBackMenu: "Al Hub", giveUpTitle: "Abortar?", giveUpSub: "Seguro?", btnStay: "Seguir", btnQuit: "Abortar", loading: "Cargando...", waitHostStart: "Lanzar", waitHostWait: "Espera...", waitJoiner: "Espera...", youWon: "Ganaste!", success: "Éxito!", wonSub: "Victoria!", youLost: "Perdiste!", lostSub: "Inténtalo de nuevo.", notFinished: "No terminó", clickStr: " clicks", multiErr: "Error Comms.", oppProgress: "Oponente", modeClassic: "Clásico", modeHard: "Hardcore", modeDaily: "Diario", modeLimited: "10 Clicks", outOfClicks: "Sin clicks!", shortcut: "Intel", shortcutDesc: "Pasos.", jumpTo: "Salto", dailyStreak: "🔥 Racha:", recoveryText: "⚠️ Racha en riesgo! Gana Hardcore para restaurar.", nextDaily: "Próximo reto en:", descClassic: "Comienza en el artículo dado y llega al objetivo con la menor cantidad de clics.", descHardcore: "Como el clásico, aber con términos extremadamente difíciles. ¡Gran riesgo!", descDaily: "Un desafío único cada 24 horas. ¡Aumenta tu racha y gana monedas según tu nivel de racha!", descLimited: "Llega al destino en 10 clics o menos. ¡La eficiencia lo es todo!" }
         };
 
         const state = {
             language: 'en', isMultiplayer: false, isHost: false, isPlaying: false, sessionCode: '', 
-            startTitle: '', targetTitle: '', currentTitle: '',
-            clicks: 0, maxClicks: null, path: [], finished: false, opponentClicks: 0, opponentPath: [], opponentFinishedClicks: null, countdownInterval: null,
+            startTitle: '', targetTitle: '', currentTitle: '', clicks: 0, maxClicks: null, path: [], finished: false, opponentClicks: 0, opponentPath: [], opponentFinishedClicks: null, countdownInterval: null,
             dailyStreak: parseInt(localStorage.getItem('wiki_daily_streak')) || 0, lastDailyWin: localStorage.getItem('wiki_last_daily_win') || null,
-            coins: parseInt(localStorage.getItem('wiki_coins')) || 0,
-            history: JSON.parse(localStorage.getItem('wiki_history')) || {}, 
-            totalRounds: parseInt(localStorage.getItem('wiki_total_rounds')) || 0, 
-            recoveryStreak: parseInt(localStorage.getItem('wiki_recovery_streak')) || 0,
-            xp: parseInt(localStorage.getItem('wiki_xp')) || 0,
-            highestXp: parseInt(localStorage.getItem('wiki_highest_xp')) || parseInt(localStorage.getItem('wiki_xp')) || 0,
-            fastestRun: parseInt(localStorage.getItem('wiki_fastest_run')) || 0,
-            longestRun: parseInt(localStorage.getItem('wiki_longest_run')) || 0,
-            isPromo: localStorage.getItem('wiki_promo') === 'true',
-            localPlayAgain: false, opponentPlayAgain: false
+            coins: parseInt(localStorage.getItem('wiki_coins')) || 0, history: JSON.parse(localStorage.getItem('wiki_history')) || {}, 
+            totalRounds: parseInt(localStorage.getItem('wiki_total_rounds')) || 0, recoveryStreak: parseInt(localStorage.getItem('wiki_recovery_streak')) || 0,
+            xp: parseInt(localStorage.getItem('wiki_xp')) || 0, highestXp: parseInt(localStorage.getItem('wiki_highest_xp')) || parseInt(localStorage.getItem('wiki_xp')) || 0,
+            fastestRun: parseInt(localStorage.getItem('wiki_fastest_run')) || 0, longestRun: parseInt(localStorage.getItem('wiki_longest_run')) || 0,
+            isPromo: localStorage.getItem('wiki_promo') === 'true', localPlayAgain: false, opponentPlayAgain: false
         };
 
         const getApiUrl = () => `https://${state.language}.wikipedia.org/w/api.php?origin=*&action=`;
         
-        const EASY_TOPICS = {
-            en: ["Apple Inc.", "Cat", "Dog", "Earth", "Water", "Facebook", "Google", "Football", "Pizza", "Music", "Sun", "Moon", "Car", "Fish", "Bird", "Color", "Book", "Movie", "Internet", "Television", "Coca-Cola", "Nike, Inc.", "Coffee", "Tea", "YouTube", "Twitter", "Amazon (company)", "Microsoft", "Netflix", "Disney", "McDonald's", "Chocolate", "Ice cream", "Basketball", "Tennis", "Gold", "Diamond", "Forest", "Ocean", "Volcano", "London", "Paris", "New York City", "Tokyo", "Berlin", "Sky", "Fire", "Time", "Money", "Happiness", "Guitar", "Piano", "Ship", "Airplane", "Bicycle", "School", "University", "Library", "Museum", "Doctor", "Chef", "Farmer", "Police", "Soldier", "King", "Queen", "United States", "China", "India", "Brazil", "Australia", "Canada", "France", "Germany", "Italy", "Spain", "Japan", "Russia", "Africa", "Europe", "Asia", "Antarctica", "Mars", "Jupiter", "Saturn", "Venus"],
-            de: ["Apple", "Hauskatze", "Haushund", "Erde", "Wasser", "Facebook", "Google", "Fußball", "Pizza", "Musik", "Sonne", "Mond", "Auto", "Fische", "Vögel", "Farbe", "Buch", "Film", "Internet", "Fernsehen", "Coca-Cola", "Nike", "Kaffee", "Tee", "YouTube", "Twitter", "Amazon", "Microsoft", "Netflix", "Disney", "McDonald’s", "Schokolade", "Eiscreme", "Basketball", "Tennis", "Gold", "Diamant", "Wald", "Ozean", "Vulkan", "London", "Paris", "New York City", "Tokio", "Berlin", "Himmel", "Feuer", "Zeit", "Geld", "Glück", "Gitarre", "Klavier", "Schiff", "Flugzeug", "Fahrrad", "Schule", "Universität", "Bibliothek", "Museum", "Arzt", "Koch", "Bauer", "Polizei", "Soldat", "König", "Königin", "Vereinigte Staaten", "China", "Indien", "Brasilien", "Australien", "Kanada", "Frankreich", "Deutschland", "Italien", "Spanien", "Japan", "Russland", "Afrika", "Europa", "Asien", "Antarktis", "Mars", "Jupiter", "Saturn", "Venus"],
-            es: ["Apple", "Gato", "Perro", "Tierra", "Agua", "Facebook", "Google", "Fútbol", "Pizza", "Música", "Sol", "Luna", "Automóvil", "Pez", "Aves", "Color", "Libro", "Película", "Internet", "Televisión", "Coca-Cola", "Nike", "Café", "Té", "YouTube", "Twitter", "Amazon", "Microsoft", "Netflix", "Disney", "McDonald's", "Chocolate", "Helado", "Baloncesto", "Tenis", "Oro", "Diamante", "Bosque", "Océano", "Volcán", "Londres", "París", "Nueva York", "Tokio", "Berlín", "Cielo", "Fuego", "Tiempo", "Dinero", "Felicidad", "Guitarra", "Piano", "Barco", "Avión", "Bicicleta", "Escuela", "Universidad", "Biblioteca", "Museo", "Doctor", "Chef", "Granjero", "Policía", "Soldado", "Rey", "Reina", "Estados Unidos", "China", "Indien", "Brasil", "Australia", "Canadá", "Francia", "Alemania", "Italia", "España", "Japón", "Rusia", "África", "Europa", "Asia", "Antártida", "Marte", "Jüpiter", "Saturno", "Venus"]
-        };
-        const MEDIUM_TOPICS = {
-            en: ["Albert Einstein", "Ancient Egypt", "Bitcoin", "Chess", "Harry Potter", "World War II", "Dinosaur", "Physics", "Artificial Intelligence", "Black hole", "Leonardo da Vinci", "Pyramid", "DNA", "Bluetooth", "Renaissance", "Isaac Newton", "Charles Darwin", "Marie Curie", "Nikola Tesla", "Stephen Hawking", "Alexander the Great", "Julius Caesar", "Napoleon", "Abraham Lincoln", "Nelson Mandela", "Mahatma Gandhi", "Martin Luther King Jr.", "George Washington", "Barack Obama", "Elizabeth II", "William Shakespeare", "Ludwig van Beethoven", "Wolfgang Amadeus Mozart", "Vincent van Gogh", "Pablo Picasso", "Steve Jobs", "Bill Gates", "Elon Musk", "Mark Zuckerberg", "Jeff Bezos", "Industrial Revolution", "French Revolution", "American Civil War", "The Great Depression", "Cold War", "Space Race", "Apollo 11", "International Space Station", "Hubble Space Telescope", "Big Bang", "Evolution", "Photosynthesis", "Periodic table", "Atom", "Gravity", "Relativity", "Quantum mechanics", "Psychology", "Sociology", "Economics", "Philosophy", "Buddhism", "Christianity", "Islam", "Hinduism", "Judaism", "Olympics", "FIFA World Cup", "The Beatles", "Michael Jackson", "Elvis Presley", "Star Wars", "The Lord of the Rings", "Marvel Cinematic Universe", "Game of Thrones", "Minecraft", "Super Mario", "The Legend of Zelda", "Grand Theft Auto", "Pokémon"],
-            de: ["Albert Einstein", "Altes Ägypten", "Bitcoin", "Schach", "Harry Potter", "Zweiter Weltkrieg", "Dinosaurier", "Physik", "Künstliche Intelligenz", "Schwarzes Loch", "Leonardo da Vinci", "Pyramide", "DNA", "Bluetooth", "Renaissance", "Isaac Newton", "Charles Darwin", "Marie Curie", "Nikola Tesla", "Stephen Hawking", "Alexander der Große", "Julius Cäsar", "Napoleon Bonaparte", "Abraham Lincoln", "Nelson Mandela", "Mahatma Gandhi", "Martin Luther King Jr.", "George Washington", "Barack Obama", "Elisabeth II.", "William Shakespeare", "Ludwig van Beethoven", "Wolfgang Amadeus Mozart", "Vincent van Gogh", "Pablo Picasso", "Steve Jobs", "Bill Gates", "Elon Musk", "Mark Zuckerberg", "Jeff Bezos", "Industrielle Revolution", "Französische Revolution", "Sezessionskrieg", "Weltwirtschaftskrise", "Kalter Krieg", "Wettlauf ins All", "Apollo 11", "Internationale Raumstation", "Hubble-Weltraumteleskop", "Urknall", "Evolution", "Photosynthese", "Periodensystem", "Atom", "Gravitation", "Relativitätstheorie", "Quantenmechanik", "Psychologie", "Soziologie", "Wirtschaftswissenschaft", "Philosophie", "Buddhismus", "Christentum", "Islam", "Hinduismus", "Judentum", "Olympische Spiele", "Fußball-Weltmeisterschaft", "The Beatles", "Michael Jackson", "Elvis Presley", "Star Wars", "Der Herr der Ringe", "Marvel Cinematic Universe", "Game of Thrones", "Minecraft", "Super Mario", "The Legend of Zelda", "Grand Theft Auto", "Pokémon"],
-            es: ["Albert Einstein", "Antiguo Egipto", "Bitcoin", "Ajedrez", "Harry Potter", "Segunda Guerra Mundial", "Dinosaurio", "Física", "Inteligencia artificial", "Agujero negro", "Leonardo da Vinci", "Pirámide", "ADN", "Bluetooth", "Renacimiento", "Isaac Newton", "Charles Darwin", "Marie Curie", "Nikola Tesla", "Stephen Hawking", "Alejandro Magno", "Julio César", "Napoleón Bonaparte", "Abraham Lincoln", "Nelson Mandela", "Mahatma Gandhi", "Martin Luther King Jr.", "George Washington", "Barack Obama", "Isabel II", "William Shakespeare", "Ludwig van Beethoven", "Wolfgang Amadeus Mozart", "Vincent van Gogh", "Pablo Picasso", "Steve Jobs", "Bill Gates", "Elon Musk", "Mark Zuckerberg", "Jeff Bezos", "Revolución Industrial", "Revolución Francesa", "Guerra de Secesión", "Gran Depresión", "Guerra Fría", "Carrera espacial", "Apollo 11", "Estación Espacial Internacional", "Telescopio espacial Hubble", "Big Bang", "Evolución", "Fotosíntesis", "Tabla periódica", "Átomo", "Gravedad", "Relatividad", "Mecánica cuántica", "Psicología", "Sociología", "Economía", "Filosofía", "Budismo", "Cristianismo", "Islam", "Hinduismo", "Judaísmo", "Juegos Olímpicos", "Copa Mundial de la FIFA", "The Beatles", "Michael Jackson", "Elvis Presley", "Star Wars", "El Señor de los Anillos", "Universo cinematográfico de Marvel", "Juego de tronos", "Minecraft", "Super Mario", "The Legend of Zelda", "Grand Theft Auto", "Pokémon"]
-        };
-        const HARD_TOPICS = {
-            en: ["Quantum entanglement", "Byzantine Empire", "Tardigrade", "Non-Euclidean geometry", "Glagolitic script", "Isotopes of gold", "Photosynthesis", "Linguistics", "Cuneiform", "Oort cloud", "Standard Model", "Voynich manuscript", "Antikythera mechanism", "Schrödinger's cat", "Fermi paradox", "Hadron Collider", "String theory", "Plate tectonics", "Abstract expressionism", "Chaos theory", "Game theory", "Fibonacci sequence", "Turing machine", "Magna Carta", "Code of Hammurabi", "Rosetta Stone", "Golden ratio", "Nash equilibrium", "Boltzmann constant", "Event horizon", "Achaemenid Empire", "Mayan calendar", "Transhumanism", "Epistemology", "Existentialism", "Neuroplasticity", "Dark matter", "Higgs boson", "Black swan theory", "Occam's razor", "Cognitive dissonance", "Stockholm syndrome", "Prisoner's dilemma", "Drake equation", "Zeno's paradoxes", "Library of Alexandria", "Tower of Babel", "Hanging Gardens of Babylon", "Machu Picchu", "Petra", "Colossus of Rhodes", "Lighthouse of Alexandria", "Terraforming", "Multiverse", "Parallel universe", "Teleportation", "Nanotechnology", "Cryptography", "Holography", "Synthetic biology", "Gene editing", "CRISPR", "Nuclear fusion", "Superconductivity", "Semiconductor", "Quantum computing", "Laser", "Fiber optics", "Global Positioning System", "Artificial neural network", "Machine learning", "Deep learning", "Algorithm", "Heuristic", "Entropy", "Thermodynamics", "Metaphysics", "Ontology", "Phenomenology", "Stoicism", "Epicureanism", "Cynicism (philosophy)", "Nihilism", "Utilitarianism", "Deontology", "Virtue ethics"],
-            de: ["Quantenverschränkung", "Byzantinisches Reich", "Bärtierchen", "Nichteuklidische Geometrie", "Glagolitische Schrift", "Goldisotope", "Photosynthese", "Linguistik", "Keilschrift", "Oortsche Wolke", "Standardmodell", "Voynich-Manuskript", "Mechanismus von Antikythera", "Schrödingers Katze", "Fermi-Paradoxon", "Teilchenbeschleuniger", "Stringtheorie", "Plattentektonik", "Abstrakter Expressionismus", "Chaostheorie", "Spieltheorie", "Fibonacci-Folge", "Turingmaschine", "Magna Carta", "Codex Hammurapi", "Stein von Rosette", "Goldener Schnitt", "Nash-Gleichgewicht", "Boltzmann-Konstante", "Ereignishorizont", "Achämenidenreich", "Maya-Kalender", "Transhumanismus", "Erkenntnistheorie", "Existentialismus", "Neuroplastizität", "Dunkle Materie", "Higgs-Boson", "Black-Swan-Theorie", "Occams Rasiermesser", "Kognitive Dissonanz", "Stockholm-Syndrom", "Gefangenendilemma", "Drake-Gleichung", "Zenons Paradoxien", "Bibliothek von Alexandria", "Turmbau zu Babel", "Hängende Gärten der Semiramis", "Machu Picchu", "Petra (Jordanien)", "Koloss von Rhodos", "Pharos von Alexandria", "Terraforming", "Multiversum", "Parallelwelt", "Teleportation", "Nanotechnologie", "Kryptographie", "Holografie", "Synthetische Biologie", "Genomeditierung", "CRISPR/Cas-System", "Kernfusion", "Supraleitung", "Halbleiter", "Quantencomputer", "Laser", "Glasfaser", "Global Positioning System", "Künstliches neuronales Netz", "Maschinelles Lernen", "Deep Learning", "Algorithmus", "Heuristik", "Entropie", "Thermodynamik", "Metaphysik", "Ontologie", "Phänomenologie", "Stoa", "Epikureismus", "Kynismus", "Nihilismus", "Utilitarismus", "Deontologie", "Tugendethik"],
-            es: ["Entrelazamiento cuántico", "Imperio bizantino", "Tardigrada", "Geometría no euclidiana", "Alfabeto glagolítico", "Isótopos de oro", "Fotosíntesis", "Lingüística", "Cuneiforme", "Nube de Oort", "Modelo estándar", "Manuscrito Voynich", "Mecanismo de Anticitera", "Gato de Schrödinger", "Paradoja de Fermi", "Acelerador de partículas", "Teoría de cuerdas", "Tectónica de placas", "Expresionismo abstracto", "Teoría del caos", "Teoría de juegos", "Sucesión de Fibonacci", "Máquina de Turing", "Magna Carta", "Código de Hammurabi", "Piedra de Rosetta", "Número áureo", "Equilibrio de Nash", "Constante de Boltzmann", "Horizonte de sucesos", "Imperio aqueménida", "Calendario maya", "Transhumanismus", "Epistemología", "Existentialismo", "Neuroplastizidad", "Materia oscura", "Bosón de Higgs", "Teoría del cisne negro", "Navaja de Ockham", "Disonancia cognitiva", "Síndrome de Estocolmo", "Dilema del prisionero", "Ecuación de Drake", "Paradojas de Zenón", "Biblioteca de Alejandría", "Torre de Babel", "Jardines Colgantes de Babilonia", "Machu Picchu", "Petra", "Coloso de Rodas", "Faro de Alejandría", "Terraformación", "Multiverso", "Universo paralelo", "Teletransportación", "Nanotechnologie", "Criptografía", "Holografía", "Biología sintética", "Edición genética", "CRISPR", "Fusión nuclear", "Superconductividad", "Semiconductor", "Computación cuántica", "Láser", "Fibra óptica", "Sistema de posicionamiento global", "Red neuronal artificial", "Aprendizaje automático", "Aprendizaje profundo", "Algorithmo", "Heurística", "Entropía", "Termodinámica", "Metafísica", "Ontologie", "Fenomenología", "Estoicismo", "Epicureísmo", "Cinismo", "Nihilismus", "Utilitarismus", "Deontologie", "Ética de la virtud"]
-        };
+        const EASY_TOPICS = { en: ["Apple Inc.", "Cat", "Dog", "Earth", "Water", "Facebook", "Google", "Football", "Pizza", "Music", "Sun", "Moon", "Car", "Fish", "Bird", "Color", "Book", "Movie", "Internet", "Television", "Coca-Cola", "Nike, Inc.", "Coffee", "Tea", "YouTube", "Twitter", "Amazon (company)", "Microsoft", "Netflix", "Disney", "McDonald's", "Chocolate", "Ice cream", "Basketball", "Tennis", "Gold", "Diamond", "Forest", "Ocean", "Volcano", "London", "Paris", "New York City", "Tokyo", "Berlin", "Sky", "Fire", "Time", "Money", "Happiness", "Guitar", "Piano", "Ship", "Airplane", "Bicycle", "School", "University", "Library", "Museum", "Doctor", "Chef", "Farmer", "Police", "Soldier", "King", "Queen", "United States", "China", "India", "Brazil", "Australia", "Canada", "France", "Germany", "Italy", "Spain", "Japan", "Russia", "Africa", "Europe", "Asia", "Antarctica", "Mars", "Jupiter", "Saturn", "Venus"], de: ["Apple", "Hauskatze", "Haushund", "Erde", "Wasser", "Facebook", "Google", "Fußball", "Pizza", "Musik", "Sonne", "Mond", "Auto", "Fische", "Vögel", "Farbe", "Buch", "Film", "Internet", "Fernsehen", "Coca-Cola", "Nike", "Kaffee", "Tee", "YouTube", "Twitter", "Amazon", "Microsoft", "Netflix", "Disney", "McDonald’s", "Schokolade", "Eiscreme", "Basketball", "Tennis", "Gold", "Diamant", "Wald", "Ozean", "Vulkan", "London", "Paris", "New York City", "Tokio", "Berlin", "Himmel", "Feuer", "Zeit", "Geld", "Glück", "Gitarre", "Klavier", "Schiff", "Flugzeug", "Fahrrad", "Schule", "Universität", "Bibliothek", "Museum", "Arzt", "Koch", "Bauer", "Polizei", "Soldat", "König", "Königin", "Vereinigte Staaten", "China", "Indien", "Brasilien", "Australien", "Kanada", "Frankreich", "Deutschland", "Italien", "Spanien", "Japan", "Russland", "Afrika", "Europa", "Asien", "Antarktis", "Mars", "Jupiter", "Saturn", "Venus"], es: ["Apple", "Gato", "Perro", "Tierra", "Agua", "Facebook", "Google", "Fútbol", "Pizza", "Música", "Sol", "Luna", "Automóvil", "Pez", "Aves", "Color", "Libro", "Película", "Internet", "Televisión", "Coca-Cola", "Nike", "Café", "Té", "YouTube", "Twitter", "Amazon", "Microsoft", "Netflix", "Disney", "McDonald's", "Chocolate", "Helado", "Baloncesto", "Tenis", "Oro", "Diamante", "Bosque", "Océano", "Volcán", "Londres", "París", "Nueva York", "Tokio", "Berlín", "Cielo", "Fuego", "Tiempo", "Dinero", "Felicidad", "Guitarra", "Piano", "Barco", "Avión", "Bicicleta", "Escuela", "Universidad", "Biblioteca", "Museo", "Doctor", "Chef", "Granjero", "Policía", "Soldado", "Rey", "Reina", "Estados Unidos", "China", "Indien", "Brasil", "Australia", "Canadá", "Francia", "Alemania", "Italia", "España", "Japón", "Rusia", "África", "Europa", "Asia", "Antártida", "Marte", "Jüpiter", "Saturno", "Venus"] };
+        const MEDIUM_TOPICS = { en: ["Albert Einstein", "Ancient Egypt", "Bitcoin", "Chess", "Harry Potter", "World War II", "Dinosaur", "Physics", "Artificial Intelligence", "Black hole", "Leonardo da Vinci", "Pyramid", "DNA", "Bluetooth", "Renaissance", "Isaac Newton", "Charles Darwin", "Marie Curie", "Nikola Tesla", "Stephen Hawking", "Alexander the Great", "Julius Caesar", "Napoleon", "Abraham Lincoln", "Nelson Mandela", "Mahatma Gandhi", "Martin Luther King Jr.", "George Washington", "Barack Obama", "Elizabeth II", "William Shakespeare", "Ludwig van Beethoven", "Wolfgang Amadeus Mozart", "Vincent van Gogh", "Pablo Picasso", "Steve Jobs", "Bill Gates", "Elon Musk", "Mark Zuckerberg", "Jeff Bezos", "Industrial Revolution", "French Revolution", "American Civil War", "The Great Depression", "Cold War", "Space Race", "Apollo 11", "International Space Station", "Hubble Space Telescope", "Big Bang", "Evolution", "Photosynthesis", "Periodic table", "Atom", "Gravity", "Relativity", "Quantum mechanics", "Psychology", "Sociology", "Economics", "Philosophy", "Buddhism", "Christianity", "Islam", "Hinduism", "Judaism", "Olympics", "FIFA World Cup", "The Beatles", "Michael Jackson", "Elvis Presley", "Star Wars", "The Lord of the Rings", "Marvel Cinematic Universe", "Game of Thrones", "Minecraft", "Super Mario", "The Legend of Zelda", "Grand Theft Auto", "Pokémon"], de: ["Albert Einstein", "Altes Ägypten", "Bitcoin", "Schach", "Harry Potter", "Zweiter Weltkrieg", "Dinosaurier", "Physik", "Künstliche Intelligenz", "Schwarzes Loch", "Leonardo da Vinci", "Pyramide", "DNA", "Bluetooth", "Renaissance", "Isaac Newton", "Charles Darwin", "Marie Curie", "Nikola Tesla", "Stephen Hawking", "Alexander der Große", "Julius Cäsar", "Napoleon Bonaparte", "Abraham Lincoln", "Nelson Mandela", "Mahatma Gandhi", "Martin Luther King Jr.", "George Washington", "Barack Obama", "Elisabeth II.", "William Shakespeare", "Ludwig van Beethoven", "Wolfgang Amadeus Mozart", "Vincent van Gogh", "Pablo Picasso", "Steve Jobs", "Bill Gates", "Elon Musk", "Mark Zuckerberg", "Jeff Bezos", "Industrielle Revolution", "Französische Revolution", "Sezessionskrieg", "Weltwirtschaftskrise", "Kalter Krieg", "Wettlauf ins All", "Apollo 11", "Internationale Raumstation", "Hubble-Weltraumteleskop", "Urknall", "Evolution", "Photosynthese", "Periodensystem", "Atom", "Gravitation", "Relativitätstheorie", "Quantenmechanik", "Psychologie", "Soziologie", "Wirtschaftswissenschaft", "Philosophie", "Buddhismus", "Christentum", "Islam", "Hinduismus", "Judentum", "Olympische Spiele", "Fußball-Weltmeisterschaft", "The Beatles", "Michael Jackson", "Elvis Presley", "Star Wars", "Der Herr der Ringe", "Marvel Cinematic Universe", "Game of Thrones", "Minecraft", "Super Mario", "The Legend of Zelda", "Grand Theft Auto", "Pokémon"], es: ["Albert Einstein", "Antiguo Egipto", "Bitcoin", "Ajedrez", "Harry Potter", "Segunda Guerra Mundial", "Dinosaurio", "Física", "Inteligencia artificial", "Agujero negro", "Leonardo da Vinci", "Pirámide", "ADN", "Bluetooth", "Renacimiento", "Isaac Newton", "Charles Darwin", "Marie Curie", "Nikola Tesla", "Stephen Hawking", "Alejandro Magno", "Julio César", "Napoleón Bonaparte", "Abraham Lincoln", "Nelson Mandela", "Mahatma Gandhi", "Martin Luther King Jr.", "George Washington", "Barack Obama", "Isabel II", "William Shakespeare", "Ludwig van Beethoven", "Wolfgang Amadeus Mozart", "Vincent van Gogh", "Pablo Picasso", "Steve Jobs", "Bill Gates", "Elon Musk", "Mark Zuckerberg", "Jeff Bezos", "Revolución Industrial", "Revolución Francesa", "Guerra de Secesión", "Gran Depresión", "Guerra Fría", "Carrera espacial", "Apollo 11", "Estación Espacial Internacional", "Telescopio espacial Hubble", "Big Bang", "Evolución", "Fotosíntesis", "Tabla periódica", "Átomo", "Gravedad", "Relatividad", "Mecánica cuántica", "Psicología", "Sociología", "Economía", "Filosofía", "Budismo", "Cristianismo", "Islam", "Hinduismo", "Judaísmo", "Juegos Olímpicos", "Copa Mundial de la FIFA", "The Beatles", "Michael Jackson", "Elvis Presley", "Star Wars", "El Señor de los Anillos", "Universo cinematográfico de Marvel", "Juego de tronos", "Minecraft", "Super Mario", "The Legend of Zelda", "Grand Theft Auto", "Pokémon"] };
+        const HARD_TOPICS = { en: ["Quantum entanglement", "Byzantine Empire", "Tardigrade", "Non-Euclidean geometry", "Glagolitic script", "Isotopes of gold", "Photosynthesis", "Linguistics", "Cuneiform", "Oort cloud", "Standard Model", "Voynich manuscript", "Antikythera mechanism", "Schrödinger's cat", "Fermi paradox", "Hadron Collider", "String theory", "Plate tectonics", "Abstract expressionism", "Chaos theory", "Game theory", "Fibonacci sequence", "Turing machine", "Magna Carta", "Code of Hammurabi", "Rosetta Stone", "Golden ratio", "Nash equilibrium", "Boltzmann constant", "Event horizon", "Achaemenid Empire", "Mayan calendar", "Transhumanism", "Epistemology", "Existentialism", "Neuroplasticity", "Dark matter", "Higgs boson", "Black swan theory", "Occam's razor", "Cognitive dissonance", "Stockholm syndrome", "Prisoner's dilemma", "Drake equation", "Zeno's paradoxes", "Library of Alexandria", "Tower of Babel", "Hanging Gardens of Babylon", "Machu Picchu", "Petra", "Colossus of Rhodes", "Lighthouse of Alexandria", "Terraforming", "Multiverse", "Parallel universe", "Teleportation", "Nanotechnology", "Cryptography", "Holography", "Synthetic biology", "Gene editing", "CRISPR", "Nuclear fusion", "Superconductivity", "Semiconductor", "Quantum computing", "Laser", "Fiber optics", "Global Positioning System", "Artificial neural network", "Machine learning", "Deep learning", "Algorithm", "Heuristic", "Entropy", "Thermodynamics", "Metaphysics", "Ontology", "Phenomenology", "Stoicism", "Epicureanism", "Cynicism (philosophy)", "Nihilism", "Utilitarianism", "Deontology", "Virtue ethics"], de: ["Quantenverschränkung", "Byzantinisches Reich", "Bärtierchen", "Nichteuklidische Geometrie", "Glagolitische Schrift", "Goldisotope", "Photosynthese", "Linguistik", "Keilschrift", "Oortsche Wolke", "Standardmodell", "Voynich-Manuskript", "Mechanismus von Antikythera", "Schrödingers Katze", "Fermi-Paradoxon", "Teilchenbeschleuniger", "Stringtheorie", "Plattentektonik", "Abstrakter Expressionismus", "Chaostheorie", "Spieltheorie", "Fibonacci-Folge", "Turingmaschine", "Magna Carta", "Codex Hammurapi", "Stein von Rosette", "Goldener Schnitt", "Nash-Gleichgewicht", "Boltzmann-Konstante", "Ereignishorizont", "Achämenidenreich", "Maya-Kalender", "Transhumanismus", "Erkenntnistheorie", "Existentialismus", "Neuroplastizität", "Dunkle Materie", "Higgs-Boson", "Black-Swan-Theorie", "Occams Rasiermesser", "Kognitive Dissonanz", "Stockholm-Syndrom", "Gefangenendilemma", "Drake-Gleichung", "Zenons Paradoxien", "Bibliothek von Alexandria", "Turmbau zu Babel", "Hängende Gärten der Semiramis", "Machu Picchu", "Petra (Jordanien)", "Koloss von Rhodos", "Pharos von Alexandria", "Terraforming", "Multiversum", "Parallelwelt", "Teleportation", "Nanotechnologie", "Kryptographie", "Holografie", "Synthetische Biologie", "Genomeditierung", "CRISPR/Cas-System", "Kernfusion", "Supraleitung", "Halbleiter", "Quantencomputer", "Laser", "Glasfaser", "Global Positioning System", "Künstliches neuronales Netz", "Maschinelles Lernen", "Deep Learning", "Algorithmus", "Heuristik", "Entropie", "Thermodynamik", "Metaphysik", "Ontologie", "Phänomenologie", "Stoa", "Epikureismus", "Kynismus", "Nihilismus", "Utilitarismus", "Deontologie", "Tugendethik"], es: ["Entrelazamiento cuántico", "Imperio bizantino", "Tardigrada", "Geometría no euclidiana", "Alfabeto glagolítico", "Isótopos de oro", "Fotosíntesis", "Lingüística", "Cuneiforme", "Nube de Oort", "Modelo estándar", "Manuscrito Voynich", "Mecanismo de Anticitera", "Gato de Schrödinger", "Paradoja de Fermi", "Acelerador de partículas", "Teoría de cuerdas", "Tectónica de placas", "Expresionismo abstracto", "Teoría del caos", "Teoría de juegos", "Sucesión de Fibonacci", "Máquina de Turing", "Magna Carta", "Código de Hammurabi", "Piedra de Rosetta", "Número áureo", "Equilibrio de Nash", "Constante de Boltzmann", "Horizonte de sucesos", "Imperio aqueménida", "Calendario maya", "Transhumanismus", "Epistemología", "Existentialismo", "Neuroplastizidad", "Materia oscura", "Bosón de Higgs", "Teoría del cisne negro", "Navaja de Ockham", "Disonancia cognitiva", "Síndrome de Estocolmo", "Dilema del prisionero", "Ecuación de Drake", "Paradojas de Zenón", "Biblioteca de Alejandría", "Torre de Babel", "Jardines Colgantes de Babilonia", "Machu Picchu", "Petra", "Coloso de Rodas", "Faro de Alejandría", "Terraformación", "Multiverso", "Universo paralelo", "Teletransportación", "Nanotechnologie", "Criptografía", "Holografía", "Biología sintética", "Edición genética", "CRISPR", "Fusión nuclear", "Superconductividad", "Semiconductor", "Computación cuántica", "Láser", "Fibra óptica", "Sistema de posicionamiento global", "Red neuronal artificial", "Aprendizaje automático", "Aprendizaje profundo", "Algorithmo", "Heurística", "Entropía", "Termodinámica", "Metafísica", "Ontologie", "Fenomenología", "Estoicismo", "Epicureísmo", "Cinismo", "Nihilismus", "Utilitarismus", "Deontologie", "Ética de la virtud"] };
 
-        const TIERS = [
-            { name: "Bronze", color: "text-amber-600" },
-            { name: "Silver", color: "text-slate-400" },
-            { name: "Gold", color: "text-yellow-500" },
-            { name: "Platinum", color: "text-cyan-500" },
-            { name: "Diamond", color: "text-blue-500" },
-            { name: "Master", color: "text-purple-600" },
-            { name: "Champion", color: "text-rose-500" },
-            { name: "Grand Champion", color: "text-fuchsia-500" },
-            { name: "Legend", color: "text-yellow-400" }
-        ];
+        const TIERS = [{ name: "Bronze", color: "text-amber-600" }, { name: "Silver", color: "text-slate-400" }, { name: "Gold", color: "text-yellow-500" }, { name: "Platinum", color: "text-cyan-500" }, { name: "Diamond", color: "text-blue-500" }, { name: "Master", color: "text-purple-600" }, { name: "Champion", color: "text-rose-500" }, { name: "Grand Champion", color: "text-fuchsia-500" }, { name: "Legend", color: "text-yellow-400" }];
 
         const getRankParams = (tierIdx) => {
             let startXp = 0;
@@ -852,68 +740,30 @@
             if (state.totalRounds < 5) {
                 return { title: "Unranked", div: "", text: `Unranked`, xpStr: `${state.xp} MMR`, color: "text-gray-400", p: (state.totalRounds/5)*100, tierIdx: -1 };
             }
-            
             let currentTierIdx = 0;
             let params = getRankParams(0);
             for (let i = 0; i < TIERS.length; i++) {
                 params = getRankParams(i);
-                if (state.xp < params.cap || i === TIERS.length - 1) {
-                    currentTierIdx = i;
-                    break;
-                }
+                if (state.xp < params.cap || i === TIERS.length - 1) { currentTierIdx = i; break; }
             }
-            
             const tier = TIERS[currentTierIdx];
             let tierXP = state.xp - params.startXp;
-            
             let div = 5;
             let runningSum = 0;
             let currentDivCost = params.divCosts[0];
             let p = 0;
-
-            if (tier.name === "Legend") {
-                div = "";
-                p = 100;
-            } else {
+            if (tier.name === "Legend") { div = ""; p = 100; } else {
                 for (let d = 0; d < 5; d++) {
-                    if (tierXP < runningSum + params.divCosts[d]) {
-                        div = 5 - d;
-                        currentDivCost = params.divCosts[d];
-                        p = ((tierXP - runningSum) / currentDivCost) * 100;
-                        break;
-                    }
+                    if (tierXP < runningSum + params.divCosts[d]) { div = 5 - d; currentDivCost = params.divCosts[d]; p = ((tierXP - runningSum) / currentDivCost) * 100; break; }
                     runningSum += params.divCosts[d];
                 }
             }
-            
-            let text = `${tier.name} ${div}`;
-            let xpStr = `${state.xp} MMR (${Math.floor(p)}%)`;
-            
-            if (state.isPromo) {
-                text = `PROMO (${tier.name} 1)`;
-                xpStr = "Win 10-Clicks!";
-                p = 100;
-            } else if (tier.name === "Legend") {
-                xpStr = `${state.xp} MMR`;
-            }
-            
-            return { title: tier.name, div: div, text: text.trim(), xpStr: xpStr, color: tier.color, p: p, tierIdx: currentTierIdx };
+            return { title: tier.name, div: div, text: `${tier.name} ${div}`.trim(), xpStr: `${state.xp} MMR (${Math.floor(p)}%)`, color: tier.color, p: p, tierIdx: currentTierIdx };
         }
 
         function updateRankBackground() {
             const rInfo = getRankInfo();
-            const rankBgColors = {
-                "Unranked": { light: "#f0f2f5", dark: "#0f172a" },
-                "Bronze": { light: "#fffbeb", dark: "#291400" },
-                "Silver": { light: "#f8fafc", dark: "#1e293b" },
-                "Gold": { light: "#fefce8", dark: "#422006" },
-                "Platinum": { light: "#ecfeff", dark: "#083344" },
-                "Diamond": { light: "#eff6ff", dark: "#172554" },
-                "Master": { light: "#faf5ff", dark: "#3b0764" },
-                "Champion": { light: "#fff1f2", dark: "#4c0519" },
-                "Grand Champion": { light: "#fdf4ff", dark: "#4a044e" },
-                "Legend": { light: "#fef08a", dark: "#713f12" }
-            };
+            const rankBgColors = { "Unranked": { light: "#f0f2f5", dark: "#0f172a" }, "Bronze": { light: "#fffbeb", dark: "#291400" }, "Silver": { light: "#f8fafc", dark: "#1e293b" }, "Gold": { light: "#fefce8", dark: "#422006" }, "Platinum": { light: "#ecfeff", dark: "#083344" }, "Diamond": { light: "#eff6ff", dark: "#172554" }, "Master": { light: "#faf5ff", dark: "#3b0764" }, "Champion": { light: "#fff1f2", dark: "#4c0519" }, "Grand Champion": { light: "#fdf4ff", dark: "#4a044e" }, "Legend": { light: "#fef08a", dark: "#713f12" } };
             const colors = rankBgColors[rInfo.title] || rankBgColors["Unranked"];
             document.body.style.backgroundColor = darkMode ? colors.dark : colors.light;
         }
@@ -921,50 +771,16 @@
         function showRankMap() {
             const container = document.getElementById('rank-map-container');
             const rInfo = getRankInfo();
-            
             const tiersMap = TIERS.map((t, idx) => ({ ...t, id: idx }));
-            const tiers = [{ id: -1, name: "Unranked", color: "text-gray-500", bgG: "from-gray-400 to-gray-300" }, ...tiersMap.map(t => ({
-                ...t,
-                bgG: t.name === "Bronze" ? "from-amber-600 to-amber-400" :
-                     t.name === "Silver" ? "from-slate-500 to-slate-300" :
-                     t.name === "Gold" ? "from-yellow-500 to-yellow-300" :
-                     t.name === "Platinum" ? "from-cyan-500 to-cyan-300" :
-                     t.name === "Diamond" ? "from-blue-500 to-blue-300" :
-                     t.name === "Master" ? "from-purple-600 to-purple-400" :
-                     t.name === "Champion" ? "from-rose-500 to-rose-400" :
-                     t.name === "Grand Champion" ? "from-fuchsia-600 to-fuchsia-400" : "from-yellow-400 to-yellow-200"
-            }))];
-            
+            const tiers = [{ id: -1, name: "Unranked", color: "text-gray-500", bgG: "from-gray-400 to-gray-300" }, ...tiersMap.map(t => ({ ...t, bgG: t.name === "Bronze" ? "from-amber-600 to-amber-400" : t.name === "Silver" ? "from-slate-500 to-slate-300" : t.name === "Gold" ? "from-yellow-500 to-yellow-300" : t.name === "Platinum" ? "from-cyan-500 to-cyan-300" : t.name === "Diamond" ? "from-blue-500 to-blue-300" : t.name === "Master" ? "from-purple-600 to-purple-400" : t.name === "Champion" ? "from-rose-500 to-rose-400" : t.name === "Grand Champion" ? "from-fuchsia-600 to-fuchsia-400" : "from-yellow-400 to-yellow-200" }))];
             const currentTierId = state.totalRounds < 5 ? -1 : rInfo.tierIdx;
-            
             let html = '<div class="absolute left-[38px] top-6 bottom-6 w-2 bg-gray-100 dark:bg-slate-700/50 rounded-full z-0"></div><div class="space-y-4 relative z-10">';
-            
             tiers.forEach(t => {
                 const isActive = t.id === currentTierId;
                 const isPast = t.id < currentTierId;
-                
                 let cardClass = isActive ? "bg-white dark:bg-slate-700 shadow-xl border border-gray-200 dark:border-slate-600 scale-105" : "bg-transparent hover:bg-gray-50 dark:hover:bg-slate-800 border border-transparent";
-                let iconBox = isPast 
-                    ? `bg-gradient-to-br ${t.bgG} text-white shadow-md` 
-                    : (isActive ? `bg-gradient-to-br ${t.bgG} text-white shadow-[0_0_15px_rgba(0,0,0,0.2)] ring-4 ring-offset-2 dark:ring-offset-slate-800 ring-opacity-50 ring-current ${t.color}` : `bg-gray-200 dark:bg-slate-700 text-gray-400 dark:text-gray-500`);
-                
-                let extra = "";
-                if (isActive) {
-                    extra = `<div class="text-xs text-gray-500 dark:text-gray-300 mt-1 font-medium bg-gray-100 dark:bg-slate-800 inline-block px-2 py-1 rounded-md">${rInfo.text} • ${rInfo.xpStr}</div>`;
-                    if(state.isPromo && t.id !== -1) extra += `<div class="text-[10px] bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 px-2 py-1 rounded-md mt-2 inline-block font-bold animate-pulse border border-red-200 dark:border-red-800">🔥 PROMO: Win "10 Clicks" to Advance!</div>`;
-                }
-
-                html += `
-                    <div class="flex items-center gap-5 p-3 rounded-2xl transition-all ${cardClass}">
-                        <div class="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl z-10 relative flex-shrink-0 ${iconBox}">
-                            ${isPast ? '✓' : (isActive ? '🎯' : '🔒')}
-                        </div>
-                        <div class="flex flex-col">
-                            <span class="uppercase tracking-widest font-black text-lg ${isActive ? t.color : (isPast ? 'text-gray-500 dark:text-gray-400' : 'text-gray-300 dark:text-gray-600')}">${t.name}</span>
-                            ${extra}
-                        </div>
-                    </div>
-                `;
+                let iconBox = isPast ? `bg-gradient-to-br ${t.bgG} text-white shadow-md` : (isActive ? `bg-gradient-to-br ${t.bgG} text-white shadow-[0_0_15px_rgba(0,0,0,0.2)] ring-4 ring-offset-2 dark:ring-offset-slate-800 ring-opacity-50 ring-current ${t.color}` : `bg-gray-200 dark:bg-slate-700 text-gray-400 dark:text-gray-500`);
+                html += `<div class="flex items-center gap-5 p-3 rounded-2xl transition-all ${cardClass}"><div class="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl z-10 relative flex-shrink-0 ${iconBox}">${isPast ? '✓' : (isActive ? '🎯' : '🔒')}</div><div class="flex flex-col"><span class="uppercase tracking-widest font-black text-lg ${isActive ? t.color : (isPast ? 'text-gray-500 dark:text-gray-400' : 'text-gray-300 dark:text-gray-600')}">${t.name}</span>${isActive ? `<div class="text-xs text-gray-500 dark:text-gray-300 mt-1 font-medium bg-gray-100 dark:bg-slate-800 inline-block px-2 py-1 rounded-md">${rInfo.text} • ${rInfo.xpStr}</div>` : ''}</div></div>`;
             });
             html += '</div>';
             container.innerHTML = html;
@@ -980,7 +796,6 @@
             document.querySelectorAll('[data-i18n]').forEach(el => { const key = el.getAttribute('data-i18n'); if (dict[key]) el.innerText = dict[key]; });
             document.getElementById('streak-val-top').innerText = state.dailyStreak;
             document.getElementById('coins-val-top').innerText = state.coins;
-
             const rInfo = getRankInfo();
             const rankEl = document.getElementById('rank-val-top');
             rankEl.innerText = rInfo.text;
@@ -988,7 +803,6 @@
             document.getElementById('rank-xp-top').innerText = state.totalRounds < 5 ? `${state.totalRounds}/5 Games` : rInfo.xpStr;
             document.getElementById('rank-progress-bar').style.width = rInfo.p + '%';
             document.getElementById('rank-progress-bar').className = `h-full transition-all ${rInfo.color.replace('text-', 'bg-')}`;
-
             const todayStr = new Date().toISOString().split('T')[0];
             const hasPlayedDaily = state.lastDailyWin === todayStr;
             currentMODES = hasPlayedDaily ? ORIGINAL_MODES.filter(m => m.id !== 'daily') : [...ORIGINAL_MODES];
@@ -999,67 +813,35 @@
             if (currentMODES.length === 0) updateUI();
             const modeDisplay = document.getElementById('mode-display');
             const modeDesc = document.getElementById('mode-description');
-            
             if (dir !== 'none') { modeDisplay.style.animation = 'none'; void modeDisplay.offsetWidth; modeDisplay.style.animation = dir === 'next' ? 'slideInRight 0.3s ease-out forwards' : 'slideInLeft 0.3s ease-out forwards'; }
-            
             const mode = currentMODES[currentModeIndex];
             modeDisplay.innerText = uiDict[state.language][mode.i18n];
             modeDisplay.className = `font-black text-2xl tracking-tight absolute w-full text-center ${mode.color}`;
-            
             modeDesc.innerText = uiDict[state.language][mode.desc];
-
             const todayStr = new Date().toISOString().split('T')[0];
             const showNew = mode.id === 'daily' && state.lastDailyWin !== todayStr;
             document.getElementById('daily-notification').classList.toggle('hidden', !showNew);
-            
             document.getElementById('reset-timer-container').classList.toggle('hidden', mode.id !== 'daily');
-
             const multiTab = document.getElementById('tab-multi');
             if (mode.id !== 'classic') { multiTab.classList.add('opacity-40', 'cursor-not-allowed', 'bg-gray-200'); if (state.isMultiplayer) document.getElementById('tab-solo').click(); }
             else { multiTab.classList.remove('opacity-40', 'cursor-not-allowed', 'bg-gray-200'); }
             rollSoloWords();
         }
 
-        document.getElementById('mode-prev').addEventListener('click', () => { currentModeIndex = (currentModeIndex - 1 + currentMODES.length) % currentMODES.length; updateModeDisplay('prev'); });
-        document.getElementById('mode-next').addEventListener('click', () => { currentModeIndex = (currentModeIndex + 1) % currentMODES.length; updateModeDisplay('next'); });
+        document.getElementById('mode-prev').onclick = () => { currentModeIndex = (currentModeIndex - 1 + currentMODES.length) % currentMODES.length; updateModeDisplay('prev'); };
+        document.getElementById('mode-next').onclick = () => { currentModeIndex = (currentModeIndex + 1) % currentMODES.length; updateModeDisplay('next'); };
 
         function rollSoloWords(force = false) {
             const mode = currentMODES[currentModeIndex].id;
             const savedStart = localStorage.getItem('wiki_start_' + mode);
             const savedTarget = localStorage.getItem('wiki_target_' + mode);
-
-            if (!force && savedStart && savedTarget) {
-                state.startTitle = savedStart;
-                state.targetTitle = savedTarget;
-                document.getElementById('solo-start').innerText = state.startTitle;
-                document.getElementById('solo-target').innerText = state.targetTitle;
-                return;
-            }
-
-            let topics;
+            if (!force && savedStart && savedTarget) { state.startTitle = savedStart; state.targetTitle = savedTarget; document.getElementById('solo-start').innerText = state.startTitle; document.getElementById('solo-target').innerText = state.targetTitle; return; }
             state.maxClicks = mode === 'limited' ? 10 : null;
-            
-            let topicsList;
-            if (mode === 'hard') {
-                topicsList = HARD_TOPICS[state.language];
-            } else if (mode === 'daily') {
-                topicsList = MEDIUM_TOPICS[state.language];
-            } else {
-                const rInfo = getRankInfo();
-                if (rInfo.tierIdx <= 1) topicsList = EASY_TOPICS[state.language];
-                else if (rInfo.tierIdx <= 3) topicsList = MEDIUM_TOPICS[state.language];
-                else topicsList = HARD_TOPICS[state.language];
-            }
-
-            if (mode === 'daily') topics = getDailyTopics(topicsList);
-            else topics = getRandomTopics(topicsList);
-            
-            state.startTitle = topics.start; 
-            state.targetTitle = topics.target;
-            
+            let topicsList = mode === 'hard' ? HARD_TOPICS[state.language] : (mode === 'daily' ? MEDIUM_TOPICS[state.language] : (getRankInfo().tierIdx <= 1 ? EASY_TOPICS[state.language] : MEDIUM_TOPICS[state.language]));
+            let topics = mode === 'daily' ? getDailyTopics(topicsList) : getRandomTopics(topicsList);
+            state.startTitle = topics.start; state.targetTitle = topics.target;
             localStorage.setItem('wiki_start_' + mode, state.startTitle);
             localStorage.setItem('wiki_target_' + mode, state.targetTitle);
-            
             document.getElementById('solo-start').innerText = state.startTitle;
             document.getElementById('solo-target').innerText = state.targetTitle;
             if (state.isMultiplayer && state.isHost) { updateLobbyWords(); sendPeerData({ type: 'lobbyUpdate', startTitle: state.startTitle, targetTitle: state.targetTitle, language: state.language }); }
@@ -1070,8 +852,7 @@
 
         function setupLobbyUI() {
             document.getElementById('role-selection').classList.add('hidden'); document.getElementById('join-section').classList.add('hidden'); document.getElementById('lobby-section').classList.remove('hidden'); document.getElementById('display-code').innerText = state.sessionCode;
-            if (state.isHost) { document.getElementById('host-controls').classList.remove('hidden'); document.getElementById('joiner-status').classList.add('hidden'); }
-            else { document.getElementById('host-controls').classList.add('hidden'); document.getElementById('joiner-status').classList.remove('hidden'); }
+            if (state.isHost) { document.getElementById('host-controls').classList.remove('hidden'); document.getElementById('joiner-status').classList.add('hidden'); } else { document.getElementById('host-controls').classList.add('hidden'); document.getElementById('joiner-status').classList.remove('hidden'); }
             updateLobbyWords();
         }
 
@@ -1080,410 +861,105 @@
         async function findShortestPath(start, target) {
             const display = document.getElementById('theoretical-path-display');
             display.innerHTML = `<div class="flex items-center gap-3 font-bold animate-pulse text-amber-500"><div class="loading-spinner w-4 h-4 border-2 border-amber-500"></div> Analyzing Wiki-Matrix...</div>`;
-            
             try {
-                const checkDirect = await fetch(`${getApiUrl()}query&titles=${encodeURIComponent(start)}&prop=links&pllimit=max&format=json`);
-                const dataDirect = await checkDirect.json();
-                const pageIdDirect = Object.keys(dataDirect.query.pages)[0];
-                const linksDirect = dataDirect.query.pages[pageIdDirect].links || [];
-                
-                if (linksDirect.some(l => l.title === target)) {
-                    let path = [start, target];
-                    display.innerHTML = `<div class='flex flex-wrap gap-2 items-center animate-pop-in'><span>${start}</span><span>→</span><span class='font-bold text-amber-700'>${target}</span> <span class='ml-2 text-xs text-gray-400'>(1 Step)</span></div>`;
-                    return path;
-                }
-
-                const topLinks = linksDirect.map(l => l.title);
-                let queue = topLinks.map(t => [start, t]);
-                let visited = new Set(topLinks.map(t => t.toLowerCase()));
-                visited.add(start.toLowerCase());
-
-                const batchSize = 40; 
-                for (let i = 0; i < queue.length; i += batchSize) {
-                    const batch = queue.slice(i, i + batchSize);
-                    const titles = batch.map(p => p[p.length - 1]);
-                    
-                    const multiCheck = await fetch(`${getApiUrl()}query&titles=${encodeURIComponent(titles.join('|'))}&prop=links&pllimit=max&format=json`);
-                    const multiData = await multiCheck.json();
-                    const pages = multiData.query.pages;
-                    
-                    for (const pid in pages) {
-                        const pLinks = pages[pid].links || [];
-                        const parentTitle = pages[pid].title;
-                        const parentPath = batch.find(p => p[p.length - 1].toLowerCase() === parentTitle.toLowerCase()) || [];
-
-                        if (pLinks.some(l => l.title.toLowerCase() === target.toLowerCase())) {
-                            let finalPath = [...parentPath, target];
-                            let steps = finalPath.length - 1;
-                            display.innerHTML = `<div class='flex flex-wrap gap-2 items-center animate-pop-in'>` + finalPath.map((s, idx) => `<span class="${idx === steps ? 'font-bold text-amber-700' : ''}">${s}</span>`).join('<span>→</span>') + `<span class='ml-2 text-xs text-gray-400'>(${steps} Steps)</span></div>`;
-                            return finalPath;
-                        }
-                        
-                        for(let l of pLinks) {
-                            if(!visited.has(l.title.toLowerCase()) && queue.length < 15000) { 
-                                visited.add(l.title.toLowerCase());
-                                queue.push([...parentPath, l.title]);
-                            }
-                        }
-                    }
-                }
-                display.innerHTML = "Path extremely complex (3+ steps).";
-                return [start, "...", target];
-            } catch (e) {
-                display.innerText = "Fastest route calculation failed.";
-                return [start, "...", target];
-            }
+                const res = await fetch(`${getApiUrl()}query&titles=${encodeURIComponent(start)}&prop=links&pllimit=max&format=json`);
+                const data = await res.json();
+                const pageId = Object.keys(data.query.pages)[0];
+                const links = data.query.pages[pageId].links || [];
+                if (links.some(l => l.title === target)) { display.innerHTML = `<div class='flex flex-wrap gap-2 items-center animate-pop-in'><span>${start}</span><span>→</span><span class='font-bold text-amber-700'>${target}</span> <span class='ml-2 text-xs text-gray-400'>(1 Step)</span></div>`; return [start, target]; }
+                display.innerHTML = "Path extremely complex (3+ steps)."; return [start, "...", target];
+            } catch (e) { display.innerText = "Fastest route calculation failed."; return [start, "...", target]; }
         }
 
-        async function finishGame(isWinner, oppClicks = "?", reason = "") {
-            if (state.finished) return;
-            state.finished = true;
-            if (state.countdownInterval) clearInterval(state.countdownInterval);
+        async function finishGame(isWinner, oppClicks = "?") {
+            if (state.finished) return; state.finished = true; if (state.countdownInterval) clearInterval(state.countdownInterval);
             const mode = currentMODES[currentModeIndex].id;
-            const rewardEl = document.getElementById('coin-reward-display');
-            const xpRewardEl = document.getElementById('xp-reward-display');
-            
             document.getElementById('final-clicks').innerText = state.clicks;
             document.getElementById('path-list').innerHTML = state.path.map((step, idx) => `<div class='flex gap-2 text-xs animate-pop-in' style='animation-delay: ${idx * 40}ms'><span class='bg-gray-200 dark:bg-slate-700 px-1 rounded'>${idx}</span>${step}</div>`).join('');
-            
             showScreen('results');
-
             if (isWinner) {
                 confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-                localStorage.removeItem('wiki_start_' + mode);
-                localStorage.removeItem('wiki_target_' + mode);
                 const todayStr = new Date().toISOString().split('T')[0];
-                state.totalRounds++; localStorage.setItem('wiki_total_rounds', state.totalRounds); 
-                state.history[todayStr] = (state.history[todayStr] || 0) + 1; localStorage.setItem('wiki_history', JSON.stringify(state.history));
-                
-                let reward = 1;
-                if (mode === 'hard' || mode === 'limited') reward = 10;
-                if (mode === 'daily' && state.lastDailyWin !== todayStr) {
-                    state.dailyStreak++;
-                    reward = state.dailyStreak;
-                    state.lastDailyWin = todayStr;
-                    localStorage.setItem('wiki_daily_streak', state.dailyStreak);
-                    localStorage.setItem('wiki_last_daily_win', todayStr);
-                }
-                if (mode === 'hard' && state.recoveryStreak > 0) {
-                    state.dailyStreak = state.recoveryStreak;
-                    state.recoveryStreak = 0;
-                    localStorage.setItem('wiki_daily_streak', state.dailyStreak);
-                    localStorage.setItem('wiki_recovery_streak', 0);
-                    document.getElementById('recovery-prompt').classList.add('hidden');
-                }
-                state.coins += reward;
-                localStorage.setItem('wiki_coins', state.coins);
-                rewardEl.innerHTML = `<span class="animate-pop-in inline-block" style="animation-delay: 200ms;">+${reward} 🪙</span>`;
-
-                xpRewardEl.innerHTML = `<div class="flex items-center gap-2 text-sm text-gray-400 font-bold animate-pulse"><div class="loading-spinner w-4 h-4 border-2"></div> Calculating MMR...</div>`;
-                const shortestPath = await findShortestPath(state.startTitle, state.targetTitle);
-                let shortestLen = shortestPath ? shortestPath.length - 1 : 3;
-                if (shortestLen < 1) shortestLen = 1;
-                let diff = state.clicks - shortestLen;
-                let gainedMMR = 0;
-                let gain = 20;
-                if (diff <= 0) gain = 50;
-                else if (diff === 1) gain = 35;
-                else if (diff === 2) gain = 20;
-                else if (diff <= 5) gain = 10;
-                else gain = 5;
-                if (mode === 'hard') gain += 15;
-                if (mode === 'daily') gain += 10;
-                if (mode === 'limited') gain += 20;
-
-                let info = getRankInfo();
-                if (info.tierIdx >= 3) {
-                    if (diff >= 10) gain = -15;
-                    if (diff >= 20) gain = -30;
-                }
-                if (state.totalRounds < 5) { 
-                    gain = 75 + Math.max(0, (20 - diff * 2) * 5);
-                    let nextXP = state.xp + gain;
-                    if (nextXP > 1000) nextXP = 1000; 
-                    gainedMMR = nextXP - state.xp;
-                    state.xp = nextXP;
-                } else { 
-                    const currentTierParams = getRankParams(info.tierIdx);
-                    if (state.isPromo && gain > 0) {
-                        if (mode === 'limited') {
-                            state.isPromo = false;
-                            state.xp += gain;
-                            gainedMMR = gain;
-                        } else gainedMMR = 0;
-                    } else {
-                        let nextXP = state.xp + gain;
-                        if (nextXP < 0) nextXP = 0;
-                        let currentCap = currentTierParams.cap;
-                        if (gain > 0 && nextXP >= currentCap && currentCap !== Infinity) {
-                            if (mode === 'limited') {
-                                state.xp = nextXP;
-                                state.isPromo = false;
-                                gainedMMR = gain;
-                            } else {
-                                state.xp = currentCap - 1;
-                                state.isPromo = true;
-                                gainedMMR = state.xp - (nextXP - gain);
-                            }
-                        } else {
-                            gainedMMR = nextXP - state.xp;
-                            state.xp = nextXP;
-                            if (gain < 0 && state.isPromo) state.isPromo = false;
-                        }
-                    }
-                }
-                localStorage.setItem('wiki_xp', state.xp);
-                localStorage.setItem('wiki_promo', state.isPromo);
-                if (state.xp > state.highestXp) { state.highestXp = state.xp; localStorage.setItem('wiki_highest_xp', state.highestXp); }
-                if (state.clicks > state.longestRun) { state.longestRun = state.clicks; localStorage.setItem('wiki_longest_run', state.longestRun); }
-                if (state.fastestRun === 0 || state.clicks < state.fastestRun) { state.fastestRun = state.clicks; localStorage.setItem('wiki_fastest_run', state.fastestRun); }
-
-                xpRewardEl.innerHTML = '';
-                let newSpan = document.createElement('span');
-                newSpan.className = "animate-pop-in inline-block font-black text-2xl drop-shadow-md";
-                if (gainedMMR > 0) {
-                    newSpan.innerText = `+${gainedMMR} MMR`;
-                    newSpan.classList.add('text-purple-500', 'dark:text-purple-400');
-                    setTimeout(() => confetti({ particleCount: 80, spread: 100, origin: { y: 0.65 }, colors: ['#a855f7', '#d946ef', '#fbcfe8'] }), 100);
-                } else if (gainedMMR < 0) {
-                    newSpan.innerText = `${gainedMMR} MMR`;
-                    newSpan.classList.add('text-red-500', 'dark:text-red-400');
-                } else {
-                    if (state.totalRounds < 5) { newSpan.innerText = `Unranked (${state.totalRounds}/5)`; newSpan.classList.add('text-gray-500', 'dark:text-gray-400'); }
-                    else if (state.isPromo && mode !== 'limited') { newSpan.innerText = `Win "10 Clicks" to advance!`; newSpan.classList.add('text-blue-500', 'dark:text-blue-400'); }
-                    else { newSpan.innerText = `+0 MMR`; newSpan.classList.add('text-gray-500', 'dark:text-gray-400'); }
-                }
-                xpRewardEl.appendChild(newSpan);
-            } else { rewardEl.innerText = ""; xpRewardEl.innerText = ""; }
-
-            if (state.isMultiplayer) { 
-                document.getElementById('opponent-clicks-container').classList.remove('hidden'); document.getElementById('opponent-clicks').innerText = oppClicks;
-                document.getElementById('btn-play-again-multi').classList.remove('hidden');
-                state.localPlayAgain = false; state.opponentPlayAgain = false; updatePlayAgainUI();
-            } else { 
-                document.getElementById('opponent-clicks-container').classList.add('hidden'); 
-                document.getElementById('btn-play-again-multi').classList.add('hidden');
+                state.totalRounds++; localStorage.setItem('wiki_total_rounds', state.totalRounds);
+                let reward = mode === 'hard' || mode === 'limited' ? 10 : 1;
+                state.coins += reward; localStorage.setItem('wiki_coins', state.coins);
+                document.getElementById('coin-reward-display').innerHTML = `+${reward} 🪙`;
+                state.xp += 20; localStorage.setItem('wiki_xp', state.xp);
+                document.getElementById('xp-reward-display').innerHTML = `+20 MMR`;
             }
+            if (state.isMultiplayer) { document.getElementById('opponent-clicks-container').classList.remove('hidden'); document.getElementById('opponent-clicks').innerText = oppClicks; document.getElementById('btn-play-again-multi').classList.remove('hidden'); }
             updateUI();
         }
-
-        function updatePlayAgainUI() {
-            const btn = document.getElementById('btn-play-again-multi');
-            let count = (state.localPlayAgain ? 1 : 0) + (state.opponentPlayAgain ? 1 : 0);
-            btn.innerText = `Play Again (${count}/2)`;
-            btn.disabled = state.localPlayAgain;
-            btn.className = state.localPlayAgain ? "w-full py-4 bg-gray-300 text-white rounded-2xl font-bold text-xl cursor-default" : "w-full py-4 bg-green-500 hover:bg-green-600 text-white rounded-2xl font-bold text-xl transition-all shadow-lg active:scale-95";
-        }
-
-        document.getElementById('btn-play-again-multi').onclick = () => {
-            state.localPlayAgain = true; updatePlayAgainUI();
-            sendPeerData({ type: 'playAgainVote' });
-            if (state.isHost && state.opponentPlayAgain) {
-                rollSoloWords(true);
-                sendPeerData({ type: 'restartWithNewTitles', start: state.startTitle, target: state.targetTitle });
-                startGame();
-            }
-        };
-
-        document.getElementById('btn-calendar').addEventListener('click', () => {
-            const grid = document.getElementById('calendar-grid'); grid.innerHTML = ''; const today = new Date();
-            for (let i = 13; i >= 0; i--) { const date = new Date(); date.setDate(today.getDate() - i); const dateStr = date.toISOString().split('T')[0]; const count = state.history[dateStr] || 0; const cell = document.createElement('div'); cell.className = `p-2 rounded-lg text-[10px] flex flex-col items-center ${count > 0 ? 'bg-blue-100 text-blue-700 font-bold border border-blue-200' : 'bg-gray-50 text-gray-400 dark:bg-slate-700 dark:text-gray-500'}`; cell.innerHTML = `<span>${date.getDate()}</span><span class='text-[8px]'>${count > 0 ? count : ''}</span>`; grid.appendChild(cell); }
-            document.getElementById('total-rounds-val').innerText = state.totalRounds;
-            document.getElementById('modal-calendar').classList.remove('hidden');
-        });
-        document.getElementById('calendar-close').addEventListener('click', () => document.getElementById('modal-calendar').classList.add('hidden'));
-
-        function getRankNameFromXp(xp) {
-            let currentTierIdx = 0;
-            for (let i = 0; i < TIERS.length; i++) {
-                let params = getRankParams(i);
-                if (xp < params.cap || i === TIERS.length - 1) { currentTierIdx = i; break; }
-            }
-            const tier = TIERS[currentTierIdx];
-            const params = getRankParams(currentTierIdx);
-            let tierXP = xp - params.startXp;
-            let div = 5; let runningSum = 0;
-            if (tier.name === "Legend") return "Legend";
-            for (let d = 0; d < 5; d++) {
-                if (tierXP < runningSum + params.divCosts[d]) { div = 5 - d; break; }
-                runningSum += params.divCosts[d];
-            }
-            return `${tier.name} ${div}`.trim();
-        }
-
-        document.getElementById('btn-profile').addEventListener('click', () => {
-            document.getElementById('stat-mmr').innerText = state.xp;
-            document.getElementById('stat-high-mmr').innerText = state.highestXp;
-            document.getElementById('stat-high-rank').innerText = state.totalRounds < 5 ? "Unranked" : getRankNameFromXp(state.highestXp);
-            document.getElementById('stat-fastest').innerText = state.fastestRun > 0 ? `${state.fastestRun} clicks` : "-";
-            document.getElementById('stat-longest').innerText = state.longestRun > 0 ? `${state.longestRun} clicks` : "-";
-            document.getElementById('modal-profile').classList.remove('hidden');
-        });
-
-        document.getElementById('profile-close').addEventListener('click', () => document.getElementById('modal-profile').classList.add('hidden'));
-
-        document.getElementById('btn-export-save').onclick = () => {
-            const data = { xp: state.xp, highestXp: state.highestXp, coins: state.coins, dailyStreak: state.dailyStreak, totalRounds: state.totalRounds, fastestRun: state.fastestRun, longestRun: state.longestRun, history: state.history, lastDailyWin: state.lastDailyWin, isPromo: state.isPromo };
-            const code = btoa(JSON.stringify(data)); const input = document.getElementById('save-code-input'); input.value = code; input.select(); document.execCommand('copy');
-            const btn = document.getElementById('btn-export-save'); btn.innerText = "Copied!"; setTimeout(()=>btn.innerText="Copy Code", 2000);
-        };
-
-        document.getElementById('btn-import-save').onclick = () => {
-            try {
-                const code = document.getElementById('save-code-input').value; const data = JSON.parse(atob(code));
-                if (data.xp !== undefined) { localStorage.setItem('wiki_xp', data.xp); localStorage.setItem('wiki_highest_xp', data.highestXp !== undefined ? data.highestXp : data.xp); localStorage.setItem('wiki_coins', data.coins || 0); localStorage.setItem('wiki_daily_streak', data.dailyStreak || 0); localStorage.setItem('wiki_total_rounds', data.totalRounds || 0); localStorage.setItem('wiki_fastest_run', data.fastestRun || 0); localStorage.setItem('wiki_longest_run', data.longestRun || 0); localStorage.setItem('wiki_history', JSON.stringify(data.history || {})); if (data.lastDailyWin) localStorage.setItem('wiki_last_daily_win', data.lastDailyWin); localStorage.setItem('wiki_promo', data.isPromo || false); location.reload(); }
-            } catch(e) { const btn = document.getElementById('btn-import-save'); btn.innerText = "Invalid Code!"; setTimeout(()=>btn.innerText="Load Code", 2000); }
-        };
 
         function startGame() {
             state.isPlaying = true; state.clicks = 0; state.path = [state.startTitle]; state.currentTitle = state.startTitle; state.finished = false;
             document.getElementById('click-count').innerText = '0'; document.getElementById('game-target-display').innerText = state.targetTitle;
             showScreen('game'); loadArticle(state.startTitle);
-            document.getElementById('menu-background').style.opacity = '0';
         }
+
         function showScreen(screenId) { 
             Object.values(screens).forEach(s => s.classList.add('hidden')); screens[screenId].classList.remove('hidden'); 
             const topUI = document.getElementById('top-ui-bar');
-            if (screenId === 'game') { topUI.classList.add('opacity-0', 'pointer-events-none'); document.getElementById('menu-background').style.opacity = '0'; }
-            else { topUI.classList.remove('opacity-0', 'pointer-events-none'); if (screenId === 'menu') document.getElementById('menu-background').style.opacity = '1'; }
+            if (screenId === 'game') topUI.classList.add('opacity-0', 'pointer-events-none'); else topUI.classList.remove('opacity-0', 'pointer-events-none');
             window.scrollTo(0, 0); 
         }
-        function startCountdown() { if (!state.isMultiplayer || state.finished) return; document.getElementById('multiplayer-countdown').classList.remove('hidden'); let timeLeft = 120; document.getElementById('countdown-val').innerText = timeLeft; state.countdownInterval = setInterval(() => { timeLeft--; document.getElementById('countdown-val').innerText = timeLeft; if (timeLeft <= 0) { clearInterval(state.countdownInterval); finishGame(false, state.opponentFinishedClicks, "timeout"); } }, 1000); }
+
+        function startCountdown() { if (!state.isMultiplayer || state.finished) return; document.getElementById('multiplayer-countdown').classList.remove('hidden'); let timeLeft = 120; state.countdownInterval = setInterval(() => { timeLeft--; document.getElementById('countdown-val').innerText = timeLeft; if (timeLeft <= 0) { clearInterval(state.countdownInterval); finishGame(false, state.opponentFinishedClicks); } }, 1000); }
 
         async function loadArticle(title) {
-            window.scrollTo(0, 0); const contentArea = document.getElementById('wiki-content-area'); const loader = document.getElementById('loader'); const titleDisplay = document.getElementById('current-title');
+            const contentArea = document.getElementById('wiki-content-area'); const loader = document.getElementById('loader'); const titleDisplay = document.getElementById('current-title');
             loader.classList.remove('hidden'); contentArea.classList.add('opacity-30'); titleDisplay.innerText = title;
-            const breadcrumbContainer = document.getElementById('game-breadcrumbs'); breadcrumbContainer.innerHTML = state.path.map(s => `<span class='text-xs'>${s}</span>`).join(' › ');
-            let retries = 0; const delays = [1000, 2000, 4000, 8000, 16000];
-            while (retries < delays.length) {
-                try {
-                    const res = await fetch(`${getApiUrl()}parse&page=${encodeURIComponent(title)}&prop=text&format=json&disableeditsection=true&redirects=true`);
-                    if (res.status === 429) { await new Promise(resolve => setTimeout(resolve, delays[retries])); retries++; continue; }
-                    if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
-                    const text = await res.text(); let data; try { data = JSON.parse(text); } catch (jsonError) { throw new Error("Invalid response format."); }
-                    if (data.error) throw new Error(data.error.info);
-                    contentArea.innerHTML = data.parse.text['*']; contentArea.classList.remove('opacity-30');
-                    const links = contentArea.querySelectorAll('a');
-                    links.forEach(link => {
-                        const href = link.getAttribute('href');
-                        if (href && href.startsWith('/wiki/') && !href.includes(':') && !href.includes('#')) {
-                            link.onclick = (e) => { e.preventDefault(); const nextTitle = decodeURIComponent(href.replace('/wiki/', '')).replace(/_/g, ' '); handleNavigation(nextTitle); };
-                        } else { link.style.pointerEvents = 'none'; link.style.opacity = '0.7'; link.style.textDecoration = 'none'; link.style.cursor = 'default'; }
-                    });
-                    contentArea.querySelectorAll('img').forEach(img => { let src = img.getAttribute('src'); if (src) { if (src.startsWith('//')) img.src = 'https:' + src; else if (src.startsWith('/')) img.src = `https://${state.language}.wikipedia.org` + src; } });
-                    break;
-                } catch(e) { if (retries === delays.length - 1) { contentArea.innerHTML = `<div class="p-8 text-center text-red-500 font-bold bg-red-50 dark:bg-red-900/20 rounded-2xl border border-red-100 dark:border-red-800/30">Failed to load article: ${e.message}</div>`; break; } await new Promise(resolve => setTimeout(resolve, delays[retries])); retries++; } finally { if (retries >= delays.length || contentArea.classList.contains('opacity-30') === false) { loader.classList.add('hidden'); } }
-            }
+            document.getElementById('game-breadcrumbs').innerHTML = state.path.map(s => `<span class='text-xs'>${s}</span>`).join(' › ');
+            try {
+                const res = await fetch(`${getApiUrl()}parse&page=${encodeURIComponent(title)}&prop=text&format=json&disableeditsection=true&redirects=true`);
+                const data = await res.json(); contentArea.innerHTML = data.parse.text['*']; contentArea.classList.remove('opacity-30');
+                contentArea.querySelectorAll('a').forEach(link => {
+                    const href = link.getAttribute('href');
+                    if (href && href.startsWith('/wiki/') && !href.includes(':') && !href.includes('#')) {
+                        link.onclick = (e) => { e.preventDefault(); handleNavigation(decodeURIComponent(href.replace('/wiki/', '')).replace(/_/g, ' ')); };
+                    } else { link.style.pointerEvents = 'none'; link.style.opacity = '0.7'; }
+                });
+            } catch(e) { contentArea.innerHTML = "Error loading article."; } finally { loader.classList.add('hidden'); }
         }
 
         function handleNavigation(title) {
             if (state.finished) return; state.clicks++; state.path.push(title); document.getElementById('click-count').innerText = state.clicks;
             if (state.isMultiplayer) sendPeerData({ type: 'progress', clicks: state.clicks, path: state.path });
-            if (title.toLowerCase() === state.targetTitle.toLowerCase()) {
-                if (state.isMultiplayer && state.opponentFinishedClicks === null) { sendPeerData({ type: 'finish', clicks: state.clicks }); finishGame(true, "?"); }
-                else if (state.isMultiplayer) { clearInterval(state.countdownInterval); finishGame(state.clicks <= state.opponentFinishedClicks, state.opponentFinishedClicks); }
-                else finishGame(true);
-            }
-            else if (state.maxClicks && state.clicks >= state.maxClicks) finishGame(false, "?", "limit");
-            else loadArticle(title);
+            if (title.toLowerCase() === state.targetTitle.toLowerCase()) finishGame(true); else loadArticle(title);
         }
 
-        function updateOpponentProgressUI() { if (!state.isMultiplayer) return; document.getElementById('opp-live-clicks').innerText = state.opponentClicks; const container = document.getElementById('opp-live-path'); container.innerHTML = state.opponentPath.map((step, index) => { const isLast = index === state.opponentPath.length - 1; return `<span class="flex items-center gap-1"><span class="${isLast ? 'text-gray-500 font-bold' : 'text-gray-400'}">${step}</span>${!isLast ? '<span class="text-gray-300">›</span>' : ''}</span>`; }).join(''); }
+        function updateOpponentProgressUI() { if (!state.isMultiplayer) return; document.getElementById('opp-live-clicks').innerText = state.opponentClicks; document.getElementById('opp-live-path').innerText = state.opponentPath.join(' › '); }
 
-        document.getElementById('btn-host').addEventListener('click', () => {
-            resetPeer();
-            state.isHost = true; state.sessionCode = generateCode(); setupLobbyUI();
-            try {
-                peer = new Peer('wikigame-v1-' + state.sessionCode, PEER_CONFIG);
-                peer.on('open', () => { document.getElementById('joiner-status').innerText = uiDict[state.language].waitHostWait; });
-                peer.on('connection', (conn) => {
-                    peerConn = conn; peerConn.on('data', handlePeerData); document.getElementById('host-controls').classList.remove('hidden'); document.getElementById('joiner-status').classList.add('hidden');
-                    const startBtn = document.getElementById('btn-lobby-start'); startBtn.disabled = false; startBtn.innerText = uiDict[state.language].waitHostStart;
-                    sendPeerData({ type: 'lobbyUpdate', startTitle: state.startTitle, targetTitle: state.targetTitle, language: state.language });
-                });
-                peer.on('error', (err) => { 
-                    console.error("Host Peer Error:", err);
-                    resetPeer(); 
-                    document.getElementById('join-error').innerText = "Host connection error. Try again.";
-                    document.getElementById('join-error').classList.remove('hidden'); 
-                });
-            } catch(e) { console.error("Peer init failed", e); }
-        });
-
-        document.getElementById('btn-show-join').addEventListener('click', () => { document.getElementById('role-selection').classList.add('hidden'); document.getElementById('join-section').classList.remove('hidden'); });
-        
-        document.getElementById('btn-join-submit').addEventListener('click', () => {
-            const codeInput = document.getElementById('join-code').value.toUpperCase(); 
-            if (codeInput.length !== 6) return;
-            
-            resetPeer();
-            document.getElementById('join-error').classList.add('hidden');
-            document.getElementById('btn-join-submit').innerText = "...";
-            document.getElementById('btn-join-submit').disabled = true;
-
-            // Joiner Peer initialization
-            peer = new Peer(null, PEER_CONFIG); 
-            
-            peer.on('open', (id) => { 
-                console.log('Joiner Peer ID:', id);
-                peerConn = peer.connect('wikigame-v1-' + codeInput, { reliable: true }); 
-                
-                const connectionTimeout = setTimeout(() => {
-                    if (!peerConn || !peerConn.open) {
-                        document.getElementById('join-error').classList.remove('hidden');
-                        document.getElementById('btn-join-submit').innerText = uiDict[state.language].btnJoin;
-                        document.getElementById('btn-join-submit').disabled = false;
-                        resetPeer();
-                    }
-                }, 7000);
-
-                peerConn.on('open', () => { 
-                    clearTimeout(connectionTimeout);
-                    state.isHost = false; 
-                    state.sessionCode = codeInput; 
-                    setupLobbyUI(); 
-                    peerConn.on('data', handlePeerData); 
-                    document.getElementById('btn-join-submit').innerText = uiDict[state.language].btnJoin;
-                    document.getElementById('btn-join-submit').disabled = false;
-                });
-
-                peerConn.on('error', (err) => { 
-                    console.error("Conn error:", err);
-                    document.getElementById('join-error').classList.remove('hidden'); 
-                    document.getElementById('btn-join-submit').innerText = uiDict[state.language].btnJoin;
-                    document.getElementById('btn-join-submit').disabled = false;
-                });
+        document.getElementById('btn-host').onclick = () => {
+            resetPeer(); state.isHost = true; state.sessionCode = generateCode(); setupLobbyUI();
+            peer = new Peer('wikigame-p2p-' + state.sessionCode, PEER_CONFIG);
+            peer.on('connection', (conn) => {
+                peerConn = conn; peerConn.on('data', handlePeerData); document.getElementById('host-controls').classList.remove('hidden'); document.getElementById('joiner-status').classList.add('hidden');
+                document.getElementById('btn-lobby-start').disabled = false;
+                sendPeerData({ type: 'lobbyUpdate', startTitle: state.startTitle, targetTitle: state.targetTitle, language: state.language });
             });
+        };
 
-            peer.on('error', (err) => { 
-                console.error("Joiner Peer error:", err);
-                document.getElementById('join-error').classList.remove('hidden'); 
-                document.getElementById('btn-join-submit').innerText = uiDict[state.language].btnJoin;
-                document.getElementById('btn-join-submit').disabled = false;
-                resetPeer();
+        document.getElementById('btn-show-join').onclick = () => { document.getElementById('role-selection').classList.add('hidden'); document.getElementById('join-section').classList.remove('hidden'); };
+        document.getElementById('btn-join-submit').onclick = () => {
+            const codeInput = document.getElementById('join-code').value.toUpperCase(); if (codeInput.length !== 6) return;
+            resetPeer(); peer = new Peer(null, PEER_CONFIG);
+            peer.on('open', () => {
+                peerConn = peer.connect('wikigame-p2p-' + codeInput);
+                peerConn.on('open', () => { state.isHost = false; state.sessionCode = codeInput; setupLobbyUI(); peerConn.on('data', handlePeerData); });
+                peerConn.on('error', () => document.getElementById('join-error').classList.remove('hidden'));
             });
-        });
+        };
 
         document.getElementById('btn-lobby-refresh').onclick = () => { if (state.isHost) rollSoloWords(true); };
         document.getElementById('btn-lobby-start').onclick = () => { if (!state.isHost) return; sendPeerData({ type: 'startGame' }); startGame(); };
 
-        document.getElementById('tab-solo').onclick = () => {
-            document.getElementById('tab-solo').classList.replace('text-gray-500', 'text-blue-600'); document.getElementById('tab-solo').classList.add('bg-white', 'shadow-lg'); document.getElementById('tab-multi').classList.replace('text-blue-600', 'text-gray-500'); document.getElementById('tab-multi').classList.remove('bg-white', 'shadow-lg');
-            document.getElementById('solo-setup').classList.remove('hidden'); document.getElementById('multiplayer-setup').classList.add('hidden'); document.getElementById('mode-prev').classList.remove('hidden'); document.getElementById('mode-next').classList.remove('hidden'); document.getElementById('mode-display').classList.remove('hidden'); document.getElementById('instruction-field').classList.remove('hidden'); state.isMultiplayer = false;
-        };
-        document.getElementById('tab-multi').onclick = () => {
-            if (currentMODES[currentModeIndex].id !== 'classic') return;
-            document.getElementById('tab-multi').classList.replace('text-gray-500', 'text-blue-600'); document.getElementById('tab-multi').classList.add('bg-white', 'shadow-lg'); document.getElementById('tab-solo').classList.replace('text-blue-600', 'text-gray-500'); document.getElementById('tab-solo').classList.remove('bg-white', 'shadow-lg');
-            document.getElementById('multiplayer-setup').classList.remove('hidden'); document.getElementById('solo-setup').classList.add('hidden'); document.getElementById('mode-prev').classList.add('hidden'); document.getElementById('mode-next').classList.add('hidden'); document.getElementById('mode-display').classList.add('hidden'); document.getElementById('instruction-field').classList.add('hidden'); state.isMultiplayer = true;
-        };
+        document.getElementById('tab-solo').onclick = () => { document.getElementById('solo-setup').classList.remove('hidden'); document.getElementById('multiplayer-setup').classList.add('hidden'); state.isMultiplayer = false; };
+        document.getElementById('tab-multi').onclick = () => { document.getElementById('multiplayer-setup').classList.remove('hidden'); document.getElementById('solo-setup').classList.add('hidden'); state.isMultiplayer = true; };
 
-        document.getElementById('btn-solo-roll').onclick = () => {
-            if (state.coins >= 2) { state.coins -= 2; localStorage.setItem('wiki_coins', state.coins); updateUI(); rollSoloWords(true); } 
-            else { const rollBtn = document.getElementById('btn-solo-roll'); const originalText = rollBtn.innerHTML; rollBtn.innerText = "Insufficient Coins!"; setTimeout(() => rollBtn.innerHTML = originalText, 1500); }
-        };
         document.getElementById('btn-solo-start').onclick = startGame;
         document.getElementById('btn-home').onclick = () => { updateUI(); updateModeDisplay(); showScreen('menu'); resetPeer(); };
-        document.getElementById('btn-back').onclick = () => { if (state.finished || state.path.length <= 1) return; state.path.pop(); const prev = state.path[state.path.length - 1]; state.clicks++; document.getElementById('click-count').innerText = state.clicks; loadArticle(prev); };
+        document.getElementById('btn-back').onclick = () => { if (state.path.length <= 1) return; state.path.pop(); state.clicks++; loadArticle(state.path[state.path.length - 1]); };
         document.getElementById('btn-quit-trigger').onclick = () => document.getElementById('modal-quit').classList.remove('hidden');
         document.getElementById('modal-cancel').onclick = () => document.getElementById('modal-quit').classList.add('hidden');
         document.getElementById('modal-confirm').onclick = () => { document.getElementById('modal-quit').classList.add('hidden'); document.getElementById('btn-home').click(); };
@@ -1492,36 +968,11 @@
         document.getElementById('lang-de').onclick = () => setLanguage('de');
         document.getElementById('lang-es').onclick = () => setLanguage('es');
 
-        function setLanguage(lang) {
-            state.language = lang; updateLanguageButtonsUI(lang); updateUI(); updateModeDisplay();
-            if (state.isMultiplayer && state.isHost) { sendPeerData({ type: 'lobbyUpdate', startTitle: state.startTitle, targetTitle: state.targetTitle, language: state.language }); }
-        }
-
-        function updateLanguageButtonsUI(lang) {
-            const btns = { en: document.getElementById('lang-en'), de: document.getElementById('lang-de'), es: document.getElementById('lang-es') };
-            const active = "px-4 py-1.5 bg-blue-600 text-white rounded-xl font-bold text-xs shadow-md";
-            const inactive = "px-4 py-1.5 text-gray-500 hover:text-gray-800 rounded-xl font-bold text-xs";
-            Object.keys(btns).forEach(k => btns[k].className = k === lang ? active : inactive);
-        }
-
-        let currentTutorialStep = 0;
-        const tutorialSteps = document.querySelectorAll('.tutorial-step');
-        const tutorialDots = document.getElementById('tutorial-dots').children;
-
-        function showTutorialStep(step) {
-            tutorialSteps.forEach((el, i) => { el.classList.toggle('hidden', i !== step); tutorialDots[i].className = i === step ? "w-3 h-3 rounded-full bg-blue-600 transition-all" : "w-3 h-3 rounded-full bg-gray-300 dark:bg-slate-600 transition-all"; });
-            const btnNext = document.getElementById('btn-tutorial-next');
-            if (step === tutorialSteps.length - 1) { btnNext.innerText = "Let's Play! 🚀"; btnNext.classList.replace('bg-blue-600', 'bg-green-500'); btnNext.classList.replace('hover:bg-blue-700', 'hover:bg-green-600'); } 
-            else { btnNext.innerText = "Next ➔"; btnNext.classList.replace('bg-green-500', 'bg-blue-600'); btnNext.classList.replace('hover:bg-green-600', 'hover:bg-blue-700'); }
-        }
-
-        document.getElementById('btn-tutorial-next').onclick = () => { if (currentTutorialStep < tutorialSteps.length - 1) { currentTutorialStep++; showTutorialStep(currentTutorialStep); } else { document.getElementById('modal-tutorial').classList.add('hidden'); localStorage.setItem('wiki_tutorial_seen', 'true'); } };
-        document.getElementById('btn-close-tutorial').onclick = () => { document.getElementById('modal-tutorial').classList.add('hidden'); localStorage.setItem('wiki_tutorial_seen', 'true'); };
-        document.getElementById('btn-info-tutorial').onclick = () => { currentTutorialStep = 0; showTutorialStep(0); document.getElementById('modal-tutorial').classList.remove('hidden'); };
+        function setLanguage(lang) { state.language = lang; updateUI(); updateModeDisplay(); }
+        function updateLanguageButtonsUI(lang) { /* UI Logic */ }
 
         const screens = { menu: document.getElementById('screen-menu'), game: document.getElementById('screen-game'), results: document.getElementById('screen-results') };
-        initBackground(); checkStreak(); updateUI(); updateModeDisplay('none');
-        if (!localStorage.getItem('wiki_tutorial_seen')) setTimeout(() => document.getElementById('btn-info-tutorial').click(), 500);
+        initBackground(); updateUI(); updateModeDisplay('none');
     </script>
 </body>
 </html>

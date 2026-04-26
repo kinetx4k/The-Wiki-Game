@@ -241,6 +241,18 @@
         </button>
     </div>
 
+    <!-- Ticket UI Center Top -->
+    <div id="ticket-ui" class="fixed top-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md px-4 py-2 rounded-2xl shadow-lg border border-white/50 dark:border-slate-700/50 font-black text-gray-800 dark:text-gray-200 text-sm whitespace-nowrap transition-opacity duration-300">
+        <span>🎟️ Tickets renew in:</span>
+        <span id="ticket-timer-val" class="text-blue-500 dark:text-blue-400 w-12 text-center">00:00</span>
+        <div class="relative group cursor-help ml-1 text-lg">
+            ℹ️
+            <div class="absolute hidden group-hover:block top-full mt-2 left-1/2 -translate-x-1/2 w-48 bg-gray-900 text-white text-xs p-3 rounded-xl shadow-xl text-center font-medium border border-gray-700 pointer-events-none">
+                Wikipedia API rate limits apply. Just wait until the next hour and touch some grass! 🌿
+            </div>
+        </div>
+    </div>
+
     <div id="top-ui-bar" class="fixed top-6 right-6 flex items-center gap-4 z-50 transition-opacity duration-300">
         <!-- Dark Mode Toggle -->
         <button id="btn-dark-mode" class="p-2.5 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl shadow-lg border border-white/50 dark:border-slate-700/50 text-xl">
@@ -759,6 +771,10 @@
             // Start Countdown logic
             updateDailyCountdown();
             setInterval(updateDailyCountdown, 1000);
+            
+            // Start Ticket Countdown logic
+            updateTicketTimer();
+            setInterval(updateTicketTimer, 1000);
         }
 
         function updateDailyCountdown() {
@@ -780,6 +796,17 @@
             
             const el = document.getElementById('daily-countdown-val');
             if (el) el.innerText = timeStr;
+        }
+
+        function updateTicketTimer() {
+            const now = new Date();
+            const nextHour = new Date(now);
+            nextHour.setHours(now.getHours() + 1, 0, 0, 0);
+            const diff = nextHour - now;
+            const m = Math.floor((diff / 1000 / 60) % 60).toString().padStart(2, '0');
+            const s = Math.floor((diff / 1000) % 60).toString().padStart(2, '0');
+            const el = document.getElementById('ticket-timer-val');
+            if (el) el.innerText = `${m}:${s}`;
         }
 
         let peer = null;
@@ -1613,9 +1640,11 @@
             const topUI = document.getElementById('top-ui-bar');
             if (screenId === 'game') {
                 topUI.classList.add('opacity-0', 'pointer-events-none');
+                document.getElementById('ticket-ui').style.opacity = '0';
                 document.getElementById('menu-background').style.opacity = '0';
             } else {
                 topUI.classList.remove('opacity-0', 'pointer-events-none');
+                document.getElementById('ticket-ui').style.opacity = '1';
                 if (screenId === 'menu') document.getElementById('menu-background').style.opacity = '1';
             }
             window.scrollTo(0, 0); 

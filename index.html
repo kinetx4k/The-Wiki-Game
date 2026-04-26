@@ -292,7 +292,7 @@
                 <div class="bg-white dark:bg-slate-800 rounded-[2.5rem] p-8 shadow-xl shadow-gray-200/50 dark:shadow-none border border-gray-100 dark:border-slate-700 relative overflow-hidden">
                     <div class="flex items-center justify-between mb-4">
                         <span class="text-xs font-black uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">Game Mode</span>
-                        <span id="daily-notification" class="hidden bg-red-500 text-white text-[10px] font-black px-3 py-1 rounded-full animate-pulse">NEW CHALLENGE</span>
+                        <span id="daily-notification" class="hidden bg-red-50 text-white text-[10px] font-black px-3 py-1 rounded-full animate-pulse">NEW CHALLENGE</span>
                     </div>
 
                     <div id="reset-timer-container" class="mb-4 text-center">
@@ -753,7 +753,7 @@
                 descClassic: "Comienza en el artículo dado y llega al objetivo con la menor cantidad de clics.",
                 descHardcore: "Como el clásico, aber con términos extremadamente difíciles. ¡Gran riesgo!",
                 descDaily: "Un desafío único cada 24 horas. ¡Aumenta tu racha y gana monedas según tu nivel de racha!",
-                descLimited: "Llega al destino in 10 clics o menos. ¡La eficiencia lo es todo!"
+                descLimited: "Llega al destino en 10 clics o menos. ¡La eficiencia lo es todo!"
             }
         };
 
@@ -790,7 +790,7 @@
         const HARD_TOPICS = {
             en: ["Quantum entanglement", "Byzantine Empire", "Tardigrade", "Non-Euclidean geometry", "Glagolitic script", "Isotopes of gold", "Photosynthesis", "Linguistics", "Cuneiform", "Oort cloud", "Standard Model", "Voynich manuscript", "Antikythera mechanism", "Schrödinger's cat", "Fermi paradox", "Hadron Collider", "String theory", "Plate tectonics", "Abstract expressionism", "Chaos theory", "Game theory", "Fibonacci sequence", "Turing machine", "Magna Carta", "Code of Hammurabi", "Rosetta Stone", "Golden ratio", "Nash equilibrium", "Boltzmann constant", "Event horizon", "Achaemenid Empire", "Mayan calendar", "Transhumanism", "Epistemology", "Existentialism", "Neuroplasticity", "Dark matter", "Higgs boson", "Black swan theory", "Occam's razor", "Cognitive dissonance", "Stockholm syndrome", "Prisoner's dilemma", "Drake equation", "Zeno's paradoxes", "Library of Alexandria", "Tower of Babel", "Hanging Gardens of Babylon", "Machu Picchu", "Petra", "Colossus of Rhodes", "Lighthouse of Alexandria", "Terraforming", "Multiverse", "Parallel universe", "Teleportation", "Nanotechnology", "Cryptography", "Holography", "Synthetic biology", "Gene editing", "CRISPR", "Nuclear fusion", "Superconductivity", "Semiconductor", "Quantum computing", "Laser", "Fiber optics", "Global Positioning System", "Artificial neural network", "Machine learning", "Deep learning", "Algorithm", "Heuristic", "Entropy", "Thermodynamics", "Metaphysics", "Ontology", "Phenomenology", "Stoicism", "Epicureanism", "Cynicism (philosophy)", "Nihilism", "Utilitarianism", "Deontology", "Virtue ethics"],
             de: ["Quantenverschränkung", "Byzantinisches Reich", "Bärtierchen", "Nichteuklidische Geometrie", "Glagolitische Schrift", "Goldisotope", "Photosynthese", "Linguistik", "Keilschrift", "Oortsche Wolke", "Standardmodell", "Voynich-Manuskript", "Mechanismus von Antikythera", "Schrödingers Katze", "Fermi-Paradoxon", "Teilchenbeschleuniger", "Stringtheorie", "Plattentektonik", "Abstrakter Expressionismus", "Chaostheorie", "Spieltheorie", "Fibonacci-Folge", "Turingmaschine", "Magna Carta", "Codex Hammurapi", "Stein von Rosette", "Goldener Schnitt", "Nash-Gleichgewicht", "Boltzmann-Konstante", "Ereignishorizont", "Achämenidenreich", "Maya-Kalender", "Transhumanismus", "Erkenntnistheorie", "Existentialismus", "Neuroplastizität", "Dunkle Materie", "Higgs-Boson", "Black-Swan-Theorie", "Occams Rasiermesser", "Kognitive Dissonanz", "Stockholm-Syndrom", "Gefangenendilemma", "Drake-Gleichung", "Zenons Paradoxien", "Bibliothek von Alexandria", "Turmbau zu Babel", "Hängende Gärten der Semiramis", "Machu Picchu", "Petra (Jordanien)", "Koloss von Rhodos", "Pharos von Alexandria", "Terraforming", "Multiversum", "Parallelwelt", "Teleportation", "Nanotechnologie", "Kryptographie", "Holografie", "Synthetische Biologie", "Genomeditierung", "CRISPR/Cas-System", "Kernfusion", "Supraleitung", "Halbleiter", "Quantencomputer", "Laser", "Glasfaser", "Global Positioning System", "Künstliches neuronales Netz", "Maschinelles Lernen", "Deep Learning", "Algorithmus", "Heuristik", "Entropie", "Thermodynamik", "Metaphysik", "Ontologie", "Phänomenologie", "Stoa", "Epikureismus", "Kynismus", "Nihilismus", "Utilitarismus", "Deontologie", "Tugendethik"],
-            es: ["Entrelazamiento cuántico", "Imperio bizantino", "Tardigrada", "Geometría no euclidiana", "Alfabeto glagolítico", "Isótopos de oro", "Fotosíntesis", "Lingüística", "Cuneiforme", "Nube de Oort", "Modelo estándar", "Manuscrito Voynich", "Mecanismo de Anticitera", "Gato de Schrödinger", "Paradoja de Fermi", "Acelerador de partículas", "Teoría de cuerdas", "Tectónica de placas", "Expresionismo abstracto", "Teoría del caos", "Teoría de juegos", "Sucesión de Fibonacci", "Máquina de Turing", "Magna Carta", "Código de Hammurabi", "Piedra de Rosetta", "Número áureo", "Equilibrio de Nash", "Constante de Boltzmann", "Horizonte de sucesos", "Imperio aqueménida", "Calendario maya", "Transhumanismo", "Epistemología", "Existencialismo", "Neuroplastizität", "Materia oscura", "Bosón de Higgs", "Teoría del cisne negro", "Navaja de Ockham", "Disonancia cognitiva", "Síndrome de Estocolmo", "Dilema del prisionero", "Ecuación de Drake", "Paradojas de Zenón", "Biblioteca de Alejandría", "Torre de Babel", "Jardines Colgantes de Babilonia", "Machu Picchu", "Petra", "Coloso de Rodas", "Faro de Alejandría", "Terraformación", "Multiverso", "Universo paralelo", "Teletransportación", "Nanotecnología", "Criptografía", "Holografía", "Biología sintética", "Edición genética", "CRISPR", "Fusión nuclear", "Superconductividad", "Semiconductor", "Computación cuántica", "Láser", "Fibra óptica", "Sistema de posicionamiento global", "Red neuronal artificial", "Aprendizaje automático", "Aprendizaje profundo", "Algoritmo", "Heurística", "Entropía", "Termodinámica", "Metafísica", "Ontología", "Fenomenología", "Estoicismo", "Epicureísmo", "Cinismo", "Nihilismo", "Utilitarismo", "Deontología", "Ética de la virtud"]
+            es: ["Entrelazamiento cuántico", "Imperio bizantino", "Tardigrada", "Geometría no euclidiana", "Alfabeto glagolítico", "Isótopos de oro", "Fotosíntesis", "Lingüística", "Cuneiforme", "Nube de Oort", "Modelo estándar", "Manuscrito Voynich", "Mecanismo de Anticitera", "Gato de Schrödinger", "Paradoja de Fermi", "Acelerador de partículas", "Teoría de cuerdas", "Tectónica de placas", "Expresionismo abstracto", "Teoría del caos", "Teoría de juegos", "Sucesión de Fibonacci", "Máquina de Turing", "Magna Carta", "Código de Hammurabi", "Piedra de Rosetta", "Número áureo", "Equilibrio de Nash", "Constante de Boltzmann", "Horizonte de sucesos", "Imperio aqueménida", "Calendario maya", "Transhumanismo", "Epistemología", "Existentialismo", "Neuroplasticidad", "Materia oscura", "Bosón de Higgs", "Teoría del cisne negro", "Navaja de Ockham", "Disonancia cognitiva", "Síndrome de Estocolmo", "Dilema del prisionero", "Ecuación de Drake", "Paradojas de Zenón", "Biblioteca de Alejandría", "Torre de Babel", "Jardines Colgantes de Babilonia", "Machu Picchu", "Petra", "Coloso de Rodas", "Faro de Alejandría", "Terraformación", "Multiverso", "Universo paralelo", "Teletransportación", "Nanotecnología", "Criptografía", "Holografía", "Biología sintética", "Edición genética", "CRISPR", "Fusión nuclear", "Superconductividad", "Semiconductor", "Computación cuántica", "Láser", "Fibra óptica", "Sistema de posicionamiento global", "Red neuronal artificial", "Aprendizaje automático", "Aprendizaje profundo", "Algoritmo", "Heurística", "Entropía", "Termodinámica", "Metafísica", "Ontología", "Fenomenología", "Estoicismo", "Epicureísmo", "Cinismo", "Nihilismo", "Utilitarismo", "Deontología", "Ética de la virtud"]
         };
 
         const TIERS = [
@@ -1419,7 +1419,7 @@
             const titleDisplay = document.getElementById('current-title');
             
             loader.classList.remove('hidden');
-            contentArea.classList.add('opacity-30'); // Visuelle Rückmeldung
+            contentArea.classList.add('opacity-30'); 
             titleDisplay.innerText = title;
 
             const breadcrumbContainer = document.getElementById('game-breadcrumbs');
@@ -1438,7 +1438,6 @@
                 const links = contentArea.querySelectorAll('a');
                 links.forEach(link => {
                     const href = link.getAttribute('href');
-                    // Nur echte Wikipedia-Artikel erlauben (keine Dateien, Kategorien, etc.)
                     if (href && href.startsWith('/wiki/') && !href.includes(':') && !href.includes('#')) {
                         link.onclick = (e) => {
                             e.preventDefault();
@@ -1453,10 +1452,22 @@
                     }
                 });
 
-                // Bilder fixen
+                // Bilder funktional machen (absolute URLs für Wikipedia-Bilder)
                 contentArea.querySelectorAll('img').forEach(img => {
                     let src = img.getAttribute('src');
-                    if (src && src.startsWith('//')) img.setAttribute('src', 'https:' + src);
+                    if (src) {
+                        if (src.startsWith('//')) img.src = 'https:' + src;
+                        else if (src.startsWith('/')) img.src = `https://${state.language}.wikipedia.org` + src;
+                    }
+                    let srcset = img.getAttribute('srcset');
+                    if (srcset) {
+                        img.srcset = srcset.split(',').map(s => {
+                            let part = s.trim();
+                            if (part.startsWith('//')) return 'https:' + part;
+                            if (part.startsWith('/')) return `https://${state.language}.wikipedia.org` + part;
+                            return part;
+                        }).join(', ');
+                    }
                 });
 
             } catch(e) {
